@@ -107,16 +107,68 @@ and decisions of record in ROADMAP.md). Headlines:
 - No @claude reviews appeared on PRs #1–#7: the @claude GitHub app is not
   active on this repo (user action: /install-github-app).
 
+### 2026-07-08 — Tier 7: overnight goal + hard lessons
+
+- goal.md: non-enumerable target (instructor-held holdout windows), one
+  checker per constraint, caps in overnight.sh not prose.
+- overnight.sh reverts red iterations via checkpoint commits + git reset,
+  NEVER git clean: the first version's `git clean -fd` deleted its own
+  untracked goal.md/checkers mid-demo (docs/solutions/2026-07-08-git-clean-
+  ate-the-loop.md). Checkpoint commits double as an audit trail.
+- Anti-cheat gate compares protected files against pristine copies taken at
+  loop start (not HEAD — the checkpoint commit would launder tampering).
+  Demoed with a shim `claude` that sabotaged a checker and rewrote goal.md:
+  both detected, restored, iteration continued green.
+- check_schema initially rejected ST/EP hazards — ReliefWeb GLIDEs use the
+  full GLIDE code list, not just GDACS's seven.
+
+### 2026-07-08 — model decision closed
+
+- User decision: production `HADR_MODEL` is **deepseek-v4-flash-free** (free
+  tier; tool calls + usage verified). The kimi-k2.7-code upgrade path is
+  dropped; revisiting would be a new decision.
+- @claude GitHub app installed; review loop live on PRs #1–#9.
+
+### 2026-07-08 — @claude review round (PRs #1–#9), fixes applied at stack tip
+
+Real bugs found by review, all fixed in one commit on tier-7-overnight:
+- dedupe `_absorb` dropped `depth_km` when GDACS (no depth) was primary; and
+  re-fetching a feed duplicated source rows — both fixed with regression tests.
+- morning `_agent_loop` constructed the model client outside its try/except,
+  so a missing `OPENCODE_API_KEY` crashed the run instead of falling back.
+- soul.md's "fetch the feeds first" contradicted the morning briefing's
+  "do NOT fetch" — now conditional ("if events have not been provided").
+- heartbeat failure-issue dedup: `--jq '.[0].number'` prints literal `null`
+  on empty, so the FIRST failure tried `gh issue comment null` and no issue
+  was ever created; fixed with `// empty`.
+- `HADR_MAX_TOKENS_TOTAL` was documented as enforced but the interactive
+  harness never read it — now enforced in `run_turn` too.
+- memory: state file now prunes inactive entries after 30 days (unbounded
+  growth); dead `last_reported_fingerprint` field removed; ESCALATED now
+  compares to the most recent alert level, so re-escalation after a dip
+  surfaces again (was: only above all-time max).
+- overnight.sh: green iterations commit immediately (a cap trip no longer
+  strands the last iteration's work); tampering now VOIDs the whole
+  iteration via reset (was: restore-and-continue, contradicting goal.md).
+- supercronic pinned by sha256; LiveModel now sends the repo User-Agent and
+  follows redirects like every other HTTP call site; state/** churn dropped
+  from PR #9 per the post-Tier-6 convention.
+
+Declined with rationale (replied on the PRs):
+- Token estimator "double-counting" (PR #7): summing per-request totals is
+  the intended spend semantic — every request re-sends the conversation as
+  prompt; clarifying comment added instead.
+- state/runs noise in PR #4: already in merged history below Tier 6, where
+  the convention doesn't apply yet.
+
 ## Open questions
 
 - Telegram or Slack for the alert webhook, and its credential (user input;
   workflow reads optional `HADR_ALERT_WEBHOOK` secret, skips if absent).
 - `ISSUE_PAT` secret (fine-grained, issues:write) needed for the failure
   issue's @claude mention to actually trigger the app (user action).
-- @claude GitHub app not installed on this repo — PR review loop inactive
-  (user action: /install-github-app).
-- OpenCode Go workspace balance needed before `kimi-k2.7-code` can be the
-  production model (user action; free model works meanwhile).
+- GitHub Pages enablement (Settings → Pages → Source: GitHub Actions) —
+  left to the user; the heartbeat's deploy step no-ops meaningfully until then.
 - ReliefWeb appname request must be filed by the user (form + email approval):
   https://apidoc.reliefweb.int/parameters#appname — do this early, approval takes time.
 

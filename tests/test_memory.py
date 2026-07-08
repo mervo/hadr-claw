@@ -63,6 +63,39 @@ def test_uid_rename_via_alias_is_not_a_new_event():
     assert "gdacs:9" not in state["events"]
 
 
+def test_re_escalation_after_a_dip_is_escalated_again():
+    base = dict(
+        hazard="EQ", title="t", occurred_at="2026-07-07T18:00:00Z",
+        updated_at="2026-07-07T18:00:00Z", lat=1.0, lon=1.0,
+        sources=[{"feed": "gdacs", "id": "9", "ids": ["9"], "url": None}],
+    )
+
+    def event(alert):
+        return [Event(uid="gdacs:9", severity={"gdacs_alert": alert}, **base)]
+
+    state = memory.load("/nonexistent")
+    memory.diff(state, event("Orange"), now=NOW)                 # first sight
+    dipped = memory.diff(state, event("Green"), now=NOW)         # de-escalation
+    assert not dipped.escalated
+    risen = memory.diff(state, event("Orange"), now=NOW)         # back up
+    assert len(risen.escalated) == 1, "re-escalation to a previous peak must surface"
+
+
+def test_pruning_drops_stale_inactive_entries():
+    state = _day1_state()
+    memory.diff(state, _events("day2"), now=NOW)  # marks deleted/aged_out
+    from datetime import timedelta
+
+    later = NOW + timedelta(days=memory.PRUNE_AFTER_DAYS + 1)
+    memory.diff(state, [], now=later)
+    statuses = {e.get("status") for e in state["events"].values()}
+    assert statuses <= {"deleted", "aged_out", "active"}
+    assert not any(
+        e for e in state["events"].values()
+        if e.get("status") != "active" and e["last_seen"] < "2026-07-09"
+    ), "inactive entries unseen for PRUNE_AFTER_DAYS are dropped"
+
+
 def test_fingerprint_survives_metre_scale_revisions():
     kwargs = dict(
         hazard="EQ", title="t", occurred_at="x", updated_at="x",

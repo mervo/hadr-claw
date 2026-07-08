@@ -87,7 +87,7 @@ def _card(e: Event, assessments: dict | None = None) -> str:
         badges += f'<span class="alert {alert}">{alert}</span>'
     mag = e.severity.get("mag")
     if mag is not None:
-        badges += f'<span class="mag">M {escape(str(mag))}</span>'
+        badges += f'<span class="mag">M {mag:.1f}</span>'
     links = " · ".join(
         f'<a href="{escape(s["url"], quote=True)}">{escape(s["feed"])}</a>'
         for s in e.sources

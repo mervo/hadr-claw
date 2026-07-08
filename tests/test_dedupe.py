@@ -31,6 +31,21 @@ def test_canonical_uid_is_glide_and_severity_is_max():
     assert venezuela.severity["mag"] == 7.1
 
 
+def test_merge_keeps_usgs_depth_when_gdacs_is_primary():
+    # GDACS events carry no depth; the merge must not drop USGS's
+    (venezuela,) = [e for e in dedupe.merge(_crossfeed()) if e.glide]
+    assert venezuela.depth_km == 10.0
+
+
+def test_refetching_a_feed_does_not_duplicate_sources():
+    events = _crossfeed()
+    merged = dedupe.merge(events)
+    remerged = dedupe.merge(merged + _crossfeed())
+    (venezuela,) = [e for e in remerged if e.glide]
+    feeds = [s["feed"] for s in venezuela.sources]
+    assert sorted(feeds) == ["gdacs", "reliefweb", "usgs"], "no duplicate source rows"
+
+
 def test_unrelated_event_stays_separate():
     merged = dedupe.merge(_crossfeed())
     assert len(merged) == 2

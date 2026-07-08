@@ -80,7 +80,6 @@ def main(argv: list[str] | None = None) -> int:
     out.parent.mkdir(parents=True, exist_ok=True)
     write_dashboard(events, statuses, out, changes=changes,
                     last_change_at=state.get("last_change_at"))
-    memory.mark_reported(state, events)
     memory.save(state, args.state)
 
     counts = changes.counts()

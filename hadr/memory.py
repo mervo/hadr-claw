@@ -34,6 +34,9 @@ STATE_PATH = Path("state/seen_events.json")
 _ALERT_RANKS = {"green": 0, "yellow": 1, "orange": 2, "red": 3}
 # only USGS is a rolling window; GDACS/ReliefWeb entries just age out of scope
 _FEED_WINDOW_HOURS = {"usgs": 24}
+# non-active entries older than this are dropped from state — the committed
+# memory file must not grow unbounded over a daily heartbeat
+PRUNE_AFTER_DAYS = 30
 
 
 def alert_rank(event: Event) -> int:
@@ -136,15 +139,18 @@ def diff(state: dict, events: list[Event], now: datetime | None = None) -> Chang
                 "occurred_at": event.occurred_at,
                 "alert_history": [[now_iso, alert_label(event)]],
             }
-        elif alert_rank(event) > max(
-            (_ALERT_RANKS.get(str(lv).lower(), -1) for _, lv in entry["alert_history"]), default=-1
-        ):
-            changes.escalated.append(event)
-            entry["alert_history"].append([now_iso, alert_label(event)])
-        elif entry["fingerprint"] != fp:
-            changes.updated.append(event)
         else:
-            changes.unchanged.append(event)
+            # compare to the most recent recorded level, not the all-time max:
+            # a re-escalation after a dip must surface on the watch floor again
+            last_rank = _ALERT_RANKS.get(str(entry["alert_history"][-1][1]).lower(), -1)
+            if alert_rank(event) != last_rank:
+                entry["alert_history"].append([now_iso, alert_label(event)])
+            if alert_rank(event) > last_rank:
+                changes.escalated.append(event)
+            elif entry["fingerprint"] != fp:
+                changes.updated.append(event)
+            else:
+                changes.unchanged.append(event)
 
         entry.update(
             {
@@ -168,13 +174,16 @@ def diff(state: dict, events: list[Event], now: datetime | None = None) -> Chang
         else:
             entry["status"] = "aged_out"
 
+    # prune: non-active entries unseen for PRUNE_AFTER_DAYS drop out entirely,
+    # so the committed file stays bounded over a daily heartbeat
+    cutoff = now.timestamp() - PRUNE_AFTER_DAYS * 86400
+    for uid in [
+        uid
+        for uid, entry in state["events"].items()
+        if entry.get("status") != "active"
+        and datetime.fromisoformat(entry["last_seen"].replace("Z", "+00:00")).timestamp() < cutoff
+    ]:
+        del state["events"][uid]
+
     state["updated_at"] = now_iso
     return changes
-
-
-def mark_reported(state: dict, events: list[Event]) -> None:
-    """Called after the dashboard is successfully written."""
-    for event in events:
-        entry = state["events"].get(event.uid)
-        if entry:
-            entry["last_reported_fingerprint"] = entry["fingerprint"]

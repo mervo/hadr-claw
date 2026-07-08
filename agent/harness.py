@@ -30,13 +30,19 @@ from agent.model import make_model  # noqa: E402
 
 SOUL = Path(__file__).with_name("soul.md")
 MAX_TURNS = int(os.environ.get("HADR_MAX_TURNS", "12"))
+MAX_TOKENS_TOTAL = int(os.environ.get("HADR_MAX_TOKENS_TOTAL", "150000"))
 
 
 def run_turn(model, messages: list[dict]) -> dict:
-    """The agent loop: keep going while the model keeps requesting tools."""
+    """The agent loop: keep going while the model keeps requesting tools.
+    Caps on turns and cumulative tokens are enforced here, in code."""
+    tokens = 0
     for _ in range(MAX_TURNS):
-        reply, _usage = model.complete(messages, tools.SCHEMAS)
+        reply, usage = model.complete(messages, tools.SCHEMAS)
         messages.append(reply)
+        tokens += usage.get("total_tokens") or (
+            sum(len(str(m.get("content") or "")) for m in messages) // 4
+        )
         if not reply.get("tool_calls"):
             return reply
         for call in reply["tool_calls"]:
@@ -44,6 +50,11 @@ def run_turn(model, messages: list[dict]) -> dict:
             messages.append(
                 {"role": "tool", "tool_call_id": call["id"], "content": tools.run(call)}
             )
+        if tokens > MAX_TOKENS_TOTAL:
+            reply = {"role": "assistant",
+                     "content": f"[stopped: token cap {MAX_TOKENS_TOTAL} reached]"}
+            messages.append(reply)
+            return reply
     reply = {"role": "assistant", "content": f"[stopped: turn cap {MAX_TURNS} reached]"}
     messages.append(reply)
     return reply

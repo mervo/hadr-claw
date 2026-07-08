@@ -13,8 +13,10 @@ COPY hadr/ hadr/
 COPY agent/ agent/
 COPY ops/ ops/
 
-# supercronic powers the optional VPS heartbeat profile (compose --profile heartbeat)
-ADD --chmod=755 https://github.com/aptible/supercronic/releases/download/v0.2.33/supercronic-linux-amd64 /usr/local/bin/supercronic
+# supercronic powers the optional VPS heartbeat profile (compose --profile heartbeat);
+# checksum-pinned — this binary runs as root, unattended
+ADD --chmod=755 --checksum=sha256:feefa310da569c81b99e1027b86b27b51e6ee9ab647747b49099645120cfc671 \
+    https://github.com/aptible/supercronic/releases/download/v0.2.33/supercronic-linux-amd64 /usr/local/bin/supercronic
 
 ENTRYPOINT ["/opt/venv/bin/python"]
 CMD ["-m", "agent.morning"]

@@ -7,12 +7,12 @@ and [ReliefWeb](feeds/reliefweb.md) — filters the noise, assesses what remains
 report to `dashboard.html` at **08:30 Singapore time**, unattended, staying quiet when
 nothing has changed.
 
-> **Status: Tier 5 — the agentic engine runs production.** `agent/morning.py`
-> does the deterministic pre-work (fetch → dedup → memory diff), briefs the
-> ~80-line harness, and the model writes the assessed situation report. Caps on
-> turns/tokens/wall-clock are enforced in code, and a deterministic fallback
-> guarantees **the morning report always exists**. OpenTelemetry traces every
-> run. Remaining: the schedule (Tier 6) and the overnight goal (Tier 7).
+> **Status: all seven tiers built.** Deterministic pipeline (three feeds →
+> dedup → memory) + agentic morning engine with code-enforced caps and a
+> fallback that guarantees the report always exists + Actions heartbeat with
+> Pages publishing and @claude failure alerts + a capped, tamper-proof
+> overnight improvement loop. Awaiting: @claude app install, PR reviews, and
+> the merge to main that arms the heartbeat (see ROADMAP.md → Launch).
 > See [ROADMAP.md](ROADMAP.md) for the tier-by-tier build plan; each tier is
 > end-to-end runnable and demoable. This README grows with each tier and never
 > describes features that don't exist yet.
@@ -90,7 +90,11 @@ The interface per tier (kept current as tiers land — unchecked means not built
   Pages. Failure demo: `gh workflow run heartbeat.yml -f fail_for_demo=true`
   → issue tagging @claude. VPS alternative:
   `docker compose --profile heartbeat up -d` (supercronic, same schedule)
-- [ ] **Tier 7** — `bash scripts/overnight.sh` → capped overnight improvement loop
+- [x] **Tier 7** — `bash scripts/overnight.sh` → capped overnight improvement
+  loop (Route B): `claude -p` per iteration against `goal.md`, pristine-copy
+  checkers, checkpoint-commit reverts, hard caps in code. Demo without spend:
+  `bash scripts/overnight.sh --max-iterations 2 --dry-run`; all instruments:
+  `uv run python scripts/run_checkers.py`
 
 Tests and lint (from Tier 1): `uv run pytest` · `uv run ruff check .`
 
@@ -103,7 +107,7 @@ tracked file**. Copy `.env.example` to `.env` (gitignored) and fill it in:
 |----------|---------|
 | `OPENCODE_API_KEY` | OpenCode Go key (get one at opencode.ai — subscribe to Go). Also stored as a GitHub Actions secret of the same name for scheduled runs. |
 | `HADR_MODEL_BASE_URL` | OpenAI-compatible base URL. Default `https://opencode.ai/zen/v1` |
-| `HADR_MODEL` | Model id on the gateway. Default `deepseek-v4-flash-free` (free tier, tool calls verified); production candidate `kimi-k2.7-code` needs workspace balance — see docs/solutions/2026-07-08-zen-gateway-models.md |
+| `HADR_MODEL` | Model id on the gateway. **Production model: `deepseek-v4-flash-free`** (decided 2026-07-08 — free tier, tool calls and usage reporting verified; see docs/solutions/2026-07-08-zen-gateway-models.md) |
 | `HADR_MAX_TURNS` / `HADR_MAX_TOKENS_TOTAL` | Hard caps on the agent loop, enforced in code |
 | `HADR_FAKE_MODEL` | Path to a recorded transcript — replays the agent loop with no key (used by CI) |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | Optional; when set, traces export via OTLP (e.g. to the compose jaeger) |
