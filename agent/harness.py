@@ -7,9 +7,13 @@ Level 3: one tool — the model asks for fetch_feed, our code runs it, the
          result goes back into the messages.
 Level 4: the agent loop — keep going while the model keeps requesting tools,
          with a hard turn cap because loops never stop on their own.
+Level 5: a second tool — write_dashboard saves an HTML page of assessed
+         events (structured args keyed by uid; facts come from feed data).
 
-    uv run python agent/harness.py            # interactive
-    uv run python agent/harness.py --once "hi" # one turn, then exit
+    uv run python agent/harness.py             # interactive
+    uv run python agent/harness.py --once "hi"  # one turn, then exit
+    uv run python agent/harness.py --once "..." --record tests/fixtures/transcripts/x.json
+    HADR_FAKE_MODEL=tests/fixtures/transcripts/x.json uv run python agent/harness.py --once "..."
 """
 
 from __future__ import annotations
@@ -48,21 +52,26 @@ def run_turn(model, messages: list[dict]) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(prog="harness")
     parser.add_argument("--once", help="single prompt instead of interactive input")
+    parser.add_argument("--record", help="save the model transcript to this path for replay")
     args = parser.parse_args()
 
-    model = make_model()
+    model = make_model(record=args.record)
     messages: list[dict] = [{"role": "system", "content": SOUL.read_text()}]
 
-    while True:
-        try:
-            user = args.once or input("> ")
-        except EOFError:
-            return 0
-        messages.append({"role": "user", "content": user})
-        reply = run_turn(model, messages)
-        print(reply.get("content") or "")
-        if args.once:
-            return 0
+    try:
+        while True:
+            try:
+                user = args.once or input("> ")
+            except EOFError:
+                return 0
+            messages.append({"role": "user", "content": user})
+            reply = run_turn(model, messages)
+            print(reply.get("content") or "")
+            if args.once:
+                return 0
+    finally:
+        if args.record and hasattr(model, "save"):
+            model.save()
 
 
 if __name__ == "__main__":

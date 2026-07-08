@@ -64,14 +64,28 @@ and decisions of record in ROADMAP.md). Headlines:
   advances), leading with "No new developments since <last change>".
 - Live verification: run 1 → 41 new; run 2 → "no changes", quiet lead renders.
 
+### 2026-07-08 — Tier 4: the 5-level harness
+
+- Built as five commits, each a runnable checkpoint (chat loop → soul →
+  fetch_feed → agent loop → write_dashboard); final harness is ~80 lines.
+- Zen gateway verified with curl before building: 51 models listed;
+  paid models (kimi-k2.7-code) blocked by CreditsError until balance topped
+  up (**user action**); `deepseek-v4-flash-free` does clean tool calls with
+  usage populated → dev/CI default. Details in docs/solutions/.
+- First live full flight: the model's first two write_dashboard calls were
+  rejected by uid validation and it self-corrected from the error feedback —
+  the guardrail works, and the recorded transcript
+  (tests/fixtures/transcripts/report.json) replays that exact exchange in CI.
+- Transcripts embed a tool-schema hash; replay against changed schemas fails
+  loudly instead of passing a stale test.
+
 ## Open questions
 
 - Telegram or Slack for the alert webhook, and its credential (user input, Tier 6).
-- Exact `HADR_MODEL` id on the Zen catalog — verify with curl at Tier 4 start.
+- OpenCode Go workspace balance needed before `kimi-k2.7-code` can be the
+  production model (user action; free model works meanwhile).
 - ReliefWeb appname request must be filed by the user (form + email approval):
   https://apidoc.reliefweb.int/parameters#appname — do this early, approval takes time.
-- Does Zen populate `resp.usage` for the chosen model? Determines whether the
-  token cap uses real usage or the chars/4 estimator (Tier 4).
 
 ## Deviations
 

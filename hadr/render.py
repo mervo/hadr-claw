@@ -43,6 +43,8 @@ PAGE = Template("""<!DOCTYPE html>
   .meta { font-size: 0.85rem; color: #555; }
   .banner { background: #fff3cd; color: #533f03; border: 1px solid #e6d9a8;
             border-radius: 0.5rem; padding: 0.6rem 1rem; margin-bottom: 1rem; }
+  .assess { border-left: 3px solid #999; padding-left: 0.6rem; }
+  .lead p { font-size: 1.05rem; }
   a { color: inherit; }
 </style>
 </head>
@@ -53,6 +55,7 @@ PAGE = Template("""<!DOCTYPE html>
 </header>
 <div class="ops">$ops_chips</div>
 $banners
+$lead
 <main>
 $sections
 </main>
@@ -77,7 +80,7 @@ def _severity_key(e: Event) -> tuple:
     )
 
 
-def _card(e: Event) -> str:
+def _card(e: Event, assessments: dict | None = None) -> str:
     alert = e.severity.get("gdacs_alert")
     badges = ""
     if alert in _ALERT_RANK:
@@ -98,17 +101,24 @@ def _card(e: Event) -> str:
     depth = f" · depth {e.depth_km:.0f} km" if e.depth_km is not None else ""
     summary = next((s["summary"] for s in e.sources if s.get("summary")), "")
     summary_html = f"<p>{escape(summary)}</p>" if summary else ""
+    assess_html = ""
+    if assessments and e.uid in assessments:
+        a = assessments[e.uid]
+        assess_html = (
+            f'<p class="assess"><strong>{escape(a.get("priority") or "")}</strong> — '
+            f"{escape(a['assessment'])}</p>"
+        )
     return f"""<div class="card">
   <h2><span class="hazard">{escape(e.hazard)}</span>{badges}{escape(e.title)}</h2>
   <p class="meta">{escape(e.occurred_at)} · {place}{depth} · {links}</p>
-  {summary_html}
+  {assess_html}{summary_html}
 </div>"""
 
 
-def _section(title: str, events: list[Event]) -> str:
+def _section(title: str, events: list[Event], assessments: dict | None = None) -> str:
     if not events:
         return ""
-    cards = "\n".join(_card(e) for e in sorted(events, key=_severity_key))
+    cards = "\n".join(_card(e, assessments) for e in sorted(events, key=_severity_key))
     return f"<h2>{escape(title)}</h2>\n{cards}"
 
 
@@ -118,6 +128,9 @@ def render(
     changes: Changes | None = None,
     generated_at: datetime | None = None,
     last_change_at: str | None = None,
+    headline: str | None = None,
+    overview: str | None = None,
+    assessments: dict | None = None,
 ) -> str:
     now = generated_at or datetime.now(timezone.utc)
     stamp_utc, stamp_sgt = _stamp(now)
@@ -146,13 +159,13 @@ def render(
         banners += '<div class="banner">No events pass the significance threshold right now.</div>'
 
     if changes is None:
-        sections = _section("Events", events)
+        sections = _section("Events", events, assessments)
     elif changes.quiet:
         since = f" since {escape(last_change_at)}" if last_change_at else ""
         sections = (
             f'<p class="stamp">No new developments{since}. '
             f"{len(changes.unchanged)} event(s) remain under watch.</p>\n"
-            + _section("Ongoing", changes.unchanged)
+            + _section("Ongoing", changes.unchanged, assessments)
         )
     else:
         deleted_note = (
@@ -164,16 +177,25 @@ def render(
         )
         sections = deleted_note + "\n".join(
             filter(None, [
-                _section("Escalated", changes.escalated),
-                _section("New", changes.new),
-                _section("Updated", changes.updated),
-                _section("Ongoing", changes.unchanged),
+                _section("Escalated", changes.escalated, assessments),
+                _section("New", changes.new, assessments),
+                _section("Updated", changes.updated, assessments),
+                _section("Ongoing", changes.unchanged, assessments),
             ])
         )
 
+    lead = ""
+    if headline or overview:
+        lead = '<div class="lead">'
+        if headline:
+            lead += f"<h2>{escape(headline)}</h2>"
+        if overview:
+            lead += f"<p>{escape(overview)}</p>"
+        lead += "</div>"
+
     return PAGE.substitute(
         stamp_utc=stamp_utc, stamp_sgt=stamp_sgt, ops_chips="\n".join(chips),
-        banners=banners, sections=sections,
+        banners=banners, lead=lead, sections=sections,
     )
 
 

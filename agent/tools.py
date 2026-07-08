@@ -8,12 +8,16 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 
-from hadr import dedupe
+from hadr import dedupe, render
 from hadr.__main__ import FEEDS, gather
 from hadr.events import Event, FeedStatus
 
 MAX_EVENTS = 50
+MAX_ASSESSMENT_CHARS = 1200
+MAX_HEADLINE_CHARS = 200
+MAX_OVERVIEW_CHARS = 2000
 
 SCHEMAS = [
     {
@@ -32,6 +36,41 @@ SCHEMAS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "write_dashboard",
+            "description": (
+                "Write the HTML situation report. Assessments must reference events "
+                "by the exact uid returned by fetch_feed — unknown uids are rejected. "
+                "Event facts (magnitude, place, links) are injected from feed data; "
+                "you supply only the analytical prose."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "headline": {"type": "string", "description": "one-line situation headline"},
+                    "overview": {"type": "string", "description": "2-4 sentence overview"},
+                    "assessments": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "uid": {"type": "string"},
+                                "assessment": {
+                                    "type": "string",
+                                    "description": "what happened, where, how bad, who is affected",
+                                },
+                                "priority": {"type": "string", "enum": ["high", "medium", "low"]},
+                            },
+                            "required": ["uid", "assessment", "priority"],
+                        },
+                    },
+                },
+                "required": ["headline", "overview", "assessments"],
+            },
+        },
+    },
 ]
 
 # events the model has actually fetched this session, by uid — write_dashboard
@@ -42,6 +81,12 @@ _statuses: dict[str, FeedStatus] = {}
 
 def fetched_events() -> dict[str, Event]:
     return _fetched
+
+
+def reset() -> None:
+    """Fresh session state (tests, and one production run per process)."""
+    _fetched.clear()
+    _statuses.clear()
 
 
 def fetch_feed(feed: str) -> str:
@@ -59,6 +104,41 @@ def fetch_feed(feed: str) -> str:
         "events": [e.to_dict() for e in listed],
     }
     return json.dumps(payload)
+
+
+def write_dashboard(headline: str, overview: str, assessments: list[dict]) -> str:
+    unknown = [a["uid"] for a in assessments if a["uid"] not in _fetched]
+    if unknown:
+        return json.dumps(
+            {
+                "ok": False,
+                "error": f"unknown uids {unknown}; valid uids are exactly those returned "
+                "by fetch_feed this session",
+                "valid_uids": sorted(_fetched),
+            }
+        )
+    if not _fetched:
+        return json.dumps({"ok": False, "error": "fetch at least one feed first"})
+    assessed = {
+        a["uid"]: {
+            "assessment": a["assessment"][:MAX_ASSESSMENT_CHARS],
+            "priority": a.get("priority", "medium"),
+        }
+        for a in assessments
+    }
+    out = Path(os.environ.get("HADR_DASHBOARD_OUT", "dashboard.html"))
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(
+        render.render(
+            list(_fetched.values()),
+            list(_statuses.values()),
+            headline=headline[:MAX_HEADLINE_CHARS],
+            overview=overview[:MAX_OVERVIEW_CHARS],
+            assessments=assessed,
+        )
+    )
+    return json.dumps({"ok": True, "path": str(out), "events": len(_fetched),
+                       "assessed": len(assessed)})
 
 
 def run(tool_call: dict) -> str:
@@ -79,4 +159,4 @@ def run(tool_call: dict) -> str:
         return f"error: {name} failed: {exc}"
 
 
-_HANDLERS = {"fetch_feed": fetch_feed}
+_HANDLERS = {"fetch_feed": fetch_feed, "write_dashboard": write_dashboard}

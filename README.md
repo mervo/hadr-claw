@@ -7,11 +7,11 @@ and [ReliefWeb](feeds/reliefweb.md) — filters the noise, assesses what remains
 report to `dashboard.html` at **08:30 Singapore time**, unattended, staying quiet when
 nothing has changed.
 
-> **Status: Tier 3 — the claw remembers.** USGS + GDACS + ReliefWeb → unified
-> events → cross-feed merge → diff against `state/seen_events.json` →
-> `dashboard.html` with New / Escalated / Updated / Ongoing sections; a rerun
-> with nothing new says so instead of re-reporting. Deterministic pipeline only
-> (no LLM yet).
+> **Status: Tier 4 — the claw has a brain.** On top of the Tier 1–3 pipeline
+> (three feeds → unified events → dedup → memory diff → dashboard), there is now
+> a hand-built agent harness (`agent/harness.py`, ~80 lines): the model decides
+> when to call `fetch_feed` and `write_dashboard`, with a turn cap and uid
+> validation so it cannot invent events. Production wiring lands in Tier 5.
 > See [ROADMAP.md](ROADMAP.md) for the tier-by-tier build plan; each tier is
 > end-to-end runnable and demoable. This README grows with each tier and never
 > describes features that don't exist yet.
@@ -71,8 +71,10 @@ The interface per tier (kept current as tiers land — unchecked means not built
   escalations (Green→Orange→Red) surface above the fold; USGS deletions inside
   the 24 h window are flagged, older disappearances age out silently;
   `uv run python scripts/check_memory.py` proves all of it
-- [ ] **Tier 4** — `uv run python agent/harness.py` → chat with the agent; it calls
-  the tools itself
+- [x] **Tier 4** — `uv run python agent/harness.py` → chat with the agent; it
+  calls the tools itself ("check the quake feeds and write me a dashboard").
+  Keyless replay: `HADR_FAKE_MODEL=tests/fixtures/transcripts/report.json …`;
+  record new transcripts with `--record <path>` on a live run
 - [ ] **Tier 5** — `docker compose run --rm claw` → full agentic morning report;
   `docker compose --profile observability up` → traces at http://localhost:16686
 - [ ] **Tier 6** — `gh workflow run heartbeat.yml` → unattended run, dashboard on
@@ -90,7 +92,7 @@ tracked file**. Copy `.env.example` to `.env` (gitignored) and fill it in:
 |----------|---------|
 | `OPENCODE_API_KEY` | OpenCode Go key (get one at opencode.ai — subscribe to Go). Also stored as a GitHub Actions secret of the same name for scheduled runs. |
 | `HADR_MODEL_BASE_URL` | OpenAI-compatible base URL. Default `https://opencode.ai/zen/v1` |
-| `HADR_MODEL` | Model id on the gateway (pinned at Tier 4 after verification) |
+| `HADR_MODEL` | Model id on the gateway. Default `deepseek-v4-flash-free` (free tier, tool calls verified); production candidate `kimi-k2.7-code` needs workspace balance — see docs/solutions/2026-07-08-zen-gateway-models.md |
 | `HADR_MAX_TURNS` / `HADR_MAX_TOKENS_TOTAL` | Hard caps on the agent loop, enforced in code |
 | `HADR_FAKE_MODEL` | Path to a recorded transcript — replays the agent loop with no key (used by CI) |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | Optional; when set, traces export via OTLP (e.g. to the compose jaeger) |
