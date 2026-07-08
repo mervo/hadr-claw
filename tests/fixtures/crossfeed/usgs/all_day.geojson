@@ -1,0 +1,64 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "generated": 1782310260000,
+  "title": "fixture",
+  "count": 2
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "id": "us7000ven1",
+   "properties": {
+    "mag": 7.1,
+    "place": "25 km NNW of Moron, Venezuela",
+    "time": 1782310260000,
+    "updated": 1782313860000,
+    "felt": 500,
+    "alert": "orange",
+    "status": "reviewed",
+    "tsunami": 1,
+    "sig": 900,
+    "ids": ",us7000ven1,",
+    "type": "earthquake",
+    "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000ven1",
+    "title": "M 7.1 - 25 km NNW of Moron, Venezuela"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -68.25,
+     10.65,
+     10.0
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "us7000oth1",
+   "properties": {
+    "mag": 5.1,
+    "place": "far away, unrelated",
+    "time": 1782270260000,
+    "updated": 1782310260000,
+    "felt": 0,
+    "alert": null,
+    "status": "automatic",
+    "tsunami": 0,
+    "sig": 400,
+    "ids": ",us7000oth1,",
+    "type": "earthquake",
+    "url": "https://earthquake.usgs.gov/earthquakes/eventpage/us7000oth1",
+    "title": "M 5.1 - unrelated quake"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     140.0,
+     35.0,
+     30.0
+    ]
+   }
+  }
+ ]
+}

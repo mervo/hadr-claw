@@ -1,0 +1,45 @@
+# Canonical runtime. `claw` is one morning run (agentic engine + fallback);
+# `dashboard` serves the result. The working copy is bind-mounted so state/,
+# run records and dashboard.html land in the repo (the claw's memory lives in
+# git). Pipeline-only run: docker compose run --rm claw -m hadr
+services:
+  claw:
+    build: .
+    env_file:
+      - path: .env
+        required: false   # pipeline runs need no secrets; the agent does
+    volumes:
+      - ./:/app
+
+  dashboard:
+    image: python:3.12-slim
+    volumes:
+      - ./:/app:ro
+    working_dir: /app
+    command: ["python", "-m", "http.server", "8080"]
+    ports:
+      - "8080:8080"
+
+  # VPS-hosted heartbeat: docker compose --profile heartbeat up -d
+  # (state persists on disk via the bind mount — no commit-back needed)
+  heartbeat:
+    profiles: ["heartbeat"]
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ./:/app
+    entrypoint: ["/usr/local/bin/supercronic", "/app/ops/crontab"]
+
+  # docker compose --profile observability up -d jaeger
+  # then: docker compose run --rm -e OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318 claw
+  # traces at http://localhost:16686
+  jaeger:
+    profiles: ["observability"]
+    image: jaegertracing/all-in-one:1.60
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"
+      - "4318:4318"

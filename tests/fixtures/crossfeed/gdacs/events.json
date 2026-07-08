@@ -1,0 +1,41 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -68.28,
+     10.62
+    ]
+   },
+   "properties": {
+    "eventtype": "EQ",
+    "eventid": 1550999,
+    "episodeid": 1717000,
+    "glide": "EQ-2026-000093-VEN",
+    "name": "Earthquake in Venezuela",
+    "alertlevel": "Red",
+    "alertscore": 3,
+    "episodealertlevel": "Red",
+    "iscurrent": "true",
+    "istemporary": "false",
+    "country": "Venezuela",
+    "fromdate": "2026-06-24T14:11:02",
+    "todate": "2026-06-24T14:11:02",
+    "datemodified": "2026-06-24T16:00:00",
+    "iso3": "VEN",
+    "source": "NEIC",
+    "severitydata": {
+     "severity": 7.1,
+     "severitytext": "Magnitude 7.1M, Depth:10km",
+     "severityunit": "M"
+    },
+    "url": {
+     "report": "https://www.gdacs.org/report.aspx?eventid=1550999&eventtype=EQ"
+    }
+   }
+  }
+ ]
+}

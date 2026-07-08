@@ -1,0 +1,91 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "generated": 1783468800000,
+  "title": "fixture",
+  "count": 3
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "id": "usday0001",
+   "properties": {
+    "mag": 5.2,
+    "place": "mid-Atlantic ridge",
+    "time": 1783461600000,
+    "updated": 1783462200000,
+    "felt": 0,
+    "alert": null,
+    "status": "reviewed",
+    "tsunami": 0,
+    "sig": 520,
+    "ids": ",usday0001,",
+    "type": "earthquake",
+    "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usday0001",
+    "title": "M 5.2 - mid-Atlantic ridge"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -30.0,
+     40.0,
+     10.0
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "usday0005",
+   "properties": {
+    "mag": 5.4,
+    "place": "northern Chile",
+    "time": 1783425600000,
+    "updated": 1783426200000,
+    "felt": 0,
+    "alert": null,
+    "status": "reviewed",
+    "tsunami": 0,
+    "sig": 540,
+    "ids": ",usday0005,",
+    "type": "earthquake",
+    "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usday0005",
+    "title": "M 5.4 - northern Chile"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -70.0,
+     -20.0,
+     10.0
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "usday0004",
+   "properties": {
+    "mag": 6.1,
+    "place": "Mindanao, Philippines",
+    "time": 1783467000000,
+    "updated": 1783467600000,
+    "felt": 0,
+    "alert": null,
+    "status": "reviewed",
+    "tsunami": 0,
+    "sig": 610,
+    "ids": ",usday0004,",
+    "type": "earthquake",
+    "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usday0004",
+    "title": "M 6.1 - Mindanao, Philippines"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     125.0,
+     8.0,
+     10.0
+    ]
+   }
+  }
+ ]
+}

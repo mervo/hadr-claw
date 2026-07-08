@@ -52,8 +52,28 @@ The RSS feed needs no approval:
 1. The appname review takes time you may not have this week. What do you
    build against in the meantime, and what does the RSS feed lack that the
    API would give you?
+   > **Answered (Tier 2):** we build against the RSS feed (`hadr/feeds/reliefweb.py`);
+   > the JSON API can slot in behind the same `normalize()` contract once the
+   > appname is approved (request form: https://apidoc.reliefweb.int/parameters#appname —
+   > still to be filed). RSS lacks: coordinates (so spatio-temporal dedup can't
+   > apply — only GLIDE ties these records to other feeds), structured
+   > country/type/status fields, and real update timestamps (`pubDate` is the
+   > creation date at midnight; change detection must fingerprint the
+   > description text instead).
 2. This Venezuela entry describes earthquakes that GDACS and USGS reported
    days earlier, under different identifiers. Is there anything in this
    record that could tie the three feeds together?
+   > **Answered (Tier 2):** the **GLIDE number**, present in both the
+   > description tag and the link slug. The parser prefers the description and
+   > falls back to the slug (`hadr/feeds/reliefweb.py::_glide`); the test suite
+   > asserts the two agree on fixtures, but the runtime does not cross-validate.
+   > GDACS carries the same GLIDE on its Orange/Red events, which merges the
+   > two; USGS joins the cluster via GDACS through spatio-temporal matching.
+   > Exactly this trio is the `tests/fixtures/crossfeed/` fixture verified by
+   > `scripts/check_dedup.py`.
 3. The API docs say usage is monitored and adapted per application. What are
    the actual limits, and how should your agent behave when it hits one?
+   > **Partially answered (Tier 2):** moot while on RSS (one fetch per run).
+   > When the API lands: the documented ceiling is 1000 calls/day per appname;
+   > on 429 the agent should fall back to RSS for that run and note the
+   > degradation on the dashboard, same as any feed failure.

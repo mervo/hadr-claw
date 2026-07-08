@@ -1,0 +1,34 @@
+{
+  "started_at": "2026-07-08T03:29:27Z",
+  "finished_at": "2026-07-08T03:29:31Z",
+  "duration_ms": 4612,
+  "feeds": [
+    {
+      "feed": "usgs",
+      "ok": true,
+      "fetched_at": "2026-07-08T03:29:27Z",
+      "latency_ms": 734,
+      "error": null,
+      "event_count": 17
+    },
+    {
+      "feed": "gdacs",
+      "ok": true,
+      "fetched_at": "2026-07-08T03:29:29Z",
+      "latency_ms": 2066,
+      "error": null,
+      "event_count": 22
+    },
+    {
+      "feed": "reliefweb",
+      "ok": true,
+      "fetched_at": "2026-07-08T03:29:31Z",
+      "latency_ms": 1810,
+      "error": null,
+      "event_count": 20
+    }
+  ],
+  "significant_events": 41,
+  "merged_away": 18,
+  "engine": "pipeline"
+}

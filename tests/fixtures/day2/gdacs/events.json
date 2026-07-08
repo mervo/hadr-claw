@@ -1,0 +1,41 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     100.0,
+     5.0
+    ]
+   },
+   "properties": {
+    "eventtype": "EQ",
+    "eventid": 2001,
+    "episodeid": 3001,
+    "glide": "",
+    "name": "Earthquake in Malaysia",
+    "alertlevel": "Orange",
+    "alertscore": 1,
+    "episodealertlevel": "Orange",
+    "iscurrent": "true",
+    "istemporary": "false",
+    "country": "Malaysia",
+    "fromdate": "2026-07-07T18:00:00",
+    "todate": "2026-07-07T18:00:00",
+    "datemodified": "2026-07-07T22:00:00",
+    "iso3": "MYS",
+    "source": "NEIC",
+    "severitydata": {
+     "severity": 5.0,
+     "severitytext": "Magnitude 5M, Depth:12km",
+     "severityunit": "M"
+    },
+    "url": {
+     "report": "https://www.gdacs.org/report.aspx?eventid=2001&eventtype=EQ"
+    }
+   }
+  }
+ ]
+}

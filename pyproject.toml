@@ -1,0 +1,25 @@
+[project]
+name = "hadr-claw"
+version = "0.1.0"
+description = "HADR monitoring claw: watches disaster feeds, assesses events, publishes a morning situation report"
+requires-python = ">=3.12"
+dependencies = [
+    "feedparser>=6.0.12",
+    "httpx>=0.28",
+    "openai>=2.44.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.43.0",
+    "opentelemetry-sdk>=1.43.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.8",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

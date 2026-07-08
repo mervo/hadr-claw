@@ -7,7 +7,12 @@ and [ReliefWeb](feeds/reliefweb.md) — filters the noise, assesses what remains
 report to `dashboard.html` at **08:30 Singapore time**, unattended, staying quiet when
 nothing has changed.
 
-> **Status: Tier 0 — documentation only.** There is no runnable code yet.
+> **Status: all seven tiers built.** Deterministic pipeline (three feeds →
+> dedup → memory) + agentic morning engine with code-enforced caps and a
+> fallback that guarantees the report always exists + Actions heartbeat with
+> Pages publishing and @claude failure alerts + a capped, tamper-proof
+> overnight improvement loop. Awaiting: @claude app install, PR reviews, and
+> the merge to main that arms the heartbeat (see ROADMAP.md → Launch).
 > See [ROADMAP.md](ROADMAP.md) for the tier-by-tier build plan; each tier is
 > end-to-end runnable and demoable. This README grows with each tier and never
 > describes features that don't exist yet.
@@ -46,21 +51,50 @@ mapped to this repository (see [Goal.md](Goal.md) for the course brief):
 
 ## Running it
 
-Nothing is runnable at Tier 0. The interface each tier will add (kept current as
-tiers land — unchecked means not built yet):
+```sh
+docker compose run --rm claw    # the full morning run: fetch, diff, assess, write
+docker compose up dashboard     # serve it at http://localhost:8080/dashboard.html
+```
 
-- [ ] **Tier 1** — `docker compose run --rm claw --feeds usgs` then
-  `docker compose up dashboard` → http://localhost:8080
+Pipeline-only (no model, no key): `docker compose run --rm claw -m hadr`.
+Traces: `docker compose --profile observability up -d jaeger`, then run claw with
+`-e OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318` → http://localhost:16686
+(without an endpoint, spans land in `state/runs/spans.jsonl`).
+
+Dev loop without docker: `uv run python -m hadr` (or `--feeds usgs` for one feed).
+Offline/deterministic (used by tests and CI): add `--fixtures tests/fixtures`.
+Each run appends a record to `state/runs/` (pruned to the newest 14) — feed health,
+latency, event counts; the dashboard's ops strip shows the same at a glance.
+
+The interface per tier (kept current as tiers land — unchecked means not built yet):
+
+- [x] **Tier 1** — `docker compose run --rm claw --feeds usgs` then
+  `docker compose up dashboard` → http://localhost:8080/dashboard.html
   (dev loop: `uv run python -m hadr --feeds usgs`; offline: `--fixtures tests/fixtures`)
-- [ ] **Tier 2** — `--feeds usgs,gdacs,reliefweb` → merged multi-source events
-- [ ] **Tier 3** — run twice → second run reports "no new developments"
-- [ ] **Tier 4** — `uv run python agent/harness.py` → chat with the agent; it calls
-  the tools itself
-- [ ] **Tier 5** — `docker compose run --rm claw` → full agentic morning report;
-  `docker compose --profile observability up` → traces at http://localhost:16686
-- [ ] **Tier 6** — `gh workflow run heartbeat.yml` → unattended run, dashboard on
-  GitHub Pages
-- [ ] **Tier 7** — `bash scripts/overnight.sh` → capped overnight improvement loop
+- [x] **Tier 2** — `--feeds usgs,gdacs,reliefweb` (the default) → merged
+  multi-source events; `uv run python scripts/check_dedup.py` proves the merge
+- [x] **Tier 3** — run twice → second run reports "no new developments";
+  escalations (Green→Orange→Red) surface above the fold; USGS deletions inside
+  the 24 h window are flagged, older disappearances age out silently;
+  `uv run python scripts/check_memory.py` proves all of it
+- [x] **Tier 4** — `uv run python agent/harness.py` → chat with the agent; it
+  calls the tools itself ("check the quake feeds and write me a dashboard").
+  Keyless replay: `HADR_FAKE_MODEL=tests/fixtures/transcripts/report.json …`;
+  record new transcripts with `--record <path>` on a live run
+- [x] **Tier 5** — `docker compose run --rm claw` → full agentic morning report;
+  kill-switch demo: `HADR_MAX_SECONDS=0 uv run python -m agent.morning` → the
+  cap trips and the deterministic fallback report still exists;
+  `scripts/check_dashboard.py` + `scripts/check_spend.py` are the instruments
+- [x] **Tier 6** — `gh workflow run heartbeat.yml && gh run watch` → unattended
+  run: morning report, memory committed back, dashboard published to GitHub
+  Pages. Failure demo: `gh workflow run heartbeat.yml -f fail_for_demo=true`
+  → issue tagging @claude. VPS alternative:
+  `docker compose --profile heartbeat up -d` (supercronic, same schedule)
+- [x] **Tier 7** — `bash scripts/overnight.sh` → capped overnight improvement
+  loop (Route B): `claude -p` per iteration against `goal.md`, pristine-copy
+  checkers, checkpoint-commit reverts, hard caps in code. Demo without spend:
+  `bash scripts/overnight.sh --max-iterations 2 --dry-run`; all instruments:
+  `uv run python scripts/run_checkers.py`
 
 Tests and lint (from Tier 1): `uv run pytest` · `uv run ruff check .`
 
@@ -73,13 +107,39 @@ tracked file**. Copy `.env.example` to `.env` (gitignored) and fill it in:
 |----------|---------|
 | `OPENCODE_API_KEY` | OpenCode Go key (get one at opencode.ai — subscribe to Go). Also stored as a GitHub Actions secret of the same name for scheduled runs. |
 | `HADR_MODEL_BASE_URL` | OpenAI-compatible base URL. Default `https://opencode.ai/zen/v1` |
-| `HADR_MODEL` | Model id on the gateway (pinned at Tier 4 after verification) |
+| `HADR_MODEL` | Model id on the gateway. **Production model: `deepseek-v4-flash-free`** (decided 2026-07-08 — free tier, tool calls and usage reporting verified; see docs/solutions/2026-07-08-zen-gateway-models.md) |
 | `HADR_MAX_TURNS` / `HADR_MAX_TOKENS_TOTAL` | Hard caps on the agent loop, enforced in code |
 | `HADR_FAKE_MODEL` | Path to a recorded transcript — replays the agent loop with no key (used by CI) |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | Optional; when set, traces export via OTLP (e.g. to the compose jaeger) |
 
 GitHub Actions gets the key once via `gh secret set OPENCODE_API_KEY`; workflows
 reference `${{ secrets.OPENCODE_API_KEY }}`.
+
+Two more secrets unlock the full alerting path (both optional — the heartbeat
+degrades gracefully without them):
+
+- `ISSUE_PAT` — a fine-grained PAT with issues:write. Failure issues created
+  with the default `GITHUB_TOKEN` do **not** trigger the @claude app; a PAT
+  makes the `@claude investigate` mention actually summon it.
+- `HADR_ALERT_WEBHOOK` — a Slack-compatible incoming-webhook URL (or any
+  endpoint accepting `{"text": …}`); failures also post there.
+
+## Operations
+
+- **Heartbeat**: `.github/workflows/heartbeat.yml`, cron 00:00 UTC (08:00 SGT —
+  drift buffer inside the 08:30 promise) + `workflow_dispatch`. Each run:
+  morning report in the same container as everywhere → checkers → commit
+  `state/` + `dashboard.html` back (`[skip ci]`, rebase-retry ×3) → deploy
+  `site/index.html` to GitHub Pages.
+- **The published dashboard** lives at the repo's GitHub Pages URL; the
+  committed `dashboard.html` is the demo copy. After this tier, dev PRs must
+  not diff `dashboard.html`/`state/**` (take main's, regenerate).
+- **Quiet mornings still publish** — the stamp advances, the lead says "no new
+  developments"; a page that never changes is indistinguishable from a dead one.
+- **When a heartbeat fails**: an issue labeled `heartbeat-failure` appears
+  tagging @claude (deduped — repeat failures comment on the open issue), plus
+  a webhook ping if configured. The daily commit is also the keep-alive that
+  stops GitHub auto-disabling the cron after 60 idle days.
 
 ## The feeds
 
@@ -96,6 +156,11 @@ Goal.md                  # course brief (untouched) — what this claw must beco
 ROADMAP.md               # tier table with live status + known blind spots
 CLAUDE.md                # conventions for agents & humans working on this repo
 implementation-notes.md  # decisions / open questions / deviations, per working block
+hadr/                    # deterministic pipeline: feeds/ → events → render (no LLM here)
+tests/                   # pytest + fixtures (checked-in feed payloads; never the network)
+state/seen_events.json   # memory: what the claw has already assessed (committed)
+state/runs/              # per-run observability records (newest 14 kept)
+dashboard.html           # the channel: generated situation report
 feeds/                   # per-feed endpoint docs and open questions
 docs/solutions/          # one hard-won fix per file; grep before debugging
 scripts/                 # deterministic checks (exit 0/1); later the goal-file checkers

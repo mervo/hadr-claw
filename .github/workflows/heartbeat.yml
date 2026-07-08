@@ -1,0 +1,102 @@
+# The heartbeat: wakes the claw at 00:00 UTC (08:00 SGT — buffer inside the
+# 08:30 promise; Actions cron can drift 15+ min), runs the morning report,
+# commits memory back (the runner is wiped — memory survives via git), and
+# publishes the dashboard to GitHub Pages.
+#
+# Manual run: gh workflow run heartbeat.yml
+# Failure-path demo: gh workflow run heartbeat.yml -f fail_for_demo=true
+name: heartbeat
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+    inputs:
+      fail_for_demo:
+        description: "Deliberately fail to exercise the alerting path"
+        type: boolean
+        default: false
+
+concurrency:
+  group: heartbeat
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+  issues: write
+
+jobs:
+  morning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: deliberate failure (demo)
+        if: inputs.fail_for_demo
+        run: |
+          echo "fail_for_demo requested — exercising the alerting path"
+          exit 1
+
+      - name: morning run (same container as everywhere)
+        env:
+          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+        run: |
+          printf 'OPENCODE_API_KEY=%s\nHADR_MODEL=deepseek-v4-flash-free\n' \
+            "$OPENCODE_API_KEY" > .env
+          timeout 10m docker compose run --rm claw
+          # the container runs as root; hand the outputs back to the runner user
+          sudo chown -R "$(id -u):$(id -g)" state dashboard.html
+
+      - name: verify the report exists and is fresh
+        # the checkers are stdlib-only, the runner's python3 suffices
+        run: |
+          python3 scripts/check_dashboard.py
+          python3 scripts/check_spend.py
+
+      - name: commit memory back
+        run: |
+          git config user.name "hadr-claw heartbeat"
+          git config user.email "actions@users.noreply.github.com"
+          git add state/ dashboard.html
+          git diff --cached --quiet && { echo "nothing to commit"; exit 0; }
+          git commit -m "heartbeat: $(date -u +%F) morning run [skip ci]"
+          for i in 1 2 3; do
+            git push && exit 0
+            git pull --rebase origin main
+          done
+          exit 1
+
+      - name: stage site
+        run: mkdir -p site && cp dashboard.html site/index.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - uses: actions/deploy-pages@v4
+
+      - name: alert on failure
+        if: failure()
+        env:
+          # ISSUE_PAT (a fine-grained PAT with issues:write) makes the @claude
+          # mention trigger the app — issues created with GITHUB_TOKEN do not
+          # trigger other workflows/apps. Falls back so the alert still exists.
+          GH_TOKEN: ${{ secrets.ISSUE_PAT || secrets.GITHUB_TOKEN }}
+          WEBHOOK: ${{ secrets.HADR_ALERT_WEBHOOK }}
+        run: |
+          TITLE="Heartbeat failed $(date -u +%F)"
+          BODY="@claude investigate this failed heartbeat run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          EXISTING=$(gh issue list --label heartbeat-failure --state open --json number --jq '.[0].number // empty' || true)
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$BODY"
+          else
+            gh issue create --title "$TITLE" --body "$BODY" --label heartbeat-failure || \
+            gh issue create --title "$TITLE" --body "$BODY"
+          fi
+          if [ -n "$WEBHOOK" ]; then
+            curl -sf -X POST -H 'Content-Type: application/json' \
+              -d "{\"text\": \"HADR claw heartbeat failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+              "$WEBHOOK" || true
+          fi
