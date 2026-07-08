@@ -1,6 +1,8 @@
 """A Claude Code of our own, in ~100 lines (Activity 7).
 
 Level 1: a chat loop — read input, send the messages array, print the reply.
+Level 2: standing orders — prepend agent/soul.md as the system prompt.
+         (This is all CLAUDE.md is.)
 
     uv run python agent/harness.py            # interactive
     uv run python agent/harness.py --once "hi" # one turn, then exit
@@ -16,6 +18,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from agent.model import make_model  # noqa: E402
 
+SOUL = Path(__file__).with_name("soul.md")
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(prog="harness")
@@ -23,7 +27,7 @@ def main() -> int:
     args = parser.parse_args()
 
     model = make_model()
-    messages: list[dict] = []
+    messages: list[dict] = [{"role": "system", "content": SOUL.read_text()}]
 
     while True:
         try:
