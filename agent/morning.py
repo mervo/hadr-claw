@@ -62,7 +62,12 @@ def _briefing(changes) -> str:
         "write_dashboard by uid — do NOT call fetch_feed. Assess the escalated and "
         "new events (what happened, where, how bad, who is affected; two sentences "
         "each at most), then call write_dashboard exactly once, referencing only "
-        "the uids listed above."
+        "the uids listed above.\n\n"
+        "Severity dict fields present depend on hazard and feed source: "
+        "EQ→mag/pager_alert/tsunami from USGS, gdacs_alert/alertscore/mag from GDACS; "
+        "TC/FL/VO→gdacs_alert/alertscore/text from GDACS; "
+        "ReliefWeb→curated:true. Refer to the assessment patterns in your soul for "
+        "how to ground assertions in the available severity data."
     )
 
 

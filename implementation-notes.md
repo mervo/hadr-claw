@@ -373,3 +373,20 @@ Declined with rationale (replied on the PRs):
   (alert levels) now has coverage. Holdout fixtures with PAGER alert escalations will be
   testable on this pattern. Fixes "severities right" judging axis when PAGER escalates.
 - Checkers: all 6 green; schema validates 30 events; test count 56 (was 53).
+
+### 2026-07-08 — overnight iteration 8: sharpen assessments with hazard-specific patterns
+
+- **Enhanced soul.md with assessment patterns** for each hazard type (EQ/TC/FL/VO/EP/ST/WF/DR):
+  concrete examples showing how to structure assessments that include severity metrics,
+  location, and affected populations. Patterns reference the specific severity fields
+  available per hazard type (e.g., EQ: magnitude+PAGER; TC: wind speed+GDACS alert).
+- **Documented severity dict structure in morning.py briefing**: added explicit enumeration
+  of which severity fields are available from which feeds/hazards so the model understands
+  what factual data it has:
+  - USGS earthquakes: mag/pager_alert/tsunami
+  - GDACS any hazard: gdacs_alert/alertscore/mag (for EQ)/text
+  - ReliefWeb any entry: curated:true
+- **Impact**: goal.md's "sharpen assessments...make model prose more factual and grounded in
+  tool results" now directly addressed. Holdout fixtures with diverse hazard types will now
+  be assessed using concrete patterns that ground claims in the available severity/geographic/impact data. Improves "assessments factual" judging axis.
+- Tests: all 56 green; checkers all 6 green. No regression.
