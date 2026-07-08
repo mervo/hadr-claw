@@ -237,3 +237,16 @@ def test_pager_alert_escalation_sequence():
     assert changes4.escalated[0].severity.get("pager_alert") == "red"
 
 
+def test_pager_escalation_from_fixtures():
+    """Verify PAGER escalation from fixture-based day1 -> day2 transition"""
+    state = memory.load("/nonexistent")
+    changes1 = memory.diff(state, _events("pager_escalation_day1"), now=NOW)
+    assert len(changes1.new) == 1, "First sighting of earthquake"
+    assert changes1.new[0].uid == "usgs:usgs_pager_2026"
+
+    changes2 = memory.diff(state, _events("pager_escalation_day2"), now=NOW)
+    assert len(changes2.escalated) == 1, "PAGER green -> red should escalate"
+    assert changes2.escalated[0].uid == "usgs:usgs_pager_2026"
+    assert changes2.escalated[0].severity.get("pager_alert") == "red"
+
+

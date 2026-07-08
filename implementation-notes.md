@@ -414,3 +414,23 @@ Declined with rationale (replied on the PRs):
   payloads are skipped gracefully and good data is salvaged. Improves "events found" and
   "duplicates merged" judging axes by testing realistic failures.
 - Checkers: all 6 green; schema still validates 30 events; test count 65 (was 56). No regression.
+
+### 2026-07-08 — overnight iteration 10: PAGER alert escalation fixtures and integration test
+
+- **PAGER escalation fixture pair** (`tests/fixtures/pager_escalation_day1/` and `pager_escalation_day2/`):
+  enables integration testing of alert escalation detection from real fixture data, addressing goal.md's
+  "more revision and escalation sequences" requirement.
+  - Day 1: M7.2 earthquake in Eastern Turkey with PAGER green alert + empty GDACS feed
+  - Day 2: same earthquake with PAGER red alert, testing alert rank escalation pathway
+  - Follows the established day1/day2 pattern for memory state-transition testing
+- **Integration test added** (`test_pager_escalation_from_fixtures`):
+  - Verifies first sighting correctly identified as NEW
+  - Verifies PAGER alert escalation (green → red) correctly detected as ESCALATED
+  - Validates uid matches and severity dict contains updated pager_alert
+- **Impact**: goal.md's "broaden fixture coverage: more revision and escalation sequences" advanced.
+  Complements existing PAGER alert unit tests (null→red, green→yellow→orange→red) with
+  fixture-based integration test, ensuring feed parsing pipeline correctly propagates alert
+  changes through dedup → memory → change classification. Improves "severities right" judging axis
+  and adds fixture coverage for alert escalation workflows.
+- Tests: 66 total (was 65); `test_pager_escalation_from_fixtures` green. All 66 pass; checkers all 6 green.
+  Lint: clean. No regression.
