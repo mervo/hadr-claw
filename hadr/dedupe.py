@@ -64,8 +64,11 @@ def _feed_rank(e: Event) -> int:
 
 
 def _absorb(primary: Event, other: Event, rule: str) -> None:
+    known = {(s["feed"], s["id"]) for s in primary.sources}
     for src in other.sources:
-        primary.sources.append({**src, "merged_by": rule})
+        # re-fetching a feed must not stack duplicate source rows on the card
+        if (src["feed"], src["id"]) not in known:
+            primary.sources.append({**src, "merged_by": rule})
     for key, value in other.severity.items():
         if primary.severity.get(key) is None and value is not None:
             primary.severity[key] = value
@@ -74,6 +77,8 @@ def _absorb(primary: Event, other: Event, rule: str) -> None:
     primary.iso3 = primary.iso3 or other.iso3
     if primary.lat is None:
         primary.lat, primary.lon = other.lat, other.lon
+    if primary.depth_km is None:
+        primary.depth_km = other.depth_km
     primary.updated_at = max(primary.updated_at, other.updated_at)
     if primary.glide:
         primary.uid = f"glide:{primary.glide}"

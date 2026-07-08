@@ -129,6 +129,38 @@ and decisions of record in ROADMAP.md). Headlines:
   dropped; revisiting would be a new decision.
 - @claude GitHub app installed; review loop live on PRs #1–#9.
 
+### 2026-07-08 — @claude review round (PRs #1–#9), fixes applied at stack tip
+
+Real bugs found by review, all fixed in one commit on tier-7-overnight:
+- dedupe `_absorb` dropped `depth_km` when GDACS (no depth) was primary; and
+  re-fetching a feed duplicated source rows — both fixed with regression tests.
+- morning `_agent_loop` constructed the model client outside its try/except,
+  so a missing `OPENCODE_API_KEY` crashed the run instead of falling back.
+- soul.md's "fetch the feeds first" contradicted the morning briefing's
+  "do NOT fetch" — now conditional ("if events have not been provided").
+- heartbeat failure-issue dedup: `--jq '.[0].number'` prints literal `null`
+  on empty, so the FIRST failure tried `gh issue comment null` and no issue
+  was ever created; fixed with `// empty`.
+- `HADR_MAX_TOKENS_TOTAL` was documented as enforced but the interactive
+  harness never read it — now enforced in `run_turn` too.
+- memory: state file now prunes inactive entries after 30 days (unbounded
+  growth); dead `last_reported_fingerprint` field removed; ESCALATED now
+  compares to the most recent alert level, so re-escalation after a dip
+  surfaces again (was: only above all-time max).
+- overnight.sh: green iterations commit immediately (a cap trip no longer
+  strands the last iteration's work); tampering now VOIDs the whole
+  iteration via reset (was: restore-and-continue, contradicting goal.md).
+- supercronic pinned by sha256; LiveModel now sends the repo User-Agent and
+  follows redirects like every other HTTP call site; state/** churn dropped
+  from PR #9 per the post-Tier-6 convention.
+
+Declined with rationale (replied on the PRs):
+- Token estimator "double-counting" (PR #7): summing per-request totals is
+  the intended spend semantic — every request re-sends the conversation as
+  prompt; clarifying comment added instead.
+- state/runs noise in PR #4: already in merged history below Tier 6, where
+  the convention doesn't apply yet.
+
 ## Open questions
 
 - Telegram or Slack for the alert webhook, and its credential (user input;

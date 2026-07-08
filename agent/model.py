@@ -15,7 +15,10 @@ import json
 import os
 from pathlib import Path
 
+import httpx
 from openai import OpenAI
+
+from hadr import USER_AGENT
 
 DEFAULT_BASE_URL = "https://opencode.ai/zen/v1"
 DEFAULT_MODEL = "deepseek-v4-flash-free"  # free tier, tool calls verified; see docs/solutions/
@@ -29,6 +32,9 @@ class LiveModel:
         self.client = OpenAI(
             base_url=os.environ.get("HADR_MODEL_BASE_URL", DEFAULT_BASE_URL),
             api_key=os.environ["OPENCODE_API_KEY"],
+            http_client=httpx.Client(
+                follow_redirects=True, headers={"User-Agent": USER_AGENT}
+            ),
         )
         self.model = os.environ.get("HADR_MODEL", DEFAULT_MODEL)
 

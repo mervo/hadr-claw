@@ -68,10 +68,15 @@ def _briefing(changes) -> str:
 def _agent_loop(messages: list[dict], span_tracer, deadline: float,
                 record: str | None = None) -> dict:
     """Returns run stats; enforces every cap in code."""
-    model = make_model(record=record)
     turns = tokens = 0
     wrote = False
     cap = None
+    try:
+        # inside the guard: a missing key or client failure must reach the
+        # fallback renderer, not crash the run (the report always exists)
+        model = make_model(record=record)
+    except Exception as exc:  # noqa: BLE001
+        return {"turns": 0, "tokens": 0, "wrote": False, "cap_tripped": f"model_error: {exc}"}
     while turns < MAX_TURNS:
         if time.monotonic() > deadline:
             cap = "wall_clock"
@@ -84,6 +89,9 @@ def _agent_loop(messages: list[dict], span_tracer, deadline: float,
                 break
             span.set_attribute("tokens", usage.get("total_tokens") or 0)
         turns += 1
+        # spend accounting: every request re-sends the whole conversation as
+        # prompt, so summing per-request totals (or the chars/4 estimate of
+        # the conversation) is deliberately cumulative-per-request
         tokens += usage.get("total_tokens") or (
             sum(len(str(m.get("content") or "")) for m in messages) // 4
         )
@@ -99,8 +107,11 @@ def _agent_loop(messages: list[dict], span_tracer, deadline: float,
             with span_tracer.start_as_current_span(f"tool:{name}"):
                 result = tools.run(call)
             messages.append({"role": "tool", "tool_call_id": call["id"], "content": result})
-            if name == "write_dashboard" and '"ok": true' in result:
-                wrote = True
+            if name == "write_dashboard":
+                try:
+                    wrote = wrote or json.loads(result).get("ok") is True
+                except ValueError:
+                    pass
         if wrote:
             break
     else:
@@ -160,7 +171,6 @@ def main(argv: list[str] | None = None) -> int:
                 )
         root.set_attribute("engine", engine)
 
-        memory.mark_reported(state, events)
         memory.save(state, args.state)
 
     counts = changes.counts()

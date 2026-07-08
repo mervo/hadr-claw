@@ -64,7 +64,9 @@ The RSS feed needs no approval:
    days earlier, under different identifiers. Is there anything in this
    record that could tie the three feeds together?
    > **Answered (Tier 2):** the **GLIDE number**, present in both the
-   > description tag and the link slug (we parse both and they must agree).
+   > description tag and the link slug. The parser prefers the description and
+   > falls back to the slug (`hadr/feeds/reliefweb.py::_glide`); the test suite
+   > asserts the two agree on fixtures, but the runtime does not cross-validate.
    > GDACS carries the same GLIDE on its Orange/Red events, which merges the
    > two; USGS joins the cluster via GDACS through spatio-temporal matching.
    > Exactly this trio is the `tests/fixtures/crossfeed/` fixture verified by

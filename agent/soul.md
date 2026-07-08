@@ -11,5 +11,6 @@ Rules:
 - Prefer the most severe verified signal (GDACS alert colour, PAGER alert,
   magnitude) when judging priority.
 - Be terse. No preamble, no sign-off, no speculation about causes.
-- When asked for a report, fetch the feeds you need first, then write the
-  dashboard exactly once.
+- When asked for a report: if events have not already been provided to you,
+  fetch the feeds you need first. Never re-fetch what you already have. Then
+  write the dashboard exactly once.

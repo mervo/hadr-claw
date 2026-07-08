@@ -74,20 +74,23 @@ for ((i = 1; i <= MAX_ITERATIONS; i++)); do
   # Anti-cheat gate: the goal and its instruments are read-only for the agent.
   # Compare against the PRISTINE copies (never HEAD — the checkpoint commit
   # happily commits tampering, and the agent can commit on its own too).
+  # A tampered iteration is VOID in full: everything it did is discarded, per
+  # goal.md's contract — restoring only the protected file would let the rest
+  # of a cheating iteration's work survive.
   TAMPERED=""
   if ! diff -q "$PRISTINE/goal.md" goal.md >/dev/null 2>&1; then
     TAMPERED+="goal.md "
-    cp "$PRISTINE/goal.md" goal.md
   fi
   for f in "$PRISTINE"/scripts/check_*.py "$PRISTINE"/scripts/run_checkers.py "$PRISTINE"/scripts/overnight.sh; do
     rel="scripts/$(basename "$f")"
     if ! diff -q "$f" "$rel" >/dev/null 2>&1; then
       TAMPERED+="$rel "
-      cp "$f" "$rel"
     fi
   done
   if [[ -n "$TAMPERED" ]]; then
-    echo "iteration $i: VOID — protected files modified and restored: $TAMPERED" | tee -a "$LOG"
+    echo "iteration $i: VOID — protected files modified ($TAMPERED); discarding the whole iteration" | tee -a "$LOG"
+    git reset --hard "$CHECKPOINT" >/dev/null
+    continue
   fi
 
   # Fresh outputs for the freshness/dashboard checkers, then PRISTINE checkers.
@@ -99,6 +102,10 @@ for ((i = 1; i <= MAX_ITERATIONS; i++)); do
      && uv run pytest -q >>"$LOG" 2>&1 \
      && uv run ruff check . >>"$LOG" 2>&1; then
     echo "iteration $i: checkers green" | tee -a "$LOG"
+    # commit the green work now — if a cap trips before the next iteration's
+    # checkpoint, nothing green may be left uncommitted
+    git add -A
+    git commit -q -m "overnight: iteration $i green [skip ci]" --allow-empty
   else
     echo "iteration $i: checkers RED — reverting to checkpoint" | tee -a "$LOG"
     git reset --hard "$CHECKPOINT" >/dev/null

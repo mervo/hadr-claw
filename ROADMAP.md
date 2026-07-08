@@ -45,6 +45,7 @@ Status values: `planned` · `in-progress` · `done`.
 1. **Install the @claude GitHub app** (`/install-github-app`) — no PR has had
    its review loop yet (PRs #1→#9 are stacked, oldest first).
 2. Review + merge the stack in order: #1 → #3 → #4 → #5 → #6 → #7 → #8 → #9.
+   (#2 is not a tier — it was the @claude GitHub-app installation PR.)
 3. Repo is already **public**; enable Pages (Settings → Pages → Source:
    GitHub Actions) or `gh api repos/mervo/hadr-claw/pages -X POST -f build_type=workflow`.
 4. `gh workflow run heartbeat.yml && gh run watch` — verify the Pages URL and
