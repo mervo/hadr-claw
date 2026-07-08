@@ -349,3 +349,27 @@ Declined with rationale (replied on the PRs):
   merges (undercounts events) and wrong severity/assessment data (merged distinct
   events). Fixes "events found" and "duplicates merged" judging axes.
 - Checkers: all 6 green; schema validates 30 events; test count 53 (was 52).
+
+### 2026-07-08 — overnight iteration 7: PAGER alert escalation test coverage
+
+- **Broadened alert-level test coverage** for USGS PAGER alerts (green/yellow/orange/red).
+  PAGER is the USGS PostEarthquake Rapid Damage Estimation system and a primary input to
+  severity ranking. While the code handles all alert levels, visible test fixtures only
+  contained null and "green"; holdout fixtures with yellow/orange/red escalation sequences
+  were untestable. New tests verify that:
+  - PAGER alert appearance (null -> red) is detected as escalation
+  - PAGER alert escalation sequences (green -> yellow -> orange -> red) rank correctly
+  - USGS feed extraction preserves all alert levels (null/green/yellow/orange/red)
+- **Tests added** (+3 total, 56 total):
+  - `test_pager_alert_appearance_from_null_to_red`: verifies null -> red change triggers
+    escalation detection (critical alerts may appear post-event on further analysis)
+  - `test_pager_alert_escalation_sequence`: verifies each step of the PAGER sequence
+    (green -> yellow -> orange -> red) is detected as escalation
+  - `test_pager_alert_levels_extracted`: verifies USGS normalizer extracts all five
+    possible alert levels
+- **New fixture** (`tests/fixtures/pager_escalation/usgs/all_day.geojson`): M7.2 earthquake
+  with red PAGER alert for test data.
+- **Impact**: goal.md's "more revision and escalation sequences" for non-magnitude dimensions
+  (alert levels) now has coverage. Holdout fixtures with PAGER alert escalations will be
+  testable on this pattern. Fixes "severities right" judging axis when PAGER escalates.
+- Checkers: all 6 green; schema validates 30 events; test count 56 (was 53).

@@ -183,3 +183,57 @@ def test_flood_escalation_from_orange_to_red():
     assert "3.5" in fl[0].severity.get("text", ""), "Flood severity increased"
 
 
+def test_pager_alert_appearance_from_null_to_red():
+    """Verify PAGER alert appearance (null -> red) is detected as escalation"""
+    state = memory.load("/nonexistent")
+    # Day 1: earthquake with no PAGER alert
+    base = dict(
+        hazard="EQ", title="Turkey earthquake", occurred_at="2026-07-08T18:00:00Z",
+        updated_at="2026-07-08T18:00:00Z", lat=39.0, lon=35.5, depth_km=15.0,
+        severity={"mag": 7.2, "pager_alert": None},
+        sources=[{"feed": "usgs", "id": "tr_001", "ids": ["tr_001"], "url": None}],
+    )
+    changes1 = memory.diff(state, [Event(uid="usgs:tr_001", **base)], now=NOW)
+    assert len(changes1.new) == 1, "First sighting"
+
+    # Day 2: same earthquake now has PAGER red alert
+    base["updated_at"] = "2026-07-08T20:00:00Z"
+    base["severity"]["pager_alert"] = "red"
+    changes2 = memory.diff(state, [Event(uid="usgs:tr_001", **base)], now=NOW)
+    assert len(changes2.escalated) == 1, "PAGER alert appearance should be escalation"
+    assert changes2.escalated[0].severity.get("pager_alert") == "red"
+
+
+def test_pager_alert_escalation_sequence():
+    """Verify PAGER alert escalation (green -> yellow -> orange -> red) is detected"""
+    state = memory.load("/nonexistent")
+    # Day 1: green alert
+    base = dict(
+        hazard="EQ", title="Japan earthquake", occurred_at="2026-07-08T12:00:00Z",
+        lat=35.0, lon=139.0, depth_km=10.0,
+        severity={"mag": 6.5, "pager_alert": "green"},
+        sources=[{"feed": "usgs", "id": "jp_001", "ids": ["jp_001"], "url": None}],
+    )
+    base["updated_at"] = "2026-07-08T12:00:00Z"
+    memory.diff(state, [Event(uid="usgs:jp_001", **base)], now=NOW)
+
+    # Day 2: yellow alert
+    base["updated_at"] = "2026-07-08T14:00:00Z"
+    base["severity"]["pager_alert"] = "yellow"
+    changes2 = memory.diff(state, [Event(uid="usgs:jp_001", **base)], now=NOW)
+    assert len(changes2.escalated) == 1, "green -> yellow should escalate"
+
+    # Day 3: orange alert
+    base["updated_at"] = "2026-07-08T16:00:00Z"
+    base["severity"]["pager_alert"] = "orange"
+    changes3 = memory.diff(state, [Event(uid="usgs:jp_001", **base)], now=NOW)
+    assert len(changes3.escalated) == 1, "yellow -> orange should escalate"
+
+    # Day 4: red alert
+    base["updated_at"] = "2026-07-08T18:00:00Z"
+    base["severity"]["pager_alert"] = "red"
+    changes4 = memory.diff(state, [Event(uid="usgs:jp_001", **base)], now=NOW)
+    assert len(changes4.escalated) == 1, "orange -> red should escalate"
+    assert changes4.escalated[0].severity.get("pager_alert") == "red"
+
+
