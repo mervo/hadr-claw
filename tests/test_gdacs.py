@@ -63,3 +63,15 @@ def test_event_level_alert_is_reported_and_episode_kept_aside():
     e = events[0]
     assert e.severity["gdacs_alert"] in ("Green", "Orange", "Red")
     assert "episode_alert" in e.sources[0]
+
+
+def test_volcano_orange_alert_kept():
+    """Volcano events with Orange alert must be kept."""
+    volcano = _feature(
+        eventid=999005, eventtype="VO", alertlevel="Orange", glide="VO-2026-000201-IDN",
+        name="Mount Merapi", severitydata={"severity": 4, "severitytext": "Magnitude 4"}
+    )
+    events = gdacs.normalize({"features": [volcano]})
+    assert len(events) == 1
+    assert events[0].hazard == "VO"
+    assert events[0].severity["gdacs_alert"] == "Orange"

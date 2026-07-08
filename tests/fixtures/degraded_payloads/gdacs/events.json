@@ -1,0 +1,89 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [141.845, 40.4353]},
+      "properties": {
+        "eventtype": "EQ",
+        "eventid": 1550601,
+        "episodeid": 1,
+        "glide": "",
+        "name": "Earthquake in Japan",
+        "htmldescription": "Red M 5.2 Earthquake",
+        "alertlevel": "Red",
+        "alertscore": 3,
+        "episodealertlevel": "Red",
+        "episodealertscore": 3,
+        "istemporary": "false",
+        "iscurrent": "true",
+        "country": null,
+        "fromdate": "2026-07-08T10:00:00",
+        "todate": "2026-07-08T10:00:00",
+        "datemodified": "2026-07-08T10:30:00",
+        "iso3": null,
+        "source": "NEIC",
+        "url": {
+          "report": "https://www.gdacs.org/report.aspx?eventid=1550601",
+          "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=EQ&eventid=1550601"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [120.5, 25.3]},
+      "properties": {
+        "eventtype": "TC",
+        "eventid": 1550602,
+        "episodeid": 1,
+        "glide": "TC-2026-000150-PHL",
+        "name": "",
+        "htmldescription": "Orange TC with minimal title",
+        "alertlevel": "Orange",
+        "alertscore": 2,
+        "episodealertlevel": "Orange",
+        "episodealertscore": 2,
+        "istemporary": "false",
+        "iscurrent": "true",
+        "country": "Philippines",
+        "fromdate": "2026-07-08T12:00:00",
+        "todate": "2026-07-08T12:00:00",
+        "datemodified": "2026-07-08T12:15:00",
+        "iso3": "PHL",
+        "source": "GDACS",
+        "url": {
+          "report": "https://www.gdacs.org/report.aspx?eventid=1550602",
+          "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=TC&eventid=1550602"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [85.0, 28.0]},
+      "properties": {
+        "eventtype": "FL",
+        "eventid": 1550603,
+        "episodeid": 1,
+        "glide": null,
+        "name": "Flood in Nepal",
+        "htmldescription": "Red FL with null glide",
+        "alertlevel": "Red",
+        "alertscore": 3,
+        "episodealertlevel": "Red",
+        "episodealertscore": 3,
+        "istemporary": "false",
+        "iscurrent": "true",
+        "country": "Nepal",
+        "fromdate": "2026-07-07T00:00:00",
+        "todate": "2026-07-08T12:00:00",
+        "datemodified": "2026-07-08T13:00:00",
+        "iso3": "NPL",
+        "source": "GDACS",
+        "url": {
+          "report": "https://www.gdacs.org/report.aspx?eventid=1550603",
+          "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=FL&eventid=1550603"
+        }
+      }
+    }
+  ]
+}

@@ -59,3 +59,43 @@ def test_normalize_shapes_event():
     # the comma-wrapped `ids` string becomes a clean alias list
     assert src["id"] in src["ids"]
     assert all(i and "," not in i for i in src["ids"])
+
+
+def test_pager_alert_levels_extracted():
+    """Verify PAGER alert levels (null, green, yellow, orange, red) are properly extracted"""
+    raw = {
+        "features": [
+            {
+                "id": "us_no_alert",
+                "geometry": {"type": "Point", "coordinates": [0.0, 0.0, 0.0]},
+                "properties": {"type": "earthquake", "mag": 5.0, "sig": 500, "time": 1783476528776, "alert": None}
+            },
+            {
+                "id": "us_green",
+                "geometry": {"type": "Point", "coordinates": [0.0, 0.0, 0.0]},
+                "properties": {"type": "earthquake", "mag": 6.0, "sig": 600, "time": 1783476528776, "alert": "green"}
+            },
+            {
+                "id": "us_yellow",
+                "geometry": {"type": "Point", "coordinates": [0.0, 0.0, 0.0]},
+                "properties": {"type": "earthquake", "mag": 6.5, "sig": 650, "time": 1783476528776, "alert": "yellow"}
+            },
+            {
+                "id": "us_orange",
+                "geometry": {"type": "Point", "coordinates": [0.0, 0.0, 0.0]},
+                "properties": {"type": "earthquake", "mag": 7.0, "sig": 700, "time": 1783476528776, "alert": "orange"}
+            },
+            {
+                "id": "us_red",
+                "geometry": {"type": "Point", "coordinates": [0.0, 0.0, 0.0]},
+                "properties": {"type": "earthquake", "mag": 7.5, "sig": 750, "time": 1783476528776, "alert": "red"}
+            }
+        ]
+    }
+    events = usgs.normalize(raw)
+    alerts = {e.uid.split(":")[1]: e.severity.get("pager_alert") for e in events}
+    assert alerts["us_no_alert"] is None
+    assert alerts["us_green"] == "green"
+    assert alerts["us_yellow"] == "yellow"
+    assert alerts["us_orange"] == "orange"
+    assert alerts["us_red"] == "red"

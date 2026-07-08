@@ -49,13 +49,27 @@ def _match_rule(a: Event, b: Event) -> str | None:
         return "alias"
     if (
         a.hazard == b.hazard
+        and a.occurred_at
+        and b.occurred_at  # _epoch maps missing to 0.0 == 0.0: never match on place alone
         and None not in (a.lat, a.lon, b.lat, b.lon)
         and _haversine_km(a.lat, a.lon, b.lat, b.lon) <= MAX_KM
         and abs(_epoch(a.occurred_at) - _epoch(b.occurred_at)) <= MAX_SECONDS
     ):
         mag_a, mag_b = a.severity.get("mag"), b.severity.get("mag")
-        if mag_a is None or mag_b is None or abs(mag_a - mag_b) <= MAX_MAG_DELTA:
-            return "spacetime"
+        # For earthquakes, magnitude is a critical discriminator. Require at least
+        # one to have magnitude data; never merge two magnitude-less quakes via
+        # spacetime (too risky — they might be distinct aftershocks). For other
+        # hazards without magnitude (TC, FL, VO), magnitude check is N/A.
+        if a.hazard == "EQ":
+            if (mag_a is None and mag_b is None) or (
+                mag_a is not None
+                and mag_b is not None
+                and abs(mag_a - mag_b) > MAX_MAG_DELTA
+            ):
+                return None
+        elif mag_a is not None and mag_b is not None and abs(mag_a - mag_b) > MAX_MAG_DELTA:
+            return None
+        return "spacetime"
     return None
 
 
@@ -72,6 +86,12 @@ def _absorb(primary: Event, other: Event, rule: str) -> None:
     for key, value in other.severity.items():
         if primary.severity.get(key) is None and value is not None:
             primary.severity[key] = value
+        # USGS magnitude takes priority over GDACS magnitude (USGS is authoritative)
+        elif key == "mag" and value is not None and primary.severity.get("mag") is not None:
+            usgs_src = any(s["feed"] == "usgs" for s in other.sources)
+            gdacs_primary = any(s["feed"] == "gdacs" for s in primary.sources)
+            if usgs_src and gdacs_primary:
+                primary.severity["mag"] = value
     primary.glide = primary.glide or other.glide
     primary.country = primary.country or other.country
     primary.iso3 = primary.iso3 or other.iso3
