@@ -20,6 +20,18 @@ services:
     ports:
       - "8080:8080"
 
+  # VPS-hosted heartbeat: docker compose --profile heartbeat up -d
+  # (state persists on disk via the bind mount — no commit-back needed)
+  heartbeat:
+    profiles: ["heartbeat"]
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ./:/app
+    entrypoint: ["/usr/local/bin/supercronic", "/app/ops/crontab"]
+
   # docker compose --profile observability up -d jaeger
   # then: docker compose run --rm -e OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318 claw
   # traces at http://localhost:16686

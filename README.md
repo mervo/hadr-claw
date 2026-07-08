@@ -85,8 +85,11 @@ The interface per tier (kept current as tiers land — unchecked means not built
   kill-switch demo: `HADR_MAX_SECONDS=0 uv run python -m agent.morning` → the
   cap trips and the deterministic fallback report still exists;
   `scripts/check_dashboard.py` + `scripts/check_spend.py` are the instruments
-- [ ] **Tier 6** — `gh workflow run heartbeat.yml` → unattended run, dashboard on
-  GitHub Pages
+- [x] **Tier 6** — `gh workflow run heartbeat.yml && gh run watch` → unattended
+  run: morning report, memory committed back, dashboard published to GitHub
+  Pages. Failure demo: `gh workflow run heartbeat.yml -f fail_for_demo=true`
+  → issue tagging @claude. VPS alternative:
+  `docker compose --profile heartbeat up -d` (supercronic, same schedule)
 - [ ] **Tier 7** — `bash scripts/overnight.sh` → capped overnight improvement loop
 
 Tests and lint (from Tier 1): `uv run pytest` · `uv run ruff check .`
@@ -107,6 +110,32 @@ tracked file**. Copy `.env.example` to `.env` (gitignored) and fill it in:
 
 GitHub Actions gets the key once via `gh secret set OPENCODE_API_KEY`; workflows
 reference `${{ secrets.OPENCODE_API_KEY }}`.
+
+Two more secrets unlock the full alerting path (both optional — the heartbeat
+degrades gracefully without them):
+
+- `ISSUE_PAT` — a fine-grained PAT with issues:write. Failure issues created
+  with the default `GITHUB_TOKEN` do **not** trigger the @claude app; a PAT
+  makes the `@claude investigate` mention actually summon it.
+- `HADR_ALERT_WEBHOOK` — a Slack-compatible incoming-webhook URL (or any
+  endpoint accepting `{"text": …}`); failures also post there.
+
+## Operations
+
+- **Heartbeat**: `.github/workflows/heartbeat.yml`, cron 00:00 UTC (08:00 SGT —
+  drift buffer inside the 08:30 promise) + `workflow_dispatch`. Each run:
+  morning report in the same container as everywhere → checkers → commit
+  `state/` + `dashboard.html` back (`[skip ci]`, rebase-retry ×3) → deploy
+  `site/index.html` to GitHub Pages.
+- **The published dashboard** lives at the repo's GitHub Pages URL; the
+  committed `dashboard.html` is the demo copy. After this tier, dev PRs must
+  not diff `dashboard.html`/`state/**` (take main's, regenerate).
+- **Quiet mornings still publish** — the stamp advances, the lead says "no new
+  developments"; a page that never changes is indistinguishable from a dead one.
+- **When a heartbeat fails**: an issue labeled `heartbeat-failure` appears
+  tagging @claude (deduped — repeat failures comment on the open issue), plus
+  a webhook ping if configured. The daily commit is also the keep-alive that
+  stops GitHub auto-disabling the cron after 60 idle days.
 
 ## The feeds
 

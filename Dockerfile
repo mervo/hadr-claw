@@ -11,6 +11,10 @@ RUN uv sync --frozen --no-dev --no-install-project
 
 COPY hadr/ hadr/
 COPY agent/ agent/
+COPY ops/ ops/
+
+# supercronic powers the optional VPS heartbeat profile (compose --profile heartbeat)
+ADD --chmod=755 https://github.com/aptible/supercronic/releases/download/v0.2.33/supercronic-linux-amd64 /usr/local/bin/supercronic
 
 ENTRYPOINT ["/opt/venv/bin/python"]
 CMD ["-m", "agent.morning"]

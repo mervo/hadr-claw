@@ -94,9 +94,27 @@ and decisions of record in ROADMAP.md). Headlines:
 - Spans: OTLP when OTEL_EXPORTER_OTLP_ENDPOINT set (compose jaeger profile),
   else state/runs/spans.jsonl (gitignored — OTLP is the real sink).
 
+### 2026-07-08 — Tier 6: heartbeat, Pages, failure path
+
+- Repo history scanned for the key (clean) before flipping to public for Pages.
+- Main left unprotected so the heartbeat bot can push its commit-back; the
+  alternative (data branch / bot exemption) recorded in ROADMAP blind spots.
+- Container writes as root on the runner → `sudo chown` before git add (the
+  classic Actions+docker gotcha).
+- fail_for_demo dispatch input exists because the system is otherwise too
+  resilient to demo the alert path: model sabotage just produces a fallback
+  report and exits 0 — by design.
+- No @claude reviews appeared on PRs #1–#7: the @claude GitHub app is not
+  active on this repo (user action: /install-github-app).
+
 ## Open questions
 
-- Telegram or Slack for the alert webhook, and its credential (user input, Tier 6).
+- Telegram or Slack for the alert webhook, and its credential (user input;
+  workflow reads optional `HADR_ALERT_WEBHOOK` secret, skips if absent).
+- `ISSUE_PAT` secret (fine-grained, issues:write) needed for the failure
+  issue's @claude mention to actually trigger the app (user action).
+- @claude GitHub app not installed on this repo — PR review loop inactive
+  (user action: /install-github-app).
 - OpenCode Go workspace balance needed before `kimi-k2.7-code` can be the
   production model (user action; free model works meanwhile).
 - ReliefWeb appname request must be filed by the user (form + email approval):
