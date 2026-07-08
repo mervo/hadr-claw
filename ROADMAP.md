@@ -15,7 +15,7 @@ Status values: `planned` · `in-progress` · `done`.
 | 4 | 5-level harness (Activity 7) | done | Chat: "check the quake feeds, write me a dashboard" → model calls tools → page updates; keyless replay via `HADR_FAKE_MODEL` | agent/{harness,tools,model}.py, agent/soul.md, tests/fixtures/transcripts/ |
 | 5 | Harness as production engine + OTel | done | `docker compose run --rm claw` (runs `agent.morning`); `HADR_MAX_TURNS=1` → fallback dashboard with degraded banner; jaeger traces at :16686 | agent/{morning,telemetry}.py, scripts/check_dashboard.py, scripts/check_spend.py |
 | 6 | Heartbeat + Pages + failure path | done | `gh workflow run heartbeat.yml && gh run watch` → Pages updates, state committed; sabotage run → issue tagging @claude; VPS: `docker compose --profile heartbeat up -d` | .github/workflows/{heartbeat,ci}.yml |
-| 7 | Overnight goal (Activity 11) | planned | `scripts/run_checkers.py` all green; `overnight.sh --max-iterations 2 --dry-run` stops on cap | goal.md, scripts/overnight.sh, scripts/check_*.py |
+| 7 | Overnight goal (Activity 11) | done (PR open) | `scripts/run_checkers.py` all green; `overnight.sh --max-iterations 2 --dry-run` stops on cap | goal.md, scripts/overnight.sh, scripts/check_*.py |
 
 ## Decisions of record (2026-07-08)
 
@@ -38,6 +38,23 @@ Status values: `planned` · `in-progress` · `done`.
    quakes (M≥4.5 populated / M≥6 anywhere); ReliefWeb entries kept as-is (curated).
 9. **ReliefWeb**: RSS now; JSON API behind the same normalizer contract once the
    appname is approved (request to be filed — user action, form + email approval).
+
+## Launch checklist (blocked on user actions)
+
+1. **Install the @claude GitHub app** (`/install-github-app`) — no PR has had
+   its review loop yet (PRs #1→#9 are stacked, oldest first).
+2. Review + merge the stack in order: #1 → #3 → #4 → #5 → #6 → #7 → #8 → #9.
+3. Repo is already **public**; enable Pages (Settings → Pages → Source:
+   GitHub Actions) or `gh api repos/mervo/hadr-claw/pages -X POST -f build_type=workflow`.
+4. `gh workflow run heartbeat.yml && gh run watch` — verify the Pages URL and
+   the state commit-back; then `-f fail_for_demo=true` to see the alert path.
+5. Optional secrets: `ISSUE_PAT` (makes the failure issue's @claude mention
+   fire), `HADR_ALERT_WEBHOOK` (Slack/Telegram-gateway URL for pings).
+6. Top up OpenCode Go balance to switch `HADR_MODEL` to `kimi-k2.7-code`
+   (free `deepseek-v4-flash-free` works meanwhile).
+7. File the ReliefWeb appname request (form + email approval takes days):
+   https://apidoc.reliefweb.int/parameters#appname
+8. Instructor sign-off on `goal.md` before any unattended overnight run.
 
 ## Known blind spots (watch for these; move to docs/solutions/ when they bite)
 

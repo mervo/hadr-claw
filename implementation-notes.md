@@ -107,6 +107,21 @@ and decisions of record in ROADMAP.md). Headlines:
 - No @claude reviews appeared on PRs #1–#7: the @claude GitHub app is not
   active on this repo (user action: /install-github-app).
 
+### 2026-07-08 — Tier 7: overnight goal + hard lessons
+
+- goal.md: non-enumerable target (instructor-held holdout windows), one
+  checker per constraint, caps in overnight.sh not prose.
+- overnight.sh reverts red iterations via checkpoint commits + git reset,
+  NEVER git clean: the first version's `git clean -fd` deleted its own
+  untracked goal.md/checkers mid-demo (docs/solutions/2026-07-08-git-clean-
+  ate-the-loop.md). Checkpoint commits double as an audit trail.
+- Anti-cheat gate compares protected files against pristine copies taken at
+  loop start (not HEAD — the checkpoint commit would launder tampering).
+  Demoed with a shim `claude` that sabotaged a checker and rewrote goal.md:
+  both detected, restored, iteration continued green.
+- check_schema initially rejected ST/EP hazards — ReliefWeb GLIDEs use the
+  full GLIDE code list, not just GDACS's seven.
+
 ## Open questions
 
 - Telegram or Slack for the alert webhook, and its credential (user input;
