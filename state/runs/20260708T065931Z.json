@@ -1,0 +1,33 @@
+{
+  "started_at": "2026-07-08T06:59:31Z",
+  "finished_at": "2026-07-08T06:59:31Z",
+  "duration_ms": 3,
+  "feeds": [
+    {
+      "feed": "gdacs",
+      "ok": true,
+      "fetched_at": "2026-07-08T06:59:31Z",
+      "latency_ms": 0,
+      "error": null,
+      "event_count": 3
+    },
+    {
+      "feed": "reliefweb",
+      "ok": true,
+      "fetched_at": "2026-07-08T06:59:31Z",
+      "latency_ms": 2,
+      "error": null,
+      "event_count": 3
+    }
+  ],
+  "significant_events": 4,
+  "merged_away": 2,
+  "changes": {
+    "new": 4,
+    "escalated": 0,
+    "updated": 0,
+    "unchanged": 0,
+    "deleted": 15
+  },
+  "engine": "pipeline"
+}

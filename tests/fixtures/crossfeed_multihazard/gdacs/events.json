@@ -1,0 +1,113 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     124.8,
+     11.2
+    ]
+   },
+   "properties": {
+    "eventtype": "TC",
+    "eventid": 1551200,
+    "episodeid": 1717300,
+    "glide": "TC-2026-000101-PHL",
+    "name": "Tropical Cyclone NARI-26",
+    "alertlevel": "Orange",
+    "alertscore": 2,
+    "episodealertlevel": "Orange",
+    "iscurrent": "true",
+    "istemporary": "false",
+    "country": "Philippines",
+    "fromdate": "2026-07-02T06:00:00",
+    "todate": "2026-07-06T18:00:00",
+    "datemodified": "2026-07-06T18:00:00",
+    "iso3": "PHL",
+    "source": "JTWC",
+    "severitydata": {
+     "severity": 185,
+     "severitytext": "Tropical Storm (maximum wind speed of 185 km/h)",
+     "severityunit": "km/h"
+    },
+    "url": {
+     "report": "https://www.gdacs.org/report.aspx?eventid=1551200&eventtype=TC"
+    }
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     90.4,
+     23.7
+    ]
+   },
+   "properties": {
+    "eventtype": "FL",
+    "eventid": 1551201,
+    "episodeid": 1717301,
+    "glide": "",
+    "name": "Flood in Bangladesh",
+    "alertlevel": "Red",
+    "alertscore": 3,
+    "episodealertlevel": "Red",
+    "iscurrent": "true",
+    "istemporary": "false",
+    "country": "Bangladesh",
+    "fromdate": "2026-07-05T00:00:00",
+    "todate": "2026-07-07T00:00:00",
+    "datemodified": "2026-07-07T09:00:00",
+    "iso3": "BGD",
+    "source": "DFO",
+    "severitydata": {
+     "severity": 2.5,
+     "severitytext": "Magnitude 2.5",
+     "severityunit": ""
+    },
+    "url": {
+     "report": "https://www.gdacs.org/report.aspx?eventid=1551201&eventtype=FL"
+    }
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     110.45,
+     -7.325
+    ]
+   },
+   "properties": {
+    "eventtype": "VO",
+    "eventid": 1551202,
+    "episodeid": 1717302,
+    "glide": "VO-2026-000200-IDN",
+    "name": "Mount Merapi Eruption",
+    "alertlevel": "Orange",
+    "alertscore": 2,
+    "episodealertlevel": "Orange",
+    "iscurrent": "true",
+    "istemporary": "false",
+    "country": "Indonesia",
+    "fromdate": "2026-07-07T12:30:00",
+    "todate": "2026-07-07T12:30:00",
+    "datemodified": "2026-07-07T15:00:00",
+    "iso3": "IDN",
+    "source": "USGS",
+    "severitydata": {
+     "severity": 4,
+     "severitytext": "Magnitude 4",
+     "severityunit": ""
+    },
+    "url": {
+     "report": "https://www.gdacs.org/report.aspx?eventid=1551202&eventtype=VO"
+    }
+   }
+  }
+ ]
+}

@@ -47,6 +47,21 @@ The outer loop runs **pristine copies** of the checkers and this file; editing
 - Total wall clock: 6 hours by default (`--max-minutes`).
 - Kill switch: create a file named `.overnight-stop` in the repo root.
 
+## Unattended operation — read this first
+
+You are one iteration of an unattended loop (`scripts/overnight.sh`). **There
+is no human at the other end.** A question, a menu of options, or "shall I…?"
+is a wasted iteration — nothing will ever answer.
+
+1. Start by reading `git log --oneline -15`: previous iterations' commits show
+   what is already done. Do not repeat it.
+2. Pick the single highest-value improvement toward the target yourself and
+   implement it **fully within this session** — code, tests, docs.
+3. Verify before you finish: `uv run pytest`, `uv run ruff check .`,
+   `uv run python scripts/run_checkers.py`. Leave the tree green.
+4. End your session only after landing a concrete, verified change. Your edits
+   are captured by the harness; you do not need to commit or push.
+
 ## Rules of engagement
 
 - Work only on the current branch; never push to or merge into `main`.

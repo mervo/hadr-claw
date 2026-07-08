@@ -1,0 +1,11 @@
+fix: add depth_km, lat, lon to briefing for factual assessments
+
+The model's briefing was missing location and depth data, forcing it to either
+omit severity-relevant facts or invent them. Now the brief includes these fields
+so assessments can reference them factually per soul.md rules ('only state facts
+present in tool results'). This enables the model to write location-aware depth
+and coordinate references verified against tool data rather than fabricated.
+
+All checkers pass; token budget increased slightly due to additional context.
+
+Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>

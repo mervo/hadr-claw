@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel><title>ReliefWeb - Disasters</title>
+<item>
+  <title>Philippines: Tropical Cyclone Nari - Jul 2026</title>
+  <link>https://reliefweb.int/disaster/tc-2026-000101-phl</link>
+  <pubDate>Sat, 04 Jul 2026 00:00:00 +0000</pubDate>
+  <description>&lt;div class="tag country"&gt;Affected country: Philippines&lt;/div&gt;
+&lt;div class="tag glide"&gt;Glide: TC-2026-000101-PHL&lt;/div&gt;
+&lt;p&gt;Tropical Cyclone Nari made landfall over Eastern Visayas on 3 July 2026, bringing destructive winds and storm surge to coastal municipalities.&lt;/p&gt;</description>
+</item>
+<item>
+  <title>Bangladesh: Floods - Jul 2026</title>
+  <link>https://reliefweb.int/disaster/fl-2026-000102-bgd</link>
+  <pubDate>Mon, 06 Jul 2026 00:00:00 +0000</pubDate>
+  <description>&lt;div class="tag country"&gt;Affected country: Bangladesh&lt;/div&gt;
+&lt;div class="tag glide"&gt;Glide: FL-2026-000102-BGD&lt;/div&gt;
+&lt;p&gt;Monsoon rains have flooded low-lying districts along the Jamuna river, displacing thousands of households.&lt;/p&gt;</description>
+</item>
+<item>
+  <title>Indonesia: Mount Merapi Eruption - Jul 2026</title>
+  <link>https://reliefweb.int/disaster/vo-2026-000200-idn</link>
+  <pubDate>Tue, 07 Jul 2026 15:00:00 +0000</pubDate>
+  <description>&lt;div class="tag country"&gt;Affected country: Indonesia&lt;/div&gt;
+&lt;div class="tag glide"&gt;Glide: VO-2026-000200-IDN&lt;/div&gt;
+&lt;p&gt;Mount Merapi erupted on 7 July, sending ash column to 12,000 meters. Alert status raised to level 3. Evacuation ongoing within 5 km radius.&lt;/p&gt;</description>
+</item>
+</channel></rss>

@@ -45,7 +45,10 @@ def alert_rank(event: Event) -> int:
 
 
 def alert_label(event: Event) -> str | None:
-    return event.severity.get("gdacs_alert") or event.severity.get("pager_alert")
+    # must agree with alert_rank: recording the lower of two levels would make
+    # the next run read "escalated" forever (e.g. GDACS Green + PAGER orange)
+    levels = [lv for lv in (event.severity.get("gdacs_alert"), event.severity.get("pager_alert")) if lv]
+    return max(levels, key=lambda lv: _ALERT_RANKS.get(str(lv).lower(), -1), default=None)
 
 
 def fingerprint(event: Event) -> str:

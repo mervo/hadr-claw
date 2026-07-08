@@ -1,0 +1,37 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "generated": 1783468800000,
+  "title": "fixture: PAGER alert escalation - day 1 (initial)",
+  "count": 1
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "id": "usgs_pager_2026",
+   "properties": {
+    "mag": 7.2,
+    "place": "Eastern Turkey",
+    "time": 1783461600000,
+    "updated": 1783462200000,
+    "felt": 0,
+    "alert": "green",
+    "status": "reviewed",
+    "tsunami": 0,
+    "sig": 720,
+    "ids": ",usgs_pager_2026,",
+    "type": "earthquake",
+    "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usgs_pager_2026",
+    "title": "M 7.2 - Eastern Turkey"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     35.5,
+     39.0,
+     15.0
+    ]
+   }
+  }
+ ]
+}
