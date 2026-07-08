@@ -20,37 +20,96 @@ PAGE = Template("""<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HADR Situation Report</title>
 <style>
-  :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
-  body { margin: 0 auto; max-width: 60rem; padding: 1rem; line-height: 1.45; }
-  header h1 { margin-bottom: 0.2rem; }
-  .stamp { color: #666; }
-  .ops { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.8rem 0 1.2rem;
-         font-size: 0.85rem; }
-  .chip { border-radius: 1rem; padding: 0.15rem 0.7rem; background: #e8e8e8; color: #222; }
-  .chip.ok { background: #d3f0d3; }
-  .chip.bad { background: #f6d3d3; }
-  .card { border: 1px solid #ccc; border-radius: 0.5rem; padding: 0.7rem 1rem;
-          margin-bottom: 0.8rem; }
-  .card h2 { margin: 0 0 0.3rem; font-size: 1.05rem; }
-  .mag { display: inline-block; min-width: 2.6rem; text-align: center; font-weight: bold;
-         border-radius: 0.4rem; padding: 0.1rem 0.4rem; margin-right: 0.5rem;
-         background: #ffd9a0; color: #222; }
-  .alert { display: inline-block; font-weight: bold; border-radius: 0.4rem;
-           padding: 0.1rem 0.5rem; margin-right: 0.5rem; color: #fff; }
-  .alert.Red { background: #c62828; } .alert.Orange { background: #ef6c00; }
-  .alert.Green { background: #2e7d32; }
-  .hazard { font-size: 0.75rem; letter-spacing: 0.05em; color: #777; margin-right: 0.5rem; }
-  .meta { font-size: 0.85rem; color: #555; }
-  .banner { background: #fff3cd; color: #533f03; border: 1px solid #e6d9a8;
-            border-radius: 0.5rem; padding: 0.6rem 1rem; margin-bottom: 1rem; }
-  .assess { border-left: 3px solid #999; padding-left: 0.6rem; }
-  .lead p { font-size: 1.05rem; }
-  a { color: inherit; }
+  /* Tokens: light and dark are both selected (not auto-flipped); status colors
+     are fixed across modes and never carry meaning without a text label. */
+  :root {
+    color-scheme: light dark;
+    --surface: #fcfcfb; --surface-2: #ffffff;
+    --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #6e6d68;
+    --border: #e4e3df; --border-strong: #cfcec9;
+    --good: #0ca30c; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
+    --warning-tint: #fdf3dd; --warning-ink: #533f03;
+    --accent: #2a78d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface: #1a1a19; --surface-2: #232322;
+      --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #98978e;
+      --border: #383835; --border-strong: #4a4945;
+      --warning-tint: #33290f; --warning-ink: #f0dfae;
+      --accent: #3987e5;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0 auto; max-width: 60rem; padding: 1.5rem 1.25rem 3rem;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.55; background: var(--surface); color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  header { margin-bottom: 0.5rem; }
+  header h1 { margin: 0 0 0.15rem; font-size: 1.45rem; letter-spacing: -0.01em; }
+  header .sub { margin: 0; color: var(--ink-3); font-size: 0.85rem; }
+  .stamp { color: var(--ink-2); font-size: 0.9rem; margin: 0.35rem 0 0; }
+  .ops { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0 1.5rem;
+         font-size: 0.8rem; }
+  .chip { display: inline-flex; align-items: center; gap: 0.4em;
+          border: 1px solid var(--border); border-radius: 999px;
+          padding: 0.2rem 0.75rem; color: var(--ink-2); background: var(--surface-2); }
+  .chip.ok::before, .chip.bad::before, .alert::before {
+    content: ""; width: 0.55em; height: 0.55em; border-radius: 50%;
+    display: inline-block; flex: none;
+  }
+  .chip.ok::before { background: var(--good); }
+  .chip.bad::before { background: var(--critical); }
+  .chip.bad { color: var(--ink); border-color: var(--border-strong); }
+  main h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.09em;
+            color: var(--ink-3); margin: 1.75rem 0 0.6rem; font-weight: 600; }
+  main h2 .count { color: var(--ink-3); font-weight: 400; }
+  .card { border: 1px solid var(--border); border-radius: 0.6rem;
+          padding: 0.85rem 1.1rem; margin-bottom: 0.7rem; background: var(--surface-2); }
+  .card h3 { margin: 0 0 0.35rem; font-size: 1.02rem; line-height: 1.4;
+             display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  .card .title { font-weight: 650; }
+  .badges { display: inline-flex; gap: 0.4rem; align-items: center; flex: none; }
+  .mag { font-weight: 600; font-size: 0.8rem; border: 1px solid var(--border-strong);
+         border-radius: 0.35rem; padding: 0.05rem 0.45rem; color: var(--ink-2); }
+  .alert { display: inline-flex; align-items: center; gap: 0.35em; font-weight: 600;
+           font-size: 0.8rem; border: 1px solid var(--border-strong);
+           border-radius: 999px; padding: 0.05rem 0.6rem; color: var(--ink); }
+  .alert.Red::before { background: var(--critical); }
+  .alert.Orange::before { background: var(--serious); }
+  .alert.Green::before { background: var(--good); }
+  .hazard { font-size: 0.72rem; letter-spacing: 0.08em; color: var(--ink-3);
+            border: 1px solid var(--border); border-radius: 0.3rem;
+            padding: 0.05rem 0.35rem; flex: none; }
+  .meta { font-size: 0.82rem; color: var(--ink-2); margin: 0 0 0.2rem; }
+  .meta a { color: var(--accent); text-decoration: none; }
+  .meta a:hover { text-decoration: underline; }
+  .card p { margin: 0.45rem 0 0; font-size: 0.92rem; color: var(--ink-2); }
+  .banner { background: var(--warning-tint); color: var(--warning-ink);
+            border: 1px solid var(--warning); border-left-width: 4px;
+            border-radius: 0.5rem; padding: 0.65rem 1rem; margin: 0 0 0.8rem;
+            font-size: 0.92rem; }
+  .assess { border-left: 3px solid var(--accent); padding: 0.1rem 0 0.1rem 0.75rem;
+            color: var(--ink); }
+  .assess .priority { font-size: 0.7rem; text-transform: uppercase;
+                      letter-spacing: 0.08em; font-weight: 700; color: var(--ink-3);
+                      margin-right: 0.5em; }
+  .lead { border: 1px solid var(--border); border-radius: 0.6rem;
+          background: var(--surface-2); padding: 1rem 1.25rem; margin: 0 0 0.6rem; }
+  .lead h2 { margin: 0 0 0.4rem; font-size: 1.15rem; line-height: 1.4; }
+  .lead p { margin: 0; font-size: 0.98rem; color: var(--ink-2); }
+  .quiet { font-size: 1rem; }
+  footer { margin-top: 2.5rem; padding-top: 0.8rem; border-top: 1px solid var(--border);
+           font-size: 0.78rem; color: var(--ink-3); }
+  footer a { color: inherit; }
 </style>
 </head>
 <body>
 <header>
   <h1>HADR Situation Report</h1>
+  <p class="sub">Global watch floor · USGS · GDACS · ReliefWeb</p>
   <p class="stamp">Data as of $stamp_utc UTC / $stamp_sgt SGT</p>
 </header>
 <div class="ops">$ops_chips</div>
@@ -59,6 +118,9 @@ $lead
 <main>
 $sections
 </main>
+<footer>Generated unattended by the
+  <a href="https://github.com/mervo/hadr-claw">hadr-claw</a> agent ·
+  feed health and change counts above reflect this run</footer>
 </body>
 </html>
 """)
@@ -105,11 +167,12 @@ def _card(e: Event, assessments: dict | None = None) -> str:
     if assessments and e.uid in assessments:
         a = assessments[e.uid]
         assess_html = (
-            f'<p class="assess"><strong>{escape(a.get("priority") or "")}</strong> — '
-            f"{escape(a['assessment'])}</p>"
+            f'<p class="assess"><span class="priority">{escape(a.get("priority") or "")}'
+            f"</span>{escape(a['assessment'])}</p>"
         )
     return f"""<div class="card">
-  <h2><span class="hazard">{escape(e.hazard)}</span>{badges}{escape(e.title)}</h2>
+  <h3><span class="badges"><span class="hazard">{escape(e.hazard)}</span>{badges}</span>
+      <span class="title">{escape(e.title)}</span></h3>
   <p class="meta">{escape(e.occurred_at)} · {place}{depth} · {links}</p>
   {assess_html}{summary_html}
 </div>"""
@@ -119,7 +182,9 @@ def _section(title: str, events: list[Event], assessments: dict | None = None) -
     if not events:
         return ""
     cards = "\n".join(_card(e, assessments) for e in sorted(events, key=_severity_key))
-    return f"<h2>{escape(title)}</h2>\n{cards}"
+    return (
+        f'<h2>{escape(title)} <span class="count">· {len(events)}</span></h2>\n{cards}'
+    )
 
 
 def render(
@@ -165,7 +230,7 @@ def render(
     elif changes.quiet:
         since = f" since {escape(last_change_at)}" if last_change_at else ""
         sections = (
-            f'<p class="stamp">No new developments{since}. '
+            f'<p class="stamp quiet">No new developments{since}. '
             f"{len(changes.unchanged)} event(s) remain under watch.</p>\n"
             + _section("Ongoing", changes.unchanged, assessments)
         )
