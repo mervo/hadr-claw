@@ -128,3 +128,44 @@ def test_state_round_trips(tmp_path):
     path = tmp_path / "seen.json"
     memory.save(state, path)
     assert memory.load(path) == state
+
+
+def _multihazard_day1():
+    events, statuses = gather(["gdacs", "reliefweb"], "tests/fixtures/crossfeed_multihazard")
+    assert all(s.ok for s in statuses)
+    return dedupe.merge(events)
+
+
+def _multihazard_day2():
+    events, statuses = gather(["gdacs", "reliefweb"], "tests/fixtures/day2_multihazard")
+    assert all(s.ok for s in statuses)
+    return dedupe.merge(events)
+
+
+def test_tropical_cyclone_escalation_from_orange_to_red():
+    """Verify TC escalation is detected: Orange -> Red is ESCALATED"""
+    state = memory.load("/nonexistent")
+    memory.diff(state, _multihazard_day1(), now=NOW)
+
+    changes = memory.diff(state, _multihazard_day2(), now=NOW)
+
+    tc = [e for e in changes.escalated if e.hazard == "TC"]
+    assert len(tc) == 1, "TC should escalate from Orange to Red"
+    assert tc[0].uid == "glide:TC-2026-000101-PHL"
+    assert tc[0].severity.get("gdacs_alert") == "Red"
+
+
+def test_volcano_escalation_from_orange_to_red():
+    """Verify VO escalation is detected: Orange -> Red with intensity increase"""
+    state = memory.load("/nonexistent")
+    memory.diff(state, _multihazard_day1(), now=NOW)
+
+    changes = memory.diff(state, _multihazard_day2(), now=NOW)
+
+    vo = [e for e in changes.escalated if e.hazard == "VO"]
+    assert len(vo) == 1, "VO should escalate from Orange to Red"
+    assert vo[0].uid == "glide:VO-2026-000200-IDN"
+    assert vo[0].severity.get("gdacs_alert") == "Red"
+    assert "Major eruption" in vo[0].severity.get("text", ""), "Volcano intensity info preserved"
+
+

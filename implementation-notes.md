@@ -274,3 +274,20 @@ Declined with rationale (replied on the PRs):
   on all four Orange/Red multi-hazard types. Schema comments already listed VO;
   this adds the test surface and fixtures to exercise it.
 - Checkers: schema now validates 30 events (was 29), all 6 checkers green.
+
+### 2026-07-08 — overnight iteration 7: revision sequences for non-EQ hazards
+
+- **Multi-hazard revision fixtures** (`tests/fixtures/day2_multihazard/`): new day2
+  snapshot with TC and VO escalations to test that the memory system tracks severity
+  changes for non-earthquake hazards with the same rigor as earthquakes.
+  - Tropical Cyclone: Orange (185 km/h) -> Red (240 km/h) — tests cyclone intensification
+  - Volcano: Orange (Magnitude 4) -> Red (Magnitude 5) — tests eruption escalation
+- **Tests added** (+2 total, 49 total):
+  - `test_tropical_cyclone_escalation_from_orange_to_red`: verifies TC escalation
+    detection when wind speeds increase
+  - `test_volcano_escalation_from_orange_to_red`: verifies VO escalation detection
+    when eruption intensity increases
+- Impact: "more revision and escalation sequences" from goal.md now includes non-EQ
+  hazards; memory.py and dedup.py handle TC/VO revisions as rigorously as quake
+  magnitude changes. Holdout fixtures with multi-hazard escalations now testable.
+- Checkers: all 6 green; schema still validates 30 events; test count 49 (was 47).
