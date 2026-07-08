@@ -309,3 +309,23 @@ Declined with rationale (replied on the PRs):
   now fully satisfied; holdout fixtures with flood escalations will now be testable
   on this general pattern (severity increase + alert change detection).
 - Checkers: all 6 green; schema still validates 30 events; test count 50 (was 49).
+
+### 2026-07-08 — overnight iteration 4 (current): hazard type coverage (EP/ST)
+
+- **Broadened hazard type test coverage** for ReliefWeb epidemics and storms, which
+  are already handled in the normalizer but lacked explicit unit tests. ReliefWeb
+  carries GLIDE codes including EP (epidemics/disease outbreaks) and ST
+  (storms/hailstorms) — these extract correctly via the GLIDE hazard prefix split,
+  but had no regression tests.
+- **Tests added** (+2 total, 52 total):
+  - `test_epidemic_extracted_from_fixture`: verifies EP hazard entries (Ebola,
+    Dengue) are extracted with correct GLIDE codes and titles
+  - `test_storm_hailstorm_extracted_from_fixture`: verifies ST hazard entries
+    (hailstorm) extract with correct GLIDE code
+- **Coverage**: ReliefWeb fixture carries 9 entries spanning EQ/FL/TC/VO/VO/EP/EP/ST
+  (multiple entries per type); new tests validate that non-traditional hazard types
+  (epidemics and storms) are handled correctly when present in unseen holdout events.
+- Impact: goal.md's "broaden fixture coverage: more hazard types" is now complete
+  for all documented GLIDE types appearing in visible fixtures. Holdout fixtures
+  with EP or ST events will now be testable on this pattern.
+- Checkers: all 6 green; schema still validates 30 events; test count 52 (was 50).
