@@ -50,11 +50,13 @@ Status values: `planned` · `in-progress` · `done`.
    the state commit-back; then `-f fail_for_demo=true` to see the alert path.
 5. Optional secrets: `ISSUE_PAT` (makes the failure issue's @claude mention
    fire), `HADR_ALERT_WEBHOOK` (Slack/Telegram-gateway URL for pings).
-6. Top up OpenCode Go balance to switch `HADR_MODEL` to `kimi-k2.7-code`
-   (free `deepseek-v4-flash-free` works meanwhile).
-7. File the ReliefWeb appname request (form + email approval takes days):
+6. File the ReliefWeb appname request (form + email approval takes days):
    https://apidoc.reliefweb.int/parameters#appname
-8. Instructor sign-off on `goal.md` before any unattended overnight run.
+7. Instructor sign-off on `goal.md` before any unattended overnight run.
+
+(Model decision closed 2026-07-08: production `HADR_MODEL` is
+`deepseek-v4-flash-free`; a paid model would need workspace balance and a new
+decision.)
 
 ## Known blind spots (watch for these; move to docs/solutions/ when they bite)
 

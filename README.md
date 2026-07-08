@@ -107,7 +107,7 @@ tracked file**. Copy `.env.example` to `.env` (gitignored) and fill it in:
 |----------|---------|
 | `OPENCODE_API_KEY` | OpenCode Go key (get one at opencode.ai — subscribe to Go). Also stored as a GitHub Actions secret of the same name for scheduled runs. |
 | `HADR_MODEL_BASE_URL` | OpenAI-compatible base URL. Default `https://opencode.ai/zen/v1` |
-| `HADR_MODEL` | Model id on the gateway. Default `deepseek-v4-flash-free` (free tier, tool calls verified); production candidate `kimi-k2.7-code` needs workspace balance — see docs/solutions/2026-07-08-zen-gateway-models.md |
+| `HADR_MODEL` | Model id on the gateway. **Production model: `deepseek-v4-flash-free`** (decided 2026-07-08 — free tier, tool calls and usage reporting verified; see docs/solutions/2026-07-08-zen-gateway-models.md) |
 | `HADR_MAX_TURNS` / `HADR_MAX_TOKENS_TOTAL` | Hard caps on the agent loop, enforced in code |
 | `HADR_FAKE_MODEL` | Path to a recorded transcript — replays the agent loop with no key (used by CI) |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | Optional; when set, traces export via OTLP (e.g. to the compose jaeger) |

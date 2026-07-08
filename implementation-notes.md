@@ -122,16 +122,21 @@ and decisions of record in ROADMAP.md). Headlines:
 - check_schema initially rejected ST/EP hazards — ReliefWeb GLIDEs use the
   full GLIDE code list, not just GDACS's seven.
 
+### 2026-07-08 — model decision closed
+
+- User decision: production `HADR_MODEL` is **deepseek-v4-flash-free** (free
+  tier; tool calls + usage verified). The kimi-k2.7-code upgrade path is
+  dropped; revisiting would be a new decision.
+- @claude GitHub app installed; review loop live on PRs #1–#9.
+
 ## Open questions
 
 - Telegram or Slack for the alert webhook, and its credential (user input;
   workflow reads optional `HADR_ALERT_WEBHOOK` secret, skips if absent).
 - `ISSUE_PAT` secret (fine-grained, issues:write) needed for the failure
   issue's @claude mention to actually trigger the app (user action).
-- @claude GitHub app not installed on this repo — PR review loop inactive
-  (user action: /install-github-app).
-- OpenCode Go workspace balance needed before `kimi-k2.7-code` can be the
-  production model (user action; free model works meanwhile).
+- GitHub Pages enablement (Settings → Pages → Source: GitHub Actions) —
+  left to the user; the heartbeat's deploy step no-ops meaningfully until then.
 - ReliefWeb appname request must be filed by the user (form + email approval):
   https://apidoc.reliefweb.int/parameters#appname — do this early, approval takes time.
 
