@@ -291,3 +291,21 @@ Declined with rationale (replied on the PRs):
   hazards; memory.py and dedup.py handle TC/VO revisions as rigorously as quake
   magnitude changes. Holdout fixtures with multi-hazard escalations now testable.
 - Checkers: all 6 green; schema still validates 30 events; test count 49 (was 47).
+
+### 2026-07-08 — overnight iteration 4: flood escalation sequences for completeness
+
+- **Completed multi-hazard escalation coverage** by adding FL (flood) escalation to
+  the day2_multihazard fixture. Previously only TC and VO escalated Orange->Red;
+  now all three major GDACS multi-hazard types (EQ/TC/FL/VO) have escalation testing.
+- **Fixture changes** (`tests/fixtures/day2_multihazard/`):
+  - GDACS FL event: escalated from Orange (severity 2.0) to Red (severity 3.5)
+    with updated timestamp and impact wording
+  - ReliefWeb FL event: updated with more severe impact description (4.8M affected,
+    disease outbreaks, resource shortages) to match escalation
+- **Test added** (+1 total, 50 total):
+  - `test_flood_escalation_from_orange_to_red`: verifies FL escalation detection
+    when severity magnitude increases, matching TC/VO test pattern
+- Impact: goal.md's "more revision and escalation sequences" for non-EQ hazards
+  now fully satisfied; holdout fixtures with flood escalations will now be testable
+  on this general pattern (severity increase + alert change detection).
+- Checkers: all 6 green; schema still validates 30 events; test count 50 (was 49).

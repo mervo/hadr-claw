@@ -169,3 +169,17 @@ def test_volcano_escalation_from_orange_to_red():
     assert "Major eruption" in vo[0].severity.get("text", ""), "Volcano intensity info preserved"
 
 
+def test_flood_escalation_from_orange_to_red():
+    """Verify FL escalation is detected: Orange -> Red with severity increase"""
+    state = memory.load("/nonexistent")
+    memory.diff(state, _multihazard_day1(), now=NOW)
+
+    changes = memory.diff(state, _multihazard_day2(), now=NOW)
+
+    fl = [e for e in changes.escalated if e.hazard == "FL"]
+    assert len(fl) == 1, "FL should escalate from Orange to Red"
+    assert fl[0].uid == "glide:FL-2026-000102-BGD"
+    assert fl[0].severity.get("gdacs_alert") == "Red"
+    assert "3.5" in fl[0].severity.get("text", ""), "Flood severity increased"
+
+
