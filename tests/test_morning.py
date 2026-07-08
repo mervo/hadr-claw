@@ -30,7 +30,7 @@ def test_agentic_replay_produces_assessed_report(session, monkeypatch):
     assert record["engine"] == "agentic"
     html = out.read_text()
     assert 'class="assess"' in html
-    assert 'class="lead"' in html
+    assert 'class="panel lead"' in html, "the situation panel carries the model lead"
     assert "Data as of" in html
 
 
