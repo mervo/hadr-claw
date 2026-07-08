@@ -5,260 +5,256 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HADR Situation Report</title>
 <style>
-  :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
-  body { margin: 0 auto; max-width: 60rem; padding: 1rem; line-height: 1.45; }
-  header h1 { margin-bottom: 0.2rem; }
-  .stamp { color: #666; }
-  .ops { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.8rem 0 1.2rem;
-         font-size: 0.85rem; }
-  .chip { border-radius: 1rem; padding: 0.15rem 0.7rem; background: #e8e8e8; color: #222; }
-  .chip.ok { background: #d3f0d3; }
-  .chip.bad { background: #f6d3d3; }
-  .card { border: 1px solid #ccc; border-radius: 0.5rem; padding: 0.7rem 1rem;
-          margin-bottom: 0.8rem; }
-  .card h2 { margin: 0 0 0.3rem; font-size: 1.05rem; }
-  .mag { display: inline-block; min-width: 2.6rem; text-align: center; font-weight: bold;
-         border-radius: 0.4rem; padding: 0.1rem 0.4rem; margin-right: 0.5rem;
-         background: #ffd9a0; color: #222; }
-  .alert { display: inline-block; font-weight: bold; border-radius: 0.4rem;
-           padding: 0.1rem 0.5rem; margin-right: 0.5rem; color: #fff; }
-  .alert.Red { background: #c62828; } .alert.Orange { background: #ef6c00; }
-  .alert.Green { background: #2e7d32; }
-  .hazard { font-size: 0.75rem; letter-spacing: 0.05em; color: #777; margin-right: 0.5rem; }
-  .meta { font-size: 0.85rem; color: #555; }
-  .banner { background: #fff3cd; color: #533f03; border: 1px solid #e6d9a8;
-            border-radius: 0.5rem; padding: 0.6rem 1rem; margin-bottom: 1rem; }
-  .assess { border-left: 3px solid #999; padding-left: 0.6rem; }
-  .lead p { font-size: 1.05rem; }
-  a { color: inherit; }
+  /* Tokens: light and dark are both selected (not auto-flipped); status colors
+     are fixed across modes and never carry meaning without a text label. */
+  :root {
+    color-scheme: light dark;
+    --surface: #fcfcfb; --surface-2: #ffffff;
+    --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #6e6d68;
+    --border: #e4e3df; --border-strong: #cfcec9;
+    --good: #0ca30c; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
+    --warning-tint: #fdf3dd; --warning-ink: #533f03;
+    --accent: #2a78d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface: #1a1a19; --surface-2: #232322;
+      --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #98978e;
+      --border: #383835; --border-strong: #4a4945;
+      --warning-tint: #33290f; --warning-ink: #f0dfae;
+      --accent: #3987e5;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0 auto; max-width: 60rem; padding: 1.5rem 1.25rem 3rem;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.55; background: var(--surface); color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  header { margin-bottom: 0.5rem; }
+  header h1 { margin: 0 0 0.15rem; font-size: 1.45rem; letter-spacing: -0.01em; }
+  header .sub { margin: 0; color: var(--ink-3); font-size: 0.85rem; }
+  .stamp { color: var(--ink-2); font-size: 0.9rem; margin: 0.35rem 0 0; }
+  .ops { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0 1.5rem;
+         font-size: 0.8rem; }
+  .chip { display: inline-flex; align-items: center; gap: 0.4em;
+          border: 1px solid var(--border); border-radius: 999px;
+          padding: 0.2rem 0.75rem; color: var(--ink-2); background: var(--surface-2); }
+  .chip.ok::before, .chip.bad::before, .alert::before {
+    content: ""; width: 0.55em; height: 0.55em; border-radius: 50%;
+    display: inline-block; flex: none;
+  }
+  .chip.ok::before { background: var(--good); }
+  .chip.bad::before { background: var(--critical); }
+  .chip.bad { color: var(--ink); border-color: var(--border-strong); }
+  main h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.09em;
+            color: var(--ink-3); margin: 1.75rem 0 0.6rem; font-weight: 600; }
+  main h2 .count { color: var(--ink-3); font-weight: 400; }
+  .card { border: 1px solid var(--border); border-radius: 0.6rem;
+          padding: 0.85rem 1.1rem; margin-bottom: 0.7rem; background: var(--surface-2); }
+  .card h3 { margin: 0 0 0.35rem; font-size: 1.02rem; line-height: 1.4;
+             display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  .card .title { font-weight: 650; }
+  .badges { display: inline-flex; gap: 0.4rem; align-items: center; flex: none; }
+  .mag { font-weight: 600; font-size: 0.8rem; border: 1px solid var(--border-strong);
+         border-radius: 0.35rem; padding: 0.05rem 0.45rem; color: var(--ink-2); }
+  .alert { display: inline-flex; align-items: center; gap: 0.35em; font-weight: 600;
+           font-size: 0.8rem; border: 1px solid var(--border-strong);
+           border-radius: 999px; padding: 0.05rem 0.6rem; color: var(--ink); }
+  .alert.Red::before { background: var(--critical); }
+  .alert.Orange::before { background: var(--serious); }
+  .alert.Green::before { background: var(--good); }
+  .hazard { font-size: 0.72rem; letter-spacing: 0.08em; color: var(--ink-3);
+            border: 1px solid var(--border); border-radius: 0.3rem;
+            padding: 0.05rem 0.35rem; flex: none; }
+  .meta { font-size: 0.82rem; color: var(--ink-2); margin: 0 0 0.2rem; }
+  .meta a { color: var(--accent); text-decoration: none; }
+  .meta a:hover { text-decoration: underline; }
+  .card p { margin: 0.45rem 0 0; font-size: 0.92rem; color: var(--ink-2); }
+  .banner { background: var(--warning-tint); color: var(--warning-ink);
+            border: 1px solid var(--warning); border-left-width: 4px;
+            border-radius: 0.5rem; padding: 0.65rem 1rem; margin: 0 0 0.8rem;
+            font-size: 0.92rem; }
+  .assess { border-left: 3px solid var(--accent); padding: 0.1rem 0 0.1rem 0.75rem;
+            color: var(--ink); }
+  .assess .priority { font-size: 0.7rem; text-transform: uppercase;
+                      letter-spacing: 0.08em; font-weight: 700; color: var(--ink-3);
+                      margin-right: 0.5em; }
+  .lead { border: 1px solid var(--border); border-radius: 0.6rem;
+          background: var(--surface-2); padding: 1rem 1.25rem; margin: 0 0 0.6rem; }
+  .lead h2 { margin: 0 0 0.4rem; font-size: 1.15rem; line-height: 1.4; }
+  .lead p { margin: 0; font-size: 0.98rem; color: var(--ink-2); }
+  .quiet { font-size: 1rem; }
+  footer { margin-top: 2.5rem; padding-top: 0.8rem; border-top: 1px solid var(--border);
+           font-size: 0.78rem; color: var(--ink-3); }
+  footer a { color: inherit; }
 </style>
 </head>
 <body>
 <header>
   <h1>HADR Situation Report</h1>
-  <p class="stamp">Data as of 2026-07-08 05:25 UTC / 2026-07-08 13:25 SGT</p>
+  <p class="sub">Global watch floor · USGS · GDACS · ReliefWeb</p>
+  <p class="stamp">Data as of 2026-07-08 07:14 UTC / 2026-07-08 15:14 SGT</p>
 </header>
-<div class="ops"><span class="chip ok">gdacs: ok · 1216 ms</span>
-<span class="chip ok">reliefweb: ok · 226 ms</span>
-<span class="chip ok">usgs: ok · 127 ms</span>
-<span class="chip">42 significant event(s)</span>
-<span class="chip">1 new, 0 escalated, 1 updated, 0 deleted</span></div>
+<div class="ops"><span class="chip ok">gdacs: ok · 1496 ms</span>
+<span class="chip ok">reliefweb: ok · 299 ms</span>
+<span class="chip ok">usgs: ok · 85 ms</span>
+<span class="chip">24 significant event(s)</span>
+<span class="chip">2 new, 0 escalated, 1 updated, 0 deleted</span></div>
 
-<div class="lead"><h2>Two low-severity earthquakes recorded in the North Atlantic – Jan Mayen Island Region and Reykjanes Ridge</h2><p>Two green-alert earthquakes occurred in remote North Atlantic areas over the past 24 hours. A magnitude 4.7 event struck the Jan Mayen Island Region on 8 July, and a magnitude 5.0 event shook the Reykjanes Ridge on 7 July. Neither event triggered a tsunami warning, and given the isolated locations, direct humanitarian impact is expected to be minimal.</p></div>
+<div class="lead"><h2>Orange-level forest fires in Portugal; minor earthquakes in Peru and Reykjanes Ridge</h2><p>Two new events and one updated event since last report. The highest priority is the forest fire in Portugal (Orange alert, ~19,670 ha affected). Two Green-alert earthquakes occurred: a M4.7 in Peru and a M5.3 (updated) in the remote Reykjanes Ridge. Neither earthquake is expected to require humanitarian response.</p></div>
 <main>
-<h2>New</h2>
+<h2>New <span class="count">· 2</span></h2>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.7</span>Earthquake in Jan Mayen Island Region</h2>
-  <p class="meta">2026-07-08T04:21:46Z · lat 71.12, lon -7.13 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550718&amp;episodeid=1716915&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tauv">usgs</a></p>
-  <p class="assess"><strong>low</strong> — A magnitude 4.7 earthquake at 10 km depth occurred in the remote Jan Mayen Island Region on 8 July 2026. GDACS issued a Green alert (alert score 1); no tsunami was generated. The area is sparsely populated with no significant infrastructure, so no humanitarian impact is expected.</p>
+  <h3><span class="badges"><span class="hazard">WF</span><span class="alert Orange">Orange</span></span>
+      <span class="title">Forest fires in Portugal</span></h3>
+  <p class="meta">2026-07-02T00:00:00Z · lat 40.62, lon -8.28 · <a href="https://www.gdacs.org/report.aspx?eventid=1029260&amp;episodeid=11&amp;eventtype=WF">gdacs</a></p>
+  <p class="assess"><span class="priority">high</span>A forest fire in Portugal has burned approximately 19,670 hectares and carries a GDACS Orange impact alert. The fire started on 2 July 2026 and is likely affecting rural communities and ecosystems across the burned area.</p>
 </div>
-<h2>Updated</h2>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.0</span>Earthquake in Reykjanes Ridge</h2>
-  <p class="meta">2026-07-07T05:00:43Z · lat 59.46, lon -30.25 · <a href="https://www.gdacs.org/report.aspx?eventid=1550554&amp;episodeid=1716731&amp;eventtype=EQ">gdacs</a></p>
-  <p class="assess"><strong>low</strong> — A magnitude 5.0 earthquake at 10 km depth struck the Reykjanes Ridge on 7 July 2026. GDACS rated it Green (alert score 1). This seismically active oceanic ridge is uninhabited, therefore no affected population or damage is anticipated.</p>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.7</span></span>
+      <span class="title">Earthquake in Peru</span></h3>
+  <p class="meta">2026-07-08T05:00:32Z · lat -10.71, lon -74.79 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550728&amp;episodeid=1716944&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tauz">usgs</a></p>
+  <p class="assess"><span class="priority">low</span>A magnitude 4.7 earthquake struck Peru at 05:00 UTC on 8 July 2026 at a depth of 10 km. GDACS issued a Green alert with a low alert score, suggesting limited or no humanitarian impact.</p>
 </div>
-<h2>Ongoing</h2>
+<h2>Updated <span class="count">· 1</span></h2>
 <div class="card">
-  <h2><span class="hazard">TC</span><span class="alert Red">Red</span>Tropical Cyclone BAVI-26</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.3</span></span>
+      <span class="title">Earthquake in Reykjanes Ridge</span></h3>
+  <p class="meta">2026-07-07T05:55:40Z · lat 59.51, lon -30.25 · <a href="https://www.gdacs.org/report.aspx?eventid=1550559&amp;episodeid=1716735&amp;eventtype=EQ">gdacs</a></p>
+  <p class="assess"><span class="priority">low</span>An updated event: a magnitude 5.3 earthquake occurred in the Reykjanes Ridge on 7 July 2026 at 05:55 UTC, depth 10 km. The GDACS Green alert indicates this remote offshore earthquake poses little to no threat to populated areas.</p>
+</div>
+<h2>Ongoing <span class="count">· 21</span></h2>
+<div class="card">
+  <h3><span class="badges"><span class="hazard">TC</span><span class="alert Red">Red</span></span>
+      <span class="title">Tropical Cyclone BAVI-26</span></h3>
   <p class="meta">2026-07-01T00:00:00Z · lat 16.90, lon 134.10 · <a href="https://www.gdacs.org/report.aspx?eventid=1001279&amp;episodeid=29&amp;eventtype=TC">gdacs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">FL</span><span class="alert Orange">Orange</span>Flood in China</h2>
+  <h3><span class="badges"><span class="hazard">FL</span><span class="alert Orange">Orange</span></span>
+      <span class="title">Flood in China</span></h3>
   <p class="meta">2026-06-06T01:00:00Z · lat 27.12, lon 111.03 · <a href="https://www.gdacs.org/report.aspx?eventid=1103933&amp;episodeid=17&amp;eventtype=FL">gdacs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">WF</span><span class="alert Orange">Orange</span>Forest fires in France</h2>
+  <h3><span class="badges"><span class="hazard">WF</span><span class="alert Orange">Orange</span></span>
+      <span class="title">Forest fires in France</span></h3>
   <p class="meta">2026-07-04T00:00:00Z · lat 42.67, lon 2.57 · <a href="https://www.gdacs.org/report.aspx?eventid=1029331&amp;episodeid=6&amp;eventtype=WF">gdacs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.8</span>Earthquake in Chile</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.8</span></span>
+      <span class="title">Earthquake in Chile</span></h3>
   <p class="meta">2026-07-07T01:26:45Z · lat -57.33, lon -66.76 · <a href="https://www.gdacs.org/report.aspx?eventid=1550528&amp;episodeid=1716719&amp;eventtype=EQ">gdacs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.4</span>Earthquake in Indonesia</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.4</span></span>
+      <span class="title">Earthquake in Indonesia</span></h3>
   <p class="meta">2026-07-07T07:16:26Z · lat 3.12, lon 127.56 · depth 37 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550568&amp;episodeid=1716745&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000talg">usgs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.3</span>Earthquake in Reykjanes Ridge</h2>
-  <p class="meta">2026-07-07T05:55:40Z · lat 59.51, lon -30.25 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550559&amp;episodeid=1716735&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tal2">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.3</span>Earthquake in Costa Rica</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.3</span></span>
+      <span class="title">Earthquake in Costa Rica</span></h3>
   <p class="meta">2026-07-07T18:11:32Z · lat 9.86, lon -84.60 · depth 48 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550639&amp;episodeid=1716823&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tarc">usgs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.3</span>Earthquake in Indonesia</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.3</span></span>
+      <span class="title">Earthquake in Indonesia</span></h3>
   <p class="meta">2026-07-07T19:44:52Z · lat -6.77, lon 105.06 · depth 35 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550650&amp;episodeid=1716837&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tary">usgs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.0</span>Earthquake in Reykjanes Ridge</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.0</span></span>
+      <span class="title">Earthquake in Reykjanes Ridge</span></h3>
+  <p class="meta">2026-07-07T05:00:43Z · lat 59.46, lon -30.25 · <a href="https://www.gdacs.org/report.aspx?eventid=1550554&amp;episodeid=1716731&amp;eventtype=EQ">gdacs</a></p>
+  
+</div>
+<div class="card">
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.0</span></span>
+      <span class="title">Earthquake in Reykjanes Ridge</span></h3>
   <p class="meta">2026-07-07T08:30:56Z · lat 59.48, lon -30.37 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550574&amp;episodeid=1716751&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000talm">usgs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.0</span>Earthquake in China</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.0</span></span>
+      <span class="title">Earthquake in China</span></h3>
   <p class="meta">2026-07-08T02:08:48Z · lat 28.59, lon 104.75 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550709&amp;episodeid=1716905&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000taui">usgs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.9</span>Earthquake in Drake Passage</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.9</span></span>
+      <span class="title">Earthquake in Drake Passage</span></h3>
   <p class="meta">2026-07-07T17:39:56Z · lat -57.35, lon -66.82 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550638&amp;episodeid=1716821&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tar3">usgs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.9</span>Earthquake in New Zealand</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.9</span></span>
+      <span class="title">Earthquake in New Zealand</span></h3>
   <p class="meta">2026-07-07T20:33:15Z · lat -37.22, lon 177.43 · depth 121 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550654&amp;episodeid=1716843&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tasa">usgs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.9</span>Earthquake in Tajikistan</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.9</span></span>
+      <span class="title">Earthquake in Tajikistan</span></h3>
   <p class="meta">2026-07-07T22:42:39Z · lat 39.15, lon 71.74 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550675&amp;episodeid=1716888&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tatn">usgs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.7</span>Earthquake in British Virgin Is.</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.7</span></span>
+      <span class="title">Earthquake in British Virgin Is.</span></h3>
   <p class="meta">2026-07-07T17:25:35Z · lat 19.64, lon -64.48 · <a href="https://www.gdacs.org/report.aspx?eventid=1550633&amp;episodeid=1716813&amp;eventtype=EQ">gdacs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.6</span>Earthquake in China</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.7</span></span>
+      <span class="title">Earthquake in Jan Mayen Island Region</span></h3>
+  <p class="meta">2026-07-08T04:21:46Z · lat 71.12, lon -7.13 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550718&amp;episodeid=1716915&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tauv">usgs</a></p>
+  
+</div>
+<div class="card">
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.6</span></span>
+      <span class="title">Earthquake in China</span></h3>
   <p class="meta">2026-07-07T22:22:13Z · lat 28.66, lon 104.71 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550674&amp;episodeid=1716865&amp;eventtype=EQ">gdacs</a> · <a href="https://www.gdacs.org/report.aspx?eventid=1550669&amp;episodeid=1716860&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tati">usgs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tatd">usgs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.6</span>Earthquake in Northern Molucca Sea</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.6</span></span>
+      <span class="title">Earthquake in Northern Molucca Sea</span></h3>
   <p class="meta">2026-07-07T23:35:51Z · lat 1.40, lon 126.36 · depth 49 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550684&amp;episodeid=1716889&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tau8">usgs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.5</span>Earthquake in Venezuela</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.5</span></span>
+      <span class="title">Earthquake in Venezuela</span></h3>
   <p class="meta">2026-07-07T08:41:37Z · lat 10.73, lon -62.58 · depth 127 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550582&amp;episodeid=1716761&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000talr">usgs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.5</span>Earthquake in Indonesia</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.5</span></span>
+      <span class="title">Earthquake in Indonesia</span></h3>
   <p class="meta">2026-07-07T14:21:22Z · lat 3.11, lon 127.29 · depth 35 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550615&amp;episodeid=1716796&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tant">usgs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.5</span>Earthquake in United States</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.5</span></span>
+      <span class="title">Earthquake in United States</span></h3>
   <p class="meta">2026-07-07T18:07:41Z · lat 52.57, lon -176.28 · depth 172 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550648&amp;episodeid=1716833&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tara">usgs</a></p>
   
 </div>
 <div class="card">
-  <h2><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.5</span>Earthquake in Philippines</h2>
+  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.5</span></span>
+      <span class="title">Earthquake in Philippines</span></h3>
   <p class="meta">2026-07-07T20:37:40Z · lat 13.77, lon 120.66 · depth 155 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550657&amp;episodeid=1716846&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tase">usgs</a></p>
   
 </div>
-<div class="card">
-  <h2><span class="hazard">FL</span>Ethiopia: Floods and Landslides - Mar 2026</h2>
-  <p class="meta">2026-03-10T00:00:00Z · Ethiopia · <a href="https://reliefweb.int/disaster/fl-2026-000033-eth">reliefweb</a></p>
-  <p>Torrential rains in the Gammo Zone in South Ethiopia Regional State caused flooding and landslides on 10 March 2026, affecting 11 villages, claiming at least 96 lives, and destroying property in 780 households. Altogether, around 1,950 households were affected, and all villages reported displaced populations, now sheltering in churches and public spaces. The worst-hit areas were Mazo Doisa, Kuyile, and Laka. Accessibility remains difficult, with several roads remaining blocked. The Ethiopian Red Cross Society deployed staff, volunteers, and ambulances to address the most urgent needs which inc</p>
-</div>
-<div class="card">
-  <h2><span class="hazard">EP</span>Bangladesh: Measles Outbreak - Mar 2026</h2>
-  <p class="meta">2026-03-15T00:00:00Z · Bangladesh · <a href="https://reliefweb.int/disaster/ep-2026-000048-bgd">reliefweb</a></p>
-  <p>The Bangladesh Directorate General of Health Services (DGHS) reported that 118 children have died across the country since March 15 with suspected measles. During the same period, 5,940 children were hospitalised with measles symptoms, of whom 1,099 were further positively confirmed. Bangladesh launched an emergency measles-rubella campaign on April 5 with UNICEF, WHO and GAVI, to protect over 1.2 million children in 30 upazilas (sub-district administrative units). IFRC is facilitating the mobilisation of community volunteers for emergency vaccination campaign. The Dhaka Division has recorded </p>
-</div>
-<div class="card">
-  <h2><span class="hazard">FL</span>Botswana: Floods - Mar 2026</h2>
-  <p class="meta">2026-03-15T00:00:00Z · Botswana · <a href="https://reliefweb.int/disaster/fl-2026-000046-bwa">reliefweb</a></p>
-  <p>Between 15 and 19 March 2026, severe flooding affected multiple areas of the Palapye Sub District in the Central District, including Majwaneng, Lerala, Seolwane, Mokokwana, Mosweu, Maunatlala, Martins Drift and surrounding farming areas. […] By 20 March, findings confirmed a surge in needs and vulnerabilities, with 7,829 people affected across districts. The assessment highlighted urgent support requirements in Central/Palapye District, where over 2,335 households (7,707 individuals) suffered shelter damage, loss of household items, and displacement. ( IFRC, 3 Apr 2026 )</p>
-</div>
-<div class="card">
-  <h2><span class="hazard">FR</span>Guinea-Bissau: Fire - Mar 2026</h2>
-  <p class="meta">2026-03-24T00:00:00Z · Guinea-Bissau · <a href="https://reliefweb.int/disaster/fr-2026-000055-gnb">reliefweb</a></p>
-  <p>On March 24th , 2026, a large fire devastated the village of TUCUNDE, CARAVELA Sector, Bolama /Bijagós Region, Caravela Island is the northernmost island of the Bijagós Archipelago, located in the administrative region of Bolama, in Guinea-Bissau. Located in the Atlantic Ocean, approximately 37 km from the mainland coast, it is part of the Caravela Sector, with 128 km² and a landscape of dense forests, mangroves and beaches, with an airport (GGCV). It caused the total destruction of twenty-three (23) houses, belonging to sixty seven (67) households, with around 469 people directly affected. ( </p>
-</div>
-<div class="card">
-  <h2><span class="hazard">VW</span>Liberia: Windstorms - Mar 2026</h2>
-  <p class="meta">2026-03-24T00:00:00Z · Liberia · <a href="https://reliefweb.int/disaster/vw-2026-000054-lbr">reliefweb</a></p>
-  <p>Between 19 and 24 March 2026, violent windstorms struck multiple communities in Nimba and Lofa Counties, Liberia, causing widespread damage to fragile housing and displacing numerous families. The storms affected 11 communities, six in Nimba County and five in Lofa County, leaving households exposed to harsh weather and without essential belongings. A total of 3,704 people (approximately 529 households) were directly affected, including 1,685 men and 2,019 women. Assessments indicate 213 houses were damaged, with 139 partially destroyed and 74 completely destroyed, forcing families to rely on </p>
-</div>
-<div class="card">
-  <h2><span class="hazard">FR</span>Liberia: Fires - Mar 2026</h2>
-  <p class="meta">2026-03-24T00:00:00Z · Liberia · <a href="https://reliefweb.int/disaster/fr-2026-000052-lbr">reliefweb</a></p>
-  <p>Between 24 and 28 March 2026, Liberia experienced a series of widespread fire outbreaks across five counties: Grand Cape Mount, River Cess, Margibi, Nimba, and Montserrado resulting in severe humanitarian challenges for affected families and communities. In total, 234 households, representing 1643 people, were impacted. The fires destroyed 61 houses, of which 41 were completely destroyed and 20 were partially damaged. As a result, many families were displaced and lost essential belongings, including clothing, bedding, and cooking utensils. Beyond the immediate physical destruction, the inciden</p>
-</div>
-<div class="card">
-  <h2><span class="hazard">FL</span>Tanzania: Floods and Landslides - Mar 2026</h2>
-  <p class="meta">2026-03-25T00:00:00Z · United Republic of Tanzania · <a href="https://reliefweb.int/disaster/fl-2026-000063-tza">reliefweb</a></p>
-  <p>In late March 2026, prolonged and intense rainfall associated with the March–May rainy season caused severe flooding and landslides in the Mbeya Region, located in Tanzania’s Southern Highlands. The most affected area was Rungwe District, where continuous heavy rains saturated the soil, triggering multiple landslides and flash floods. The disaster occurred primarily between the evening of 25 March and the early hours of 26 March 2026, with heavy rainfall reported for several consecutive hours. According to local authorities and media reports, the rains were accompanied by strong winds, signifi</p>
-</div>
-<div class="card">
-  <h2><span class="hazard">FF</span>Afghanistan: Floods - Mar 2026</h2>
-  <p class="meta">2026-03-25T00:00:00Z · Afghanistan · <a href="https://reliefweb.int/disaster/ff-2026-000043-afg">reliefweb</a></p>
-  <p>Since 25 March, multiple provinces of Afghanistan have been affected by heavy rains and resultant floods. The most affected provinces include Parwan, Maidan Wardak, Daikundi, Logar, Herat, Farah, Badghis, Ghor, Samangan, Sar-e Pol, Jawzjan, Faryab, and Laghman. As of 31 March, media reported 42 fatalities and 66 people injured. A total of 1,130 families are affected. 130 houses were destroyed, and more than 900 houses were damaged. Livestock perished, and roads, irrigation canals as well as agricultural land has been destroyed. ( ECHO, 1 Apr 2026 ) Since 26 March, heavy rainfall and flash floo</p>
-</div>
-<div class="card">
-  <h2><span class="hazard">FL</span>Yemen: Floods - Mar 2026</h2>
-  <p class="meta">2026-03-27T00:00:00Z · Yemen · <a href="https://reliefweb.int/disaster/fl-2026-000044-yem">reliefweb</a></p>
-  <p>[...] The rainy season in Yemen began earlier than usual, with initial low-intensity rainfall recorded starting from 20 March 2026. From 27 March 2026 onwards, rainfall intensified significantly, triggering severe flooding across Yemen and approximately more than ten governorates were affected, including Taiz (Al-Mokha), Al Jawf, Ibb, Abyan, Al Bayda, Lahj, Marib, Al Hodeidah, Hadramout, Aden, and Al Dhale’e. According to Yemen Red Crescent Society (YRCS) reports, the floods have caused widespread humanitarian impacts, affecting an estimated 83,713 people (11,959 households). Of those affected</p>
-</div>
-<div class="card">
-  <h2><span class="hazard">TC</span>Tropical Cyclone Vaianu - Apr 2026</h2>
-  <p class="meta">2026-04-06T00:00:00Z · Fiji · <a href="https://reliefweb.int/disaster/tc-2026-000053-fji">reliefweb</a></p>
-  <p>Tropical Cyclone Vaianu affected Fiji between 7 and 8 April 2026, bringing heavy rainfall, strong winds, and widespread flooding. The system primarily impacted the Western Division, parts of Viti Levu, and maritime island communities. According to the National Emergency Operations Centre (NEOC) as of 8 April 2026, a total of 2,182 people (506 households) were displaced across 60 evacuation centers nationwide. The majority were located in the Western Division (1,796 people), followed by the Eastern (292 people), Northern (74 people), and Central Divisions (20 people). One fatality had been repo</p>
-</div>
-<div class="card">
-  <h2><span class="hazard">TC</span>Tropical Cyclone Maila - Apr 2026</h2>
-  <p class="meta">2026-04-06T00:00:00Z · Australia, Papua New Guinea, Solomon Islands · <a href="https://reliefweb.int/disaster/tc-2026-000051-slb">reliefweb</a></p>
-  <p>Tropical Cyclone Maila intensified to a Category 3 system on 6 April in the Solomon Sea between Papua New Guinea and the Solomon Islands, with winds up to 185 km/h. The cyclone remains slow-moving with an uncertain track, increasing the risk of prolonged exposure. ( ECHO, 6 Apr 2026 ) On 6 April, tropical cyclone MAILA continued moving very slowly over the Solomon Sea, with maximum sustained winds up to 176 km/h. On 7 April at 0.00 UTC, its centre was located offshore, approximately 545 km east of far south-eastern Papua New Guinea, with maximum sustained winds of 167 km/h (equivalent to cat. </p>
-</div>
-<div class="card">
-  <h2><span class="hazard">FL</span>Dominican Republic: Floods - Apr 2026</h2>
-  <p class="meta">2026-04-07T00:00:00Z · Dominican Republic · <a href="https://reliefweb.int/disaster/fl-2026-000087-dom">reliefweb</a></p>
-  <p>Since 7 April 2026, a trough system has been affecting the Dominican Republic, generating intense rainfall and prolonged atmospheric instability across the national territory. As a result, the National Emergency Operations Centre (Centro de Operaciones de Emergencias - COE) issued alerts for 28 provinces (4 on red alert, 17 on yellow alert, and 7 on green alert) due to the risk of urban and flash flooding (COE, Situation Reports, latest update 16 April 2026). The situation reached a critical point on 12 April 2026, resulting in 10 reported fatalities. In response, the Government declared a Sta</p>
-</div>
-<div class="card">
-  <h2><span class="hazard">TC</span>Typhoon Sinlaku - Apr 2026</h2>
-  <p class="meta">2026-04-09T00:00:00Z · Guam, Micronesia (Federated States of), Northern Mariana Islands (The United States of America) · <a href="https://reliefweb.int/disaster/tc-2026-000050-fsm">reliefweb</a></p>
-  <p>A tropical cyclone named Sinlaku formed over the western North Pacific Ocean on 9 April and started moving north-west toward Guam and the far southern Northern Mariana Islands as a tropical storm. On 10 April at 0.00 UTC its centre was located over the ocean approximately 885 km south-east of Guam, with maximum sustained winds of 74 km/h. ( ECHO, 10 Apr 2026 ) Over 11-12 April, Tropical Cyclone Sinlaku continued moving north-west over the western North Pacific Ocean toward the Northern Mariana Islands and Guam, further strengthening. On 13 April at 00:00 UTC, its centre was located over the oc</p>
-</div>
-<div class="card">
-  <h2><span class="hazard">EP</span>Sri Lanka: Dengue Outbreak - May 2026</h2>
-  <p class="meta">2026-05-01T00:00:00Z · Sri Lanka · <a href="https://reliefweb.int/disaster/ep-2026-000085-lka">reliefweb</a></p>
-  <p>Dengue cases have been on the rise in the country since the beginning of the year. Following a massive seasonal surge triggered by heavy rains in mid-May 2026, the epidemic trajectory accelerated significantly. Driven by the onset of the southwest monsoon and severe local flooding, the island-wide total quickly advanced from 25,082 cases in early May to more than 35,000 cases by the first week of June, marking an approximate 30% increase compared to the corresponding period of the previous year (as noted by reports via Dengue Visual Atlas). A higher number of cases is recorded in the Western, </p>
-</div>
-<div class="card">
-  <h2><span class="hazard">EP</span>DR Congo/Uganda: Ebola Outbreak - May 2026</h2>
-  <p class="meta">2026-05-05T00:00:00Z · Democratic Republic of the Congo, Uganda · <a href="https://reliefweb.int/disaster/ep-2026-000071-cod">reliefweb</a></p>
-  <p>On 5 May 2026, the World Health Organization (WHO) was alerted of a high-mortality outbreak of unknown illness in Mongbwalu Health Zone, Ituri Province, including deaths among health workers. Laboratory analysis confirmed Bundibugyo virus disease (BVD), a species of Ebola, in eight samples on 15 May. The case fatality rates in the past two BVD outbreaks have ranged from 30% to 50%. Unlike Ebola virus disease, there is no licensed vaccine or specific therapeutics against Bundibugyo virus, though early supportive care is lifesaving. On 15 May 2026, the Ministry of Public Health, Hygiene and Soci</p>
-</div>
-<div class="card">
-  <h2><span class="hazard">FL</span>Syria: Floods - May 2026</h2>
-  <p class="meta">2026-05-20T00:00:00Z · Syrian Arab Republic · <a href="https://reliefweb.int/disaster/fl-2026-000080-syr">reliefweb</a></p>
-  <p>In late May 2026, the Euphrates River experienced severe flooding, expanding to three times its normal size, from 60.9 km² to 188.7 km², following exceptional upstream rainfall and large‑scale dam water releases. The flood inundated 7,210 hectares of agricultural land, equivalent to 8.2% of all cultivated land in Deir‑ez‑Zor Governorate, at a critical time during the wheat harvest period. ( WFP, 3 Jun 2026 ) Since mid-May 2026, Syria has experienced severe flooding and rapidly rising water levels along the Euphrates River following a sharp increase in water inflow from upstream areas in Türkiy</p>
-</div>
-<div class="card">
-  <h2><span class="hazard">ST</span>Armenia: Hailstorm - Jun 2026</h2>
-  <p class="meta">2026-06-06T00:00:00Z · Armenia · <a href="https://reliefweb.int/disaster/st-2026-000086-arm">reliefweb</a></p>
-  <p>On 6 June 2026, at approximately 12:56 PM, a severe hailstorm struck the Stepanavan community and surrounding areas in Lori Region, northern Armenia. The hailstorm lasted approximately 15-20 minutes and was accompanied by exceptionally large hailstones, reportedly measuring between 4 and 6 centimetres in diameter. The intensity of the storm caused widespread damage to residential buildings, particularly roofs and windows, leaving many households exposed to weather conditions and subsequent rainfall. Significant damage was also reported to agricultural land, greenhouses, vehicles, public infras</p>
-</div>
-<div class="card">
-  <h2><span class="hazard">EQ</span>Philippines: Earthquake and Tsunami - Jun 2026</h2>
-  <p class="meta">2026-06-08T00:00:00Z · Indonesia, Philippines · <a href="https://reliefweb.int/disaster/eq-2026-000083-phl">reliefweb</a></p>
-  <p>A magnitude 7.8 earthquake struck 32 km offshore west of Maasim, Sarangani, at 7:37 a.m. on 08 June. Intensity VIII (very destructive) was reported in General Santos City. A tsunami alert triggered coastal evacuations across nine provinces and was lifted by mid-afternoon. More than 138 aftershocks have been recorded. Initial reports indicate 19 people dead, 12 missing and 134 injured. Figures for affected and displaced people remain provisional pending government validation and ongoing assessments. Homes, government buildings, hospitals and schools have been damaged or destroyed. Power and tel</p>
-</div>
-<div class="card">
-  <h2><span class="hazard">EQ</span>Venezuela: Earthquakes - Jun 2026</h2>
-  <p class="meta">2026-06-24T00:00:00Z · Venezuela (Bolivarian Republic of) · <a href="https://reliefweb.int/disaster/eq-2026-000093-ven">reliefweb</a></p>
-  <p>On 24 June 2026, two strong earthquakes, preliminarily measured at magnitudes 7.1 and 7.5, struck north-central Venezuela in rapid succession, with epicentres near Morón, Carabobo State. The earthquakes were felt across much of the country, including Caracas, La Guaira, Aragua, Carabobo and neighbouring states. Therefore, the national government of Venezuela declared the state of emergency. Preliminary information indicates damage to residential and commercial buildings, with reports of structural collapses in parts of Caracas and damage to infrastructure in several affected areas. Search and </p>
-</div>
-<div class="card">
-  <h2><span class="hazard">FL</span>Georgia: Floods - Jun 2026</h2>
-  <p class="meta">2026-06-27T00:00:00Z · Georgia · <a href="https://reliefweb.int/disaster/fl-2026-000106-geo">reliefweb</a></p>
-  <p>On 27–29 June 2026, heavy and persistent rainfall struck the Samegrelo-Zemo Svaneti, Kakheti Regions in Western Georgia, severely impacting Senaki, Chkhorotsku municipalities and Akhmeta municipality in Eastern over the following days. The continuous rainfall, which began on 27 June at approximately 03:00 AM, led to rising water levels and widespread flooding across multiple communities. Five villages in Senaki Municipality, (Eki, Zana, Dzvelisopeli, Nosiri, and Teklati), as well as areas of Senaki town, experienced significant flooding. Similarly, in Chkhorotsku Municipality, 13 administrativ</p>
-</div>
 </main>
+<footer>Generated unattended by the
+  <a href="https://github.com/mervo/hadr-claw">hadr-claw</a> agent ·
+  feed health and change counts above reflect this run</footer>
 </body>
 </html>
