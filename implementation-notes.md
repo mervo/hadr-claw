@@ -434,3 +434,22 @@ Declined with rationale (replied on the PRs):
   and adds fixture coverage for alert escalation workflows.
 - Tests: 66 total (was 65); `test_pager_escalation_from_fixtures` green. All 66 pass; checkers all 6 green.
   Lint: clean. No regression.
+
+### 2026-07-08 — overnight iteration 11: briefing prioritizes curated sources
+
+- **Behavioral improvement** to assessment grounding: modified `agent/morning.py:_briefing()` to explicitly
+  prefer ReliefWeb's human-curated summaries when available, rather than taking the first source's summary.
+  ReliefWeb entries are significantly more detailed and factual than auto-generated GDACS prose, and
+  giving the model the richest available context improves assessment quality on cross-feed merged events.
+  - Current behavior: `next((s["summary"] for s in e.sources if s.get("summary")), None)` returns first match
+  - Improved behavior: prioritize `feed=="reliefweb"` source, then fall back to any other source
+  - Rationale: "sharpen assessments...make model prose more factual and grounded in tool results" (goal.md).
+    ReliefWeb's curated summaries provide that grounding; auto-generated feeds are thinner.
+- **Test added** (`test_briefing_prioritizes_reliefweb_summary`):
+  - Creates merged GDACS+ReliefWeb event with curated summary
+  - Verifies briefing extracts and prioritizes the ReliefWeb summary
+  - Regression protection against future feed changes
+- **Impact**: goal.md's "assessments factual" judging axis directly served. Model now receives richest
+  available context for merged events, improving likelihood of factual, well-grounded assessment prose.
+  Holdout fixtures with cross-feed merged events will benefit from this behavior change.
+- Tests: 67 total (was 66); all green. Checkers: all 6 green. Lint: clean. No regression.

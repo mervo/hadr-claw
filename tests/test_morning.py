@@ -3,6 +3,8 @@ import json
 import pytest
 
 from agent import morning, tools
+from hadr.events import Event
+from hadr.memory import Changes
 
 TRANSCRIPT = "tests/fixtures/transcripts/morning.json"
 
@@ -66,3 +68,39 @@ def test_run_record_carries_caps_and_observability_fields(session, monkeypatch):
     transcripts = list((state.parent / "runs").glob("*-transcript.json"))
     assert transcripts, "agentic runs save their transcript"
     assert (session / "spans.jsonl").exists(), "file span exporter wrote traces"
+
+
+def test_briefing_prioritizes_reliefweb_summary():
+    """Verify that the briefing prefers ReliefWeb's curated summary over other sources."""
+    # Create a merged event with both GDACS and ReliefWeb sources
+    merged_event = Event(
+        uid="glide:EQ-2026-000001-IDN",
+        hazard="EQ",
+        title="Earthquake in Indonesia",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=0.5,
+        lon=101.0,
+        severity={"gdacs_alert": "Orange", "mag": 6.5},
+        glide="EQ-2026-000001-IDN",
+        sources=[
+            {"feed": "gdacs", "id": "123456", "ids": ["123456"]},
+            {
+                "feed": "reliefweb",
+                "id": "EQ-2026-000001-IDN",
+                "ids": ["EQ-2026-000001-IDN"],
+                "summary": "Powerful earthquake struck central Indonesia. Significant damage and casualties reported."
+            }
+        ]
+    )
+
+    # Create a Changes object with this event as new
+    changes = Changes(new=[merged_event])
+
+    # Get the briefing (internal function, but we can call it through the module)
+    briefing_text = morning._briefing(changes)
+
+    # Verify ReliefWeb's summary is in the briefing
+    assert "Significant damage and casualties reported" in briefing_text
+    briefing_json = json.loads(briefing_text.split("Morning situation report run. Changes since the last report: ")[1].split("\nAll events")[0])
+    assert briefing_json["new"][0]["summary"] == "Powerful earthquake struck central Indonesia. Significant damage and casualties reported."
