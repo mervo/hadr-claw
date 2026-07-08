@@ -473,3 +473,22 @@ Declined with rationale (replied on the PRs):
   addressed. The model now understands that risk-level *decreases* are also important changes to report, improving
   "severities right" judging axis by ensuring the watch floor sees the full picture of threat evolution.
 - Tests: 68 total (was 67); all green. Checkers: all 6 green. Lint: clean. No regression.
+
+### 2026-07-08 — overnight iteration 13: dedup boundary condition coverage
+
+- **Boundary condition tests for spacetime matching rules** (+6 total, 74 total): holdout fixtures may contain events
+  at the edges of the dedup thresholds. Added explicit tests for:
+  - `test_spacetime_boundary_exactly_100km_merges`: events at exactly 100 km distance should merge
+  - `test_spacetime_boundary_over_100km_does_not_merge`: events 100.1 km apart should not merge
+  - `test_spacetime_boundary_exactly_30min_merges`: events at exactly 30 minutes apart should merge
+  - `test_spacetime_boundary_over_30min_does_not_merge`: events 30m01s apart should not merge
+  - `test_magnitude_boundary_exactly_0_6_difference_merges`: earthquakes 0.6 mag apart should merge
+  - `test_magnitude_boundary_over_0_6_difference_does_not_merge`: earthquakes 0.61 mag apart should not merge
+- **Design rationale**: The dedup rules use hard thresholds (MAX_KM=100, MAX_SECONDS=1800, MAX_MAG_DELTA=0.6).
+  Boundary-condition tests ensure the inclusive/exclusive logic is correct: events AT the boundary should be
+  included (merge), events just past should be excluded (don't merge). Holdout fixtures may have events landing
+  exactly on these thresholds; tests verify consistent behavior.
+- **Impact**: goal.md's "tighten dedup: cross-feed clusters that should merge but don't (or worse, do but shouldn't)"
+  strengthened. Boundary coverage improves "events found" and "duplicates merged" judging axes by ensuring the
+  dedup rules are robust to realistic edge cases.
+- Tests: 74 total (was 68); all green. Checkers: all 6 green. Lint: clean. No regression.

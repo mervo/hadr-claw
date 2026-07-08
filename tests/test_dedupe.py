@@ -160,3 +160,166 @@ def test_two_distinct_quakes_without_magnitude_do_not_merge():
     )
     merged = dedupe.merge([quake1, quake2])
     assert len(merged) == 2, "two quakes without magnitude should not merge via spacetime"
+
+
+def test_spacetime_boundary_exactly_100km_merges():
+    # Events exactly at the 100 km boundary should merge if other conditions match
+    # Two points exactly 100 km apart at the equator (approx)
+    quake1 = Event(
+        uid="usgs:eq001",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=0.0,
+        lon=0.0,
+        severity={"mag": 5.0},
+        sources=[{"feed": "usgs", "id": "eq001", "ids": ["eq001"]}],
+    )
+    quake2 = Event(
+        uid="gdacs:eq002",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=0.898, lon=0.0,  # ~100 km at equator
+        severity={"mag": 5.1},
+        sources=[{"feed": "gdacs", "id": "eq002", "ids": ["eq002"]}],
+    )
+    merged = dedupe.merge([quake1, quake2])
+    assert len(merged) == 1, "events at exactly 100 km should merge via spacetime"
+
+
+def test_spacetime_boundary_over_100km_does_not_merge():
+    # Events just over 100 km should NOT merge
+    quake1 = Event(
+        uid="usgs:eq001",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=0.0,
+        lon=0.0,
+        severity={"mag": 5.0},
+        sources=[{"feed": "usgs", "id": "eq001", "ids": ["eq001"]}],
+    )
+    quake2 = Event(
+        uid="gdacs:eq002",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=0.91, lon=0.0,  # ~101 km at equator
+        severity={"mag": 5.1},
+        sources=[{"feed": "gdacs", "id": "eq002", "ids": ["eq002"]}],
+    )
+    merged = dedupe.merge([quake1, quake2])
+    assert len(merged) == 2, "events over 100 km should not merge via spacetime"
+
+
+def test_spacetime_boundary_exactly_30min_merges():
+    # Events exactly at the 30 minute boundary should merge if other conditions match
+    quake1 = Event(
+        uid="usgs:eq001",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=5.0,
+        lon=120.0,
+        severity={"mag": 5.0},
+        sources=[{"feed": "usgs", "id": "eq001", "ids": ["eq001"]}],
+    )
+    quake2 = Event(
+        uid="gdacs:eq002",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:30:00Z",  # exactly 30 minutes later
+        updated_at="2026-07-08T10:30:00Z",
+        lat=5.1, lon=120.0,  # very close
+        severity={"mag": 5.1},
+        sources=[{"feed": "gdacs", "id": "eq002", "ids": ["eq002"]}],
+    )
+    merged = dedupe.merge([quake1, quake2])
+    assert len(merged) == 1, "events exactly 30 minutes apart should merge via spacetime"
+
+
+def test_spacetime_boundary_over_30min_does_not_merge():
+    # Events just over 30 minutes apart should NOT merge
+    quake1 = Event(
+        uid="usgs:eq001",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=5.0,
+        lon=120.0,
+        severity={"mag": 5.0},
+        sources=[{"feed": "usgs", "id": "eq001", "ids": ["eq001"]}],
+    )
+    quake2 = Event(
+        uid="gdacs:eq002",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:30:01Z",  # 30 minutes 1 second later
+        updated_at="2026-07-08T10:30:01Z",
+        lat=5.1, lon=120.0,
+        severity={"mag": 5.1},
+        sources=[{"feed": "gdacs", "id": "eq002", "ids": ["eq002"]}],
+    )
+    merged = dedupe.merge([quake1, quake2])
+    assert len(merged) == 2, "events over 30 minutes apart should not merge via spacetime"
+
+
+def test_magnitude_boundary_exactly_0_6_difference_merges():
+    # Magnitudes exactly at 0.6 difference should merge
+    quake1 = Event(
+        uid="usgs:eq001",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=5.0,
+        lon=120.0,
+        severity={"mag": 5.0},
+        sources=[{"feed": "usgs", "id": "eq001", "ids": ["eq001"]}],
+    )
+    quake2 = Event(
+        uid="gdacs:eq002",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=5.1, lon=120.0,
+        severity={"mag": 5.6},  # exactly 0.6 different
+        sources=[{"feed": "gdacs", "id": "eq002", "ids": ["eq002"]}],
+    )
+    merged = dedupe.merge([quake1, quake2])
+    assert len(merged) == 1, "events with exactly 0.6 magnitude difference should merge"
+
+
+def test_magnitude_boundary_over_0_6_difference_does_not_merge():
+    # Magnitudes over 0.6 difference should NOT merge
+    quake1 = Event(
+        uid="usgs:eq001",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=5.0,
+        lon=120.0,
+        severity={"mag": 5.0},
+        sources=[{"feed": "usgs", "id": "eq001", "ids": ["eq001"]}],
+    )
+    quake2 = Event(
+        uid="gdacs:eq002",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=5.1, lon=120.0,
+        severity={"mag": 5.61},  # 0.61 different
+        sources=[{"feed": "gdacs", "id": "eq002", "ids": ["eq002"]}],
+    )
+    merged = dedupe.merge([quake1, quake2])
+    assert len(merged) == 2, "events with over 0.6 magnitude difference should not merge"
