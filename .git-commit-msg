@@ -1,0 +1,13 @@
+fix: USGS magnitude takes priority in severity merge during dedup
+
+When a GDACS earthquake merges with USGS data, the combined event kept
+GDACS's potentially older magnitude instead of USGS's authoritative value.
+This caused the watch floor to see stale severity data.
+
+Now USGS magnitude overrides GDACS magnitude when a GDACS-primary event
+merges with USGS data, since USGS is the authoritative earthquake source
+and typically has more frequent magnitude revisions.
+
+Test: test_usgs_magnitude_overrides_gdacs_when_merging validates the fix.
+
+Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>

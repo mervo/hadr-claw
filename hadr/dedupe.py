@@ -74,6 +74,12 @@ def _absorb(primary: Event, other: Event, rule: str) -> None:
     for key, value in other.severity.items():
         if primary.severity.get(key) is None and value is not None:
             primary.severity[key] = value
+        # USGS magnitude takes priority over GDACS magnitude (USGS is authoritative)
+        elif key == "mag" and value is not None and primary.severity.get("mag") is not None:
+            usgs_src = any(s["feed"] == "usgs" for s in other.sources)
+            gdacs_primary = any(s["feed"] == "gdacs" for s in primary.sources)
+            if usgs_src and gdacs_primary:
+                primary.severity["mag"] = value
     primary.glide = primary.glide or other.glide
     primary.country = primary.country or other.country
     primary.iso3 = primary.iso3 or other.iso3

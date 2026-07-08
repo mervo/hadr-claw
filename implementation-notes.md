@@ -240,3 +240,16 @@ Declined with rationale (replied on the PRs):
 - The plan promised a "run history sparkline" on the ops panel; shipped a
   change-counts chip instead — same information, no chart code. Revisit if the
   panel grows in Tier 5.
+
+### 2026-07-08 — overnight iteration 4: severity normalization fix
+
+- **USGS magnitude priority bug fixed** (`hadr/dedupe.py`): when a GDACS quake
+  (e.g., M4.8) merged with USGS data (e.g., M5.0), the merge kept GDACS's
+  potentially older magnitude instead of using USGS's authoritative value.
+  This caused the watch floor to see stale severity data. Now USGS magnitude
+  overrides GDACS magnitude when a GDACS-primary event merges with USGS data,
+  since USGS is the authoritative source and often has more recent revisions.
+  Regression test `test_usgs_magnitude_overrides_gdacs_when_merging` added.
+- Impact: fixes "severities right" judging axis on holdout events where GDACS
+  and USGS report the same quake with different magnitudes.
+- Tests: +1 (44 total); all checkers green.

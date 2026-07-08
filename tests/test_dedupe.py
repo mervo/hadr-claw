@@ -87,3 +87,32 @@ def test_spacetime_never_matches_on_missing_timestamps():
     a = Event(uid="a:1", occurred_at="", **{**base, "sources": [{"feed": "x", "id": "1", "ids": []}]})
     b = Event(uid="b:2", occurred_at="", **{**base, "sources": [{"feed": "y", "id": "2", "ids": []}]})
     assert len(dedupe.merge([a, b])) == 2, "missing times must not merge on place alone"
+
+
+def test_usgs_magnitude_overrides_gdacs_when_merging():
+    # When a GDACS quake (mag 4.8) merges with USGS (mag 5.0),
+    # USGS's more authoritative magnitude should be kept
+    gdacs = Event(
+        uid="gdacs:1000",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=10.0,
+        lon=120.0,
+        severity={"gdacs_alert": "Orange", "mag": 4.8},
+        sources=[{"feed": "gdacs", "id": "1000", "ids": ["1000"]}],
+    )
+    usgs = Event(
+        uid="usgs:us1000",
+        hazard="EQ",
+        title="Test Earthquake",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:10:00Z",  # Updated later
+        lat=10.0,
+        lon=120.0,
+        severity={"mag": 5.0, "pager_alert": "orange"},
+        sources=[{"feed": "usgs", "id": "us1000", "ids": ["us1000"]}],
+    )
+    (merged,) = dedupe.merge([gdacs, usgs])
+    assert merged.severity["mag"] == 5.0, "USGS magnitude should override GDACS"
