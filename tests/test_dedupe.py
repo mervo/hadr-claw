@@ -129,3 +129,34 @@ def test_volcano_merges_across_gdacs_and_reliefweb_via_glide():
     rules = {s["feed"]: s.get("merged_by") for s in volcano.sources}
     assert rules == {"gdacs": None, "reliefweb": "glide"}
     assert volcano.severity["gdacs_alert"] == "Orange"
+
+
+def test_two_distinct_quakes_without_magnitude_do_not_merge():
+    # Two distinct earthquakes in the same region at nearly the same time,
+    # both lacking magnitude data. Should NOT merge via spacetime just because
+    # both lack magnitude — magnitude is a key discriminator. Without it, we
+    # should be conservative and not merge on place+time alone.
+    quake1 = Event(
+        uid="usgs:eq001",
+        hazard="EQ",
+        title="Earthquake in Sumatra",
+        occurred_at="2026-07-08T10:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=0.5,
+        lon=99.5,
+        severity={},  # no magnitude
+        sources=[{"feed": "usgs", "id": "eq001", "ids": ["eq001"]}],
+    )
+    quake2 = Event(
+        uid="usgs:eq002",
+        hazard="EQ",
+        title="Earthquake in Sumatra",
+        occurred_at="2026-07-08T10:15:00Z",
+        updated_at="2026-07-08T10:15:00Z",
+        lat=0.52,  # 5.5 km away
+        lon=99.52,
+        severity={},  # no magnitude
+        sources=[{"feed": "usgs", "id": "eq002", "ids": ["eq002"]}],
+    )
+    merged = dedupe.merge([quake1, quake2])
+    assert len(merged) == 2, "two quakes without magnitude should not merge via spacetime"

@@ -1,11 +1,10 @@
 {
-  "finished_at": "2026-07-08T05:25:57Z",
+  "finished_at": "2026-07-08T06:59:31Z",
   "changes": {
-    "new": 1,
+    "new": 4,
     "escalated": 0,
-    "updated": 1,
-    "unchanged": 40,
-    "deleted": 0
-  },
-  "engine": "agentic"
+    "updated": 0,
+    "unchanged": 0,
+    "deleted": 15
+  }
 }

@@ -19,7 +19,7 @@
       "last_reported_fingerprint": "sha256:fb96f5b304f1f2e08667ac8cbd449265c612bb16d0743c8dc957cae061e275d7",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T01:26:45Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Chile"
     },
     "gdacs:1550554": {
@@ -41,7 +41,7 @@
       "last_reported_fingerprint": "sha256:83c2f94725cc9af9d52acc2a97f4d315da0334599e7a1e53c85d4a370e37a496",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T05:00:43Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Reykjanes Ridge"
     },
     "gdacs:1550559": {
@@ -66,7 +66,7 @@
       "last_reported_fingerprint": "sha256:02569d67c93998b3866e92f5ee2f09109df3d22b6f00c5938c81c95c4c2e272e",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T05:55:40Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Reykjanes Ridge"
     },
     "gdacs:1550568": {
@@ -91,7 +91,7 @@
       "last_reported_fingerprint": "sha256:1c9409125987f07f11cd496a6e5b57db922ad4b1b0c39acb742fc5c042b51ccd",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T07:16:26Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in Indonesia"
     },
     "gdacs:1550574": {
@@ -116,7 +116,7 @@
       "last_reported_fingerprint": "sha256:7ffde236a658bdc0df0cd735a997afc5efd7b9da0a7900ceabca23d238459b00",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T08:30:56Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in Reykjanes Ridge"
     },
     "gdacs:1550582": {
@@ -141,7 +141,7 @@
       "last_reported_fingerprint": "sha256:8f6e71d68b9ec666975b54e37b01ca4c2b2bc21427ea457907e588ce2ca7dd11",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T08:41:37Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in Venezuela"
     },
     "gdacs:1550615": {
@@ -166,7 +166,7 @@
       "last_reported_fingerprint": "sha256:2c35efe77399087ae60f814ebbb9b007bef7fc15ebcd03b5f6d0a2c547c48888",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T14:21:22Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in Indonesia"
     },
     "gdacs:1550633": {
@@ -188,7 +188,7 @@
       "last_reported_fingerprint": "sha256:3b9d76e655bae22b582e87adfc1866eee6a92423fe77c98cf8178bd2b30cde49",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T17:25:35Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in British Virgin Is."
     },
     "gdacs:1550638": {
@@ -213,7 +213,7 @@
       "last_reported_fingerprint": "sha256:def932a253ba825cb3ede17364ca8199b5d1521fcce6bc54332f605555acddbe",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T17:39:56Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in Drake Passage"
     },
     "gdacs:1550639": {
@@ -238,7 +238,7 @@
       "last_reported_fingerprint": "sha256:1e52028487c793cab8a5eedae35927ba3e77a8c032151dcc0b573b1fb4879dc8",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T18:11:32Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in Costa Rica"
     },
     "gdacs:1550648": {
@@ -264,7 +264,7 @@
       "last_reported_fingerprint": "sha256:ab3dfd557967be9c7185d1a5f9e627bf596dab712f0068ffdc129784703639be",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T18:07:41Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in United States"
     },
     "gdacs:1550650": {
@@ -289,7 +289,7 @@
       "last_reported_fingerprint": "sha256:02baffae30be3ab33e791c208c1a8ca077965755327de0220ffe9729e4ea19e4",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T19:44:52Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in Indonesia"
     },
     "gdacs:1550654": {
@@ -314,7 +314,7 @@
       "last_reported_fingerprint": "sha256:057653f777935e20436317dca771eab42659d2dbd821785cd6cccdf285f5a172",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T20:33:15Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in New Zealand"
     },
     "gdacs:1550657": {
@@ -339,7 +339,7 @@
       "last_reported_fingerprint": "sha256:9583e01b6b617b39368cf1a11b8035f4a87b5ef7f9db3cb6cd7b022659716aa1",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T20:37:40Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in Philippines"
     },
     "gdacs:1550674": {
@@ -368,7 +368,7 @@
       "last_reported_fingerprint": "sha256:3813cd7a7d6c76c58a69cf61ed57dfbe01f89ab51aa08dc39e6bbc6baa000bd4",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T22:22:13Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in China"
     },
     "gdacs:1550675": {
@@ -393,7 +393,7 @@
       "last_reported_fingerprint": "sha256:bc26f33efb07f3a19f12468f491d77f5e073ff985037a0deccdd7da6eebc14e0",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T22:42:39Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in Tajikistan"
     },
     "gdacs:1550684": {
@@ -418,7 +418,7 @@
       "last_reported_fingerprint": "sha256:d5b491c1d630c67c923b2ee5a8f64e8c64c72bb6d5c2f37b0e9e61ebe71ec9a4",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-07T23:35:51Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in Northern Molucca Sea"
     },
     "gdacs:1550709": {
@@ -443,7 +443,7 @@
       "last_reported_fingerprint": "sha256:ccbd8e049e64ddfcd7b9e2551caa67c4dfa1bac81d6a5ac5122e295d7c12fd7e",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-08T02:08:48Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in China"
     },
     "gdacs:1550718": {
@@ -467,8 +467,29 @@
       "first_seen": "2026-07-08T05:25:51Z",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-08T04:21:46Z",
-      "status": "active",
+      "status": "deleted",
       "title": "Earthquake in Jan Mayen Island Region"
+    },
+    "gdacs:1551201": {
+      "alert_history": [
+        [
+          "2026-07-08T06:59:31Z",
+          "Red"
+        ]
+      ],
+      "aliases": [
+        "1551201",
+        "gdacs:1551201"
+      ],
+      "feeds": [
+        "gdacs"
+      ],
+      "fingerprint": "sha256:4bb172884854d918a4856e2b7279da01b9f84e92c0cd8b68b663c861209d38f7",
+      "first_seen": "2026-07-08T06:59:31Z",
+      "last_seen": "2026-07-08T06:59:31Z",
+      "occurred_at": "2026-07-05T00:00:00Z",
+      "status": "active",
+      "title": "Flood in Bangladesh"
     },
     "glide:EP-2026-000048-BGD": {
       "alert_history": [
@@ -490,7 +511,7 @@
       "last_reported_fingerprint": "sha256:974a32cf9864ed458f07afda1cb4b8b4dd1867cec854202a4de98e3590b03801",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-03-15T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Bangladesh: Measles Outbreak - Mar 2026"
     },
     "glide:EP-2026-000071-COD": {
@@ -513,7 +534,7 @@
       "last_reported_fingerprint": "sha256:6bfd888ff5a29fd1d163730624228cb9d5411ac7b6e757c984148a9b0d7c5859",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-05-05T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "DR Congo/Uganda: Ebola Outbreak - May 2026"
     },
     "glide:EP-2026-000085-LKA": {
@@ -536,7 +557,7 @@
       "last_reported_fingerprint": "sha256:1b82417413d8c1bad7aa02b05a29333f0eafafb6d82ed002115dfb13dab269dc",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-05-01T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Sri Lanka: Dengue Outbreak - May 2026"
     },
     "glide:EQ-2026-000083-PHL": {
@@ -559,7 +580,7 @@
       "last_reported_fingerprint": "sha256:71ef9fe7c1cac124a9eb46cf7f09be87e6b9b19bed75838a4deea9f8c3b4eab3",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-06-08T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Philippines: Earthquake and Tsunami - Jun 2026"
     },
     "glide:EQ-2026-000093-VEN": {
@@ -582,7 +603,7 @@
       "last_reported_fingerprint": "sha256:8e053b55e093041cfaf4330cec70ed3d58f3b9f73c065ee53d4050cae13f5cd4",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-06-24T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Venezuela: Earthquakes - Jun 2026"
     },
     "glide:FF-2026-000043-AFG": {
@@ -605,7 +626,7 @@
       "last_reported_fingerprint": "sha256:648788f7ee8f6a47ad39fbe5a0c3fa327612c87d73498d3fa1129cfeacc6ab80",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-03-25T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Afghanistan: Floods - Mar 2026"
     },
     "glide:FL-2026-000033-ETH": {
@@ -628,7 +649,7 @@
       "last_reported_fingerprint": "sha256:14bbfe6bdcf2a294ae42ceb59310c1f66c60f0bb70517606eb5f04135ef162c8",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-03-10T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Ethiopia: Floods and Landslides - Mar 2026"
     },
     "glide:FL-2026-000044-YEM": {
@@ -651,7 +672,7 @@
       "last_reported_fingerprint": "sha256:07bb0462c4d8af83411a2289a57a848fef2655686ab997cb63bac6c34fa6152d",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-03-27T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Yemen: Floods - Mar 2026"
     },
     "glide:FL-2026-000046-BWA": {
@@ -674,7 +695,7 @@
       "last_reported_fingerprint": "sha256:35241f45379b7fc9cf3ad91c1a796c81472b3fa5159a60729caecc64431b9f2e",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-03-15T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Botswana: Floods - Mar 2026"
     },
     "glide:FL-2026-000063-TZA": {
@@ -697,7 +718,7 @@
       "last_reported_fingerprint": "sha256:7cdb4e8d21d0d987243c9f4de2018003e7f934f9fc0047fd399fbe9b65a86b5d",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-03-25T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Tanzania: Floods and Landslides - Mar 2026"
     },
     "glide:FL-2026-000080-SYR": {
@@ -720,7 +741,7 @@
       "last_reported_fingerprint": "sha256:05a5d9e1d7d3c4bdb728f38a7e20dced7882b0ab78d164bd6442f981199d2e62",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-05-20T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Syria: Floods - May 2026"
     },
     "glide:FL-2026-000087-DOM": {
@@ -743,8 +764,30 @@
       "last_reported_fingerprint": "sha256:111ae33db9293f9ac8465fcaf3a79d480e3ff2dd3daca3b295bc74a7a0b0d161",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-04-07T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Dominican Republic: Floods - Apr 2026"
+    },
+    "glide:FL-2026-000102-BGD": {
+      "alert_history": [
+        [
+          "2026-07-08T06:59:31Z",
+          null
+        ]
+      ],
+      "aliases": [
+        "FL-2026-000102-BGD",
+        "glide:FL-2026-000102-BGD",
+        "reliefweb:FL-2026-000102-BGD"
+      ],
+      "feeds": [
+        "reliefweb"
+      ],
+      "fingerprint": "sha256:9aefbf93bb17332766afc702ef810916ee698349b7e11a7bc6d1eb1b5ae2c175",
+      "first_seen": "2026-07-08T06:59:31Z",
+      "last_seen": "2026-07-08T06:59:31Z",
+      "occurred_at": "2026-07-06T00:00:00Z",
+      "status": "active",
+      "title": "Bangladesh: Floods - Jul 2026"
     },
     "glide:FL-2026-000105-CHN": {
       "alert_history": [
@@ -766,7 +809,7 @@
       "last_reported_fingerprint": "sha256:d7bccacfc9fcac41a9113511ea3998c4d1d9b865f148a9c57fbf00d78abcf109",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-06-06T01:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Flood in China"
     },
     "glide:FL-2026-000106-GEO": {
@@ -789,7 +832,7 @@
       "last_reported_fingerprint": "sha256:c4ebc1300bfa74b731f6861b301b5e2cbc20b953166dc34e86e5226761639b1c",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-06-27T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Georgia: Floods - Jun 2026"
     },
     "glide:FR-2026-000052-LBR": {
@@ -812,7 +855,7 @@
       "last_reported_fingerprint": "sha256:89d0e0c81ecfa3494edf62542e4b7e0c863154dbd3ca90dfa80a2cdbead1ea5e",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-03-24T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Liberia: Fires - Mar 2026"
     },
     "glide:FR-2026-000055-GNB": {
@@ -835,7 +878,7 @@
       "last_reported_fingerprint": "sha256:23b62eef29b0bcada6bdc1f0d9c6d3b2c21991da73a278922067ee6729fbbfe5",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-03-24T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Guinea-Bissau: Fire - Mar 2026"
     },
     "glide:ST-2026-000086-ARM": {
@@ -858,7 +901,7 @@
       "last_reported_fingerprint": "sha256:f90ede2881a00071adb6357ecbdf5fa9853e93c32e0191946f993e43933aa20b",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-06-06T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Armenia: Hailstorm - Jun 2026"
     },
     "glide:TC-2026-000050-FSM": {
@@ -881,7 +924,7 @@
       "last_reported_fingerprint": "sha256:8cb7e0d2195c9dee3768806e06a6c6c3708994bd60a6f9f4314b30784146bc2b",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-04-09T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Typhoon Sinlaku - Apr 2026"
     },
     "glide:TC-2026-000051-SLB": {
@@ -904,7 +947,7 @@
       "last_reported_fingerprint": "sha256:1ff9d3c1dbb1e07d36727ef6acd42bff61632619b23e510358a2a7ed4ebb7098",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-04-06T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Tropical Cyclone Maila - Apr 2026"
     },
     "glide:TC-2026-000053-FJI": {
@@ -927,7 +970,7 @@
       "last_reported_fingerprint": "sha256:9b8904e61186ba5645bc14da1018f008b7c52e792eac3af5293e4c79c62ff839",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-04-06T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Tropical Cyclone Vaianu - Apr 2026"
     },
     "glide:TC-2026-000099-GUM": {
@@ -950,8 +993,58 @@
       "last_reported_fingerprint": "sha256:4e030a996635b7ed084aabc24991948b9ea491d068072b9ad20db42bf2f4e7b6",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-01T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Tropical Cyclone BAVI-26"
+    },
+    "glide:TC-2026-000101-PHL": {
+      "alert_history": [
+        [
+          "2026-07-08T06:59:31Z",
+          "Orange"
+        ]
+      ],
+      "aliases": [
+        "1551200",
+        "TC-2026-000101-PHL",
+        "gdacs:1551200",
+        "glide:TC-2026-000101-PHL",
+        "reliefweb:TC-2026-000101-PHL"
+      ],
+      "feeds": [
+        "gdacs",
+        "reliefweb"
+      ],
+      "fingerprint": "sha256:13f0a3e54e35561863292bbbbf90748b2d9b07273681f122d28cd5d1f4e1174c",
+      "first_seen": "2026-07-08T06:59:31Z",
+      "last_seen": "2026-07-08T06:59:31Z",
+      "occurred_at": "2026-07-02T06:00:00Z",
+      "status": "active",
+      "title": "Tropical Cyclone NARI-26"
+    },
+    "glide:VO-2026-000200-IDN": {
+      "alert_history": [
+        [
+          "2026-07-08T06:59:31Z",
+          "Orange"
+        ]
+      ],
+      "aliases": [
+        "1551202",
+        "VO-2026-000200-IDN",
+        "gdacs:1551202",
+        "glide:VO-2026-000200-IDN",
+        "reliefweb:VO-2026-000200-IDN"
+      ],
+      "feeds": [
+        "gdacs",
+        "reliefweb"
+      ],
+      "fingerprint": "sha256:475f01213c4160b41d5c8a54ab77db9decd84729838fb285b8be2aadbe0d9803",
+      "first_seen": "2026-07-08T06:59:31Z",
+      "last_seen": "2026-07-08T06:59:31Z",
+      "occurred_at": "2026-07-07T12:30:00Z",
+      "status": "active",
+      "title": "Mount Merapi Eruption"
     },
     "glide:VW-2026-000054-LBR": {
       "alert_history": [
@@ -973,7 +1066,7 @@
       "last_reported_fingerprint": "sha256:77a741b59ecb99fbb5295a9cfe429f45da95f5ec82c1fddbd793ab4525492f04",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-03-24T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Liberia: Windstorms - Mar 2026"
     },
     "glide:WF-2026-000102-FRA": {
@@ -996,11 +1089,11 @@
       "last_reported_fingerprint": "sha256:b7df2c1627cfbc59b7ddaf077493580df45f48c9bd30bfe95e5101e02dca86a4",
       "last_seen": "2026-07-08T05:25:51Z",
       "occurred_at": "2026-07-04T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Forest fires in France"
     }
   },
-  "last_change_at": "2026-07-08T05:25:51Z",
-  "updated_at": "2026-07-08T05:25:51Z",
+  "last_change_at": "2026-07-08T06:59:31Z",
+  "updated_at": "2026-07-08T06:59:31Z",
   "version": 1
 }

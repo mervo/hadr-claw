@@ -56,8 +56,20 @@ def _match_rule(a: Event, b: Event) -> str | None:
         and abs(_epoch(a.occurred_at) - _epoch(b.occurred_at)) <= MAX_SECONDS
     ):
         mag_a, mag_b = a.severity.get("mag"), b.severity.get("mag")
-        if mag_a is None or mag_b is None or abs(mag_a - mag_b) <= MAX_MAG_DELTA:
-            return "spacetime"
+        # For earthquakes, magnitude is a critical discriminator. Require at least
+        # one to have magnitude data; never merge two magnitude-less quakes via
+        # spacetime (too risky — they might be distinct aftershocks). For other
+        # hazards without magnitude (TC, FL, VO), magnitude check is N/A.
+        if a.hazard == "EQ":
+            if (mag_a is None and mag_b is None) or (
+                mag_a is not None
+                and mag_b is not None
+                and abs(mag_a - mag_b) > MAX_MAG_DELTA
+            ):
+                return None
+        elif mag_a is not None and mag_b is not None and abs(mag_a - mag_b) > MAX_MAG_DELTA:
+            return None
+        return "spacetime"
     return None
 
 

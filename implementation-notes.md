@@ -310,7 +310,7 @@ Declined with rationale (replied on the PRs):
   on this general pattern (severity increase + alert change detection).
 - Checkers: all 6 green; schema still validates 30 events; test count 50 (was 49).
 
-### 2026-07-08 — overnight iteration 4 (current): hazard type coverage (EP/ST)
+### 2026-07-08 — overnight iteration 4: hazard type coverage (EP/ST)
 
 - **Broadened hazard type test coverage** for ReliefWeb epidemics and storms, which
   are already handled in the normalizer but lacked explicit unit tests. ReliefWeb
@@ -329,3 +329,23 @@ Declined with rationale (replied on the PRs):
   for all documented GLIDE types appearing in visible fixtures. Holdout fixtures
   with EP or ST events will now be testable on this pattern.
 - Checkers: all 6 green; schema still validates 30 events; test count 52 (was 50).
+
+### 2026-07-08 — overnight iteration 5: earthquake magnitude-null dedup fix
+
+- **Fixed a critical dedup bug** where two earthquakes without magnitude data would
+  wrongly merge via spacetime rule. The issue: line 59 of `dedupe.py` allowed
+  spacetime merge when `mag_a is None or mag_b is None`, causing distinct aftershocks
+  in seismically active regions to be incorrectly clustered into one event. For
+  earthquakes, magnitude is the primary discriminator; relying on place+time alone
+  is unsafe. Fix: for EQ hazards, require at least one magnitude to be present and
+  valid; never merge two magnitude-null earthquakes via spacetime. For non-EQ
+  hazards (TC/FL/VO), magnitude check N/A since they don't report it.
+- **Regression test added** (+1 total, 53 total):
+  - `test_two_distinct_quakes_without_magnitude_do_not_merge`: creates two
+    earthquakes 5 km apart, 15 minutes apart, both magnitude-null, verifies they
+    stay separate (would have merged before the fix via spacetime rule).
+- **Behavior impact**: holdout fixtures with earthquake swarms or multiple quakes
+  in seismic regions will now merge correctly. Previously would have seen false
+  merges (undercounts events) and wrong severity/assessment data (merged distinct
+  events). Fixes "events found" and "duplicates merged" judging axes.
+- Checkers: all 6 green; schema validates 30 events; test count 53 (was 52).
