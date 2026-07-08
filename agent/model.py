@@ -19,7 +19,9 @@ from openai import OpenAI
 
 DEFAULT_BASE_URL = "https://opencode.ai/zen/v1"
 DEFAULT_MODEL = "deepseek-v4-flash-free"  # free tier, tool calls verified; see docs/solutions/
-MAX_COMPLETION_TOKENS = 2048
+# generous: a morning write_dashboard call carries every assessment in one JSON
+# argument, and a too-small cap truncates it mid-string (learned the hard way)
+MAX_COMPLETION_TOKENS = 8192
 
 
 class LiveModel:

@@ -79,6 +79,21 @@ and decisions of record in ROADMAP.md). Headlines:
 - Transcripts embed a tool-schema hash; replay against changed schemas fails
   loudly instead of passing a stale test.
 
+### 2026-07-08 — Tier 5: production engine + observability
+
+- First live morning run fell back with cap_tripped=tokens: the model ignored
+  "already fetched" and re-fetched all three feeds (135k chars of context),
+  and `max_tokens=2048` truncated its long write_dashboard JSON mid-string.
+  Fixes: completion budget 8192, briefing explicitly forbids fetch_feed,
+  two-sentence cap per assessment. After: 1 turn, ~7k tokens, engine=agentic
+  (22x cheaper). Lesson recorded in docs/solutions/.
+- check_spend semantics: a tripped cap that stopped the run is enforcement
+  *working*; the failure mode is overspend with no trip recorded.
+- Quiet mornings short-circuit to the deterministic renderer without a model
+  call (proven by a test that hands the quiet path a broken model).
+- Spans: OTLP when OTEL_EXPORTER_OTLP_ENDPOINT set (compose jaeger profile),
+  else state/runs/spans.jsonl (gitignored — OTLP is the real sink).
+
 ## Open questions
 
 - Telegram or Slack for the alert webhook, and its credential (user input, Tier 6).

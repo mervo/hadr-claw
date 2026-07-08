@@ -77,6 +77,7 @@ SCHEMAS = [
 # may only reference these (the model cannot invent events)
 _fetched: dict[str, Event] = {}
 _statuses: dict[str, FeedStatus] = {}
+_context: dict = {}  # changes/last_change_at set by agent.morning for section rendering
 
 
 def fetched_events() -> dict[str, Event]:
@@ -87,6 +88,15 @@ def reset() -> None:
     """Fresh session state (tests, and one production run per process)."""
     _fetched.clear()
     _statuses.clear()
+    _context.clear()
+
+
+def seed(events: list[Event], statuses: list[FeedStatus], **context) -> None:
+    """agent.morning pre-fetches deterministically and injects the results;
+    the model doesn't have to re-fetch (but may)."""
+    _fetched.update({e.uid: e for e in events})
+    _statuses.update({s.feed: s for s in statuses})
+    _context.update(context)
 
 
 def fetch_feed(feed: str) -> str:
@@ -132,6 +142,8 @@ def write_dashboard(headline: str, overview: str, assessments: list[dict]) -> st
         render.render(
             list(_fetched.values()),
             list(_statuses.values()),
+            changes=_context.get("changes"),
+            last_change_at=_context.get("last_change_at"),
             headline=headline[:MAX_HEADLINE_CHARS],
             overview=overview[:MAX_OVERVIEW_CHARS],
             assessments=assessed,

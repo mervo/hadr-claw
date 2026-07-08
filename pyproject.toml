@@ -7,6 +7,8 @@ dependencies = [
     "feedparser>=6.0.12",
     "httpx>=0.28",
     "openai>=2.44.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.43.0",
+    "opentelemetry-sdk>=1.43.0",
 ]
 
 [dependency-groups]

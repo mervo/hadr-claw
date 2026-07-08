@@ -10,6 +10,7 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev --no-install-project
 
 COPY hadr/ hadr/
+COPY agent/ agent/
 
-ENTRYPOINT ["/opt/venv/bin/python", "-m", "hadr"]
-CMD []
+ENTRYPOINT ["/opt/venv/bin/python"]
+CMD ["-m", "agent.morning"]

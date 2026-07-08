@@ -131,6 +131,7 @@ def render(
     headline: str | None = None,
     overview: str | None = None,
     assessments: dict | None = None,
+    notice: str | None = None,
 ) -> str:
     now = generated_at or datetime.now(timezone.utc)
     stamp_utc, stamp_sgt = _stamp(now)
@@ -149,7 +150,8 @@ def render(
             + "</span>"
         )
 
-    banners = "".join(
+    banners = f'<div class="banner">{escape(notice)}</div>' if notice else ""
+    banners += "".join(
         f'<div class="banner">{escape(s.feed)} unreachable this run — {escape(s.error or "")}. '
         f"Report reflects the remaining feeds.</div>"
         for s in statuses
@@ -206,7 +208,8 @@ def write_dashboard(
     changes: Changes | None = None,
     generated_at: datetime | None = None,
     last_change_at: str | None = None,
+    notice: str | None = None,
 ) -> Path:
     out = Path(out)
-    out.write_text(render(events, statuses, changes, generated_at, last_change_at))
+    out.write_text(render(events, statuses, changes, generated_at, last_change_at, notice=notice))
     return out

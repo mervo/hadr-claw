@@ -15,6 +15,8 @@ def write_run(record: dict, runs_dir: str | Path = "state/runs") -> Path:
     stamp = record["started_at"].replace(":", "").replace("-", "")
     path = runs / f"{stamp}.json"
     path.write_text(json.dumps(record, indent=2))
-    for old in sorted(runs.glob("*.json"))[:-KEEP]:
-        old.unlink()
+    # prune each file family separately so transcripts don't crowd out records
+    for pattern in ("[0-9]*Z.json", "*-transcript.json"):
+        for old in sorted(runs.glob(pattern))[:-KEEP]:
+            old.unlink()
     return path

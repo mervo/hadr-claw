@@ -7,11 +7,12 @@ and [ReliefWeb](feeds/reliefweb.md) — filters the noise, assesses what remains
 report to `dashboard.html` at **08:30 Singapore time**, unattended, staying quiet when
 nothing has changed.
 
-> **Status: Tier 4 — the claw has a brain.** On top of the Tier 1–3 pipeline
-> (three feeds → unified events → dedup → memory diff → dashboard), there is now
-> a hand-built agent harness (`agent/harness.py`, ~80 lines): the model decides
-> when to call `fetch_feed` and `write_dashboard`, with a turn cap and uid
-> validation so it cannot invent events. Production wiring lands in Tier 5.
+> **Status: Tier 5 — the agentic engine runs production.** `agent/morning.py`
+> does the deterministic pre-work (fetch → dedup → memory diff), briefs the
+> ~80-line harness, and the model writes the assessed situation report. Caps on
+> turns/tokens/wall-clock are enforced in code, and a deterministic fallback
+> guarantees **the morning report always exists**. OpenTelemetry traces every
+> run. Remaining: the schedule (Tier 6) and the overnight goal (Tier 7).
 > See [ROADMAP.md](ROADMAP.md) for the tier-by-tier build plan; each tier is
 > end-to-end runnable and demoable. This README grows with each tier and never
 > describes features that don't exist yet.
@@ -51,9 +52,14 @@ mapped to this repository (see [Goal.md](Goal.md) for the course brief):
 ## Running it
 
 ```sh
-docker compose run --rm claw    # fetch all feeds, dedup, write dashboard.html
+docker compose run --rm claw    # the full morning run: fetch, diff, assess, write
 docker compose up dashboard     # serve it at http://localhost:8080/dashboard.html
 ```
+
+Pipeline-only (no model, no key): `docker compose run --rm claw -m hadr`.
+Traces: `docker compose --profile observability up -d jaeger`, then run claw with
+`-e OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318` → http://localhost:16686
+(without an endpoint, spans land in `state/runs/spans.jsonl`).
 
 Dev loop without docker: `uv run python -m hadr` (or `--feeds usgs` for one feed).
 Offline/deterministic (used by tests and CI): add `--fixtures tests/fixtures`.
@@ -75,8 +81,10 @@ The interface per tier (kept current as tiers land — unchecked means not built
   calls the tools itself ("check the quake feeds and write me a dashboard").
   Keyless replay: `HADR_FAKE_MODEL=tests/fixtures/transcripts/report.json …`;
   record new transcripts with `--record <path>` on a live run
-- [ ] **Tier 5** — `docker compose run --rm claw` → full agentic morning report;
-  `docker compose --profile observability up` → traces at http://localhost:16686
+- [x] **Tier 5** — `docker compose run --rm claw` → full agentic morning report;
+  kill-switch demo: `HADR_MAX_SECONDS=0 uv run python -m agent.morning` → the
+  cap trips and the deterministic fallback report still exists;
+  `scripts/check_dashboard.py` + `scripts/check_spend.py` are the instruments
 - [ ] **Tier 6** — `gh workflow run heartbeat.yml` → unattended run, dashboard on
   GitHub Pages
 - [ ] **Tier 7** — `bash scripts/overnight.sh` → capped overnight improvement loop
