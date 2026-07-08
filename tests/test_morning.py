@@ -104,3 +104,58 @@ def test_briefing_prioritizes_reliefweb_summary():
     assert "Significant damage and casualties reported" in briefing_text
     briefing_json = json.loads(briefing_text.split("Morning situation report run. Changes since the last report: ")[1].split("\nAll events")[0])
     assert briefing_json["new"][0]["summary"] == "Powerful earthquake struck central Indonesia. Significant damage and casualties reported."
+
+
+def test_briefing_identifies_deescalated_events():
+    """Verify that de-escalated events (alert level decreased) are identified in the briefing."""
+    # Create an event that was Red and is now Orange
+    deescalated_event = Event(
+        uid="gdacs:12345",
+        hazard="EQ",
+        title="Earthquake in Turkey",
+        occurred_at="2026-07-07T18:00:00Z",
+        updated_at="2026-07-08T10:00:00Z",
+        lat=39.0,
+        lon=32.0,
+        severity={"gdacs_alert": "Orange", "mag": 6.5},
+        sources=[{"feed": "gdacs", "id": "12345", "ids": ["12345"], "url": None}],
+    )
+
+    # Create state with alert history showing Red -> Orange de-escalation
+    state = {
+        "version": 1,
+        "updated_at": None,
+        "events": {
+            "gdacs:12345": {
+                "first_seen": "2026-07-07T18:00:00Z",
+                "last_seen": "2026-07-08T10:00:00Z",
+                "occurred_at": "2026-07-07T18:00:00Z",
+                "alert_history": [
+                    ["2026-07-07T18:00:00Z", "Red"],
+                    ["2026-07-08T10:00:00Z", "Orange"]
+                ],
+                "aliases": ["gdacs:12345"],
+                "feeds": ["gdacs"],
+                "status": "active",
+                "title": "Earthquake in Turkey",
+                "fingerprint": "sha256:old"
+            }
+        }
+    }
+
+    # Create Changes with this event as updated (fingerprint changed)
+    changes = Changes(updated=[deescalated_event])
+
+    # Get the briefing with state
+    briefing_text = morning._briefing(changes, state)
+
+    # Verify de-escalated event is in the briefing under deescalated key
+    briefing_json = json.loads(briefing_text.split("Morning situation report run. Changes since the last report: ")[1].split("\nAll events")[0])
+    assert "deescalated" in briefing_json
+    assert len(briefing_json["deescalated"]) == 1
+    assert briefing_json["deescalated"][0]["uid"] == "gdacs:12345"
+    assert briefing_json["deescalated"][0]["severity"]["gdacs_alert"] == "Orange"
+
+    # Verify the prompt mentions de-escalated events
+    assert "de-escalated" in briefing_text
+    assert "Assess the escalated, new, and de-escalated events" in briefing_text

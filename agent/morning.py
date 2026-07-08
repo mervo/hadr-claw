@@ -38,7 +38,7 @@ def _now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def _briefing(changes) -> str:
+def _briefing(changes, state: dict | None = None) -> str:
     def brief(e):
         # Prefer ReliefWeb's human-curated summary if available; it provides richer
         # context than auto-generated summaries. Fall back to any other summary.
@@ -53,6 +53,24 @@ def _briefing(changes) -> str:
             "summary": summary,
         }
 
+    # Identify de-escalated events: updated events whose alert level decreased.
+    # alert_history is already updated by memory.diff, so we compare current alert
+    # (already in state[-1]) to the previous alert (state[-2] if it exists)
+    deescalated = []
+    if state:
+        for event in changes.updated:
+            entry = state.get("events", {}).get(event.uid)
+            if entry and len(entry.get("alert_history", [])) >= 2:
+                # Last entry is already the current (possibly updated) alert;
+                # compare to the previous one to see if it decreased
+                previous_alert = entry["alert_history"][-2][1]
+                current_alert = entry["alert_history"][-1][1]
+                if previous_alert and current_alert:
+                    previous_rank = memory._ALERT_RANKS.get(str(previous_alert).lower(), -1)
+                    current_rank = memory._ALERT_RANKS.get(str(current_alert).lower(), -1)
+                    if current_rank < previous_rank:
+                        deescalated.append(event)
+
     return (
         "Morning situation report run. Changes since the last report: "
         + json.dumps(
@@ -60,15 +78,16 @@ def _briefing(changes) -> str:
                 "counts": changes.counts(),
                 "escalated": [brief(e) for e in changes.escalated],
                 "new": [brief(e) for e in changes.new],
-                "updated": [brief(e) for e in changes.updated],
+                "deescalated": [brief(e) for e in deescalated],
+                "updated": [brief(e) for e in changes.updated if e not in deescalated],
                 "withdrawn": [d.get("title") or d["uid"] for d in changes.deleted],
             }
         )
         + "\nAll events (including unchanged) are ALREADY fetched and available to "
-        "write_dashboard by uid — do NOT call fetch_feed. Assess the escalated and "
-        "new events (what happened, where, how bad, who is affected; two sentences "
-        "each at most), then call write_dashboard exactly once, referencing only "
-        "the uids listed above.\n\n"
+        "write_dashboard by uid — do NOT call fetch_feed. Assess the escalated, new, "
+        "and de-escalated events (what happened, where, how bad, who is affected; two "
+        "sentences each at most), then call write_dashboard exactly once, referencing "
+        "only the uids listed above.\n\n"
         "Severity dict fields present depend on hazard and feed source: "
         "EQ→mag/pager_alert/tsunami from USGS, gdacs_alert/alertscore/mag from GDACS; "
         "TC/FL/VO→gdacs_alert/alertscore/text from GDACS; "
@@ -167,7 +186,7 @@ def main(argv: list[str] | None = None) -> int:
         else:
             messages = [
                 {"role": "system", "content": SOUL.read_text()},
-                {"role": "user", "content": _briefing(changes)},
+                {"role": "user", "content": _briefing(changes, state)},
             ]
             stats = _agent_loop(messages, t, deadline=t0 + MAX_SECONDS, record=args.record)
             html = Path(args.out).read_text() if Path(args.out).exists() else ""

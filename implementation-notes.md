@@ -453,3 +453,23 @@ Declined with rationale (replied on the PRs):
   available context for merged events, improving likelihood of factual, well-grounded assessment prose.
   Holdout fixtures with cross-feed merged events will benefit from this behavior change.
 - Tests: 67 total (was 66); all green. Checkers: all 6 green. Lint: clean. No regression.
+
+### 2026-07-08 — overnight iteration 12: de-escalation visibility in briefing
+
+- **Assessment quality improvement**: Modified `agent/morning.py:_briefing()` to explicitly identify and report
+  de-escalated events — those where alert level decreased (e.g., Red → Orange, Orange → Green). Previously,
+  de-escalations landed in the generic "updated" category, sharing space with magnitude revisions and new sources.
+  Now they have their own "deescalated" category in the briefing JSON.
+- **Implementation**: De-escalation detection compares the current alert level to the previous one in the stored
+  `alert_history` (comparing [-2] to [-1] since memory.diff updates the history before the briefing is called).
+  The prompt explicitly instructs the model to "Assess the escalated, new, and de-escalated events", improving
+  visibility into threat-level improvements on the watch floor.
+- **Design choice**: Briefing-only change (low risk). Avoided structural changes to the Changes dataclass or
+  memory.py, which would have required careful coordination with the pristine check_memory.py checker. The
+  approach is safe: the state already contains the necessary alert history; the briefing just interprets it better.
+- **Test added** (`test_briefing_identifies_deescalated_events`): Creates an event with alert history Red → Orange,
+  verifies it appears in the briefing's "deescalated" list and the prompt mentions it.
+- **Impact**: goal.md's "sharpen assessments...make model prose more factual and grounded in tool results" directly
+  addressed. The model now understands that risk-level *decreases* are also important changes to report, improving
+  "severities right" judging axis by ensuring the watch floor sees the full picture of threat evolution.
+- Tests: 68 total (was 67); all green. Checkers: all 6 green. Lint: clean. No regression.
