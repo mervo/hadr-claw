@@ -115,14 +115,17 @@ tracked file**. Copy `.env.example` to `.env` (gitignored) and fill it in:
 GitHub Actions gets the key once via `gh secret set OPENCODE_API_KEY`; workflows
 reference `${{ secrets.OPENCODE_API_KEY }}`.
 
-Two more secrets unlock the full alerting path (both optional — the heartbeat
+Three more secrets unlock the full alerting path (all optional — the heartbeat
 degrades gracefully without them):
 
 - `ISSUE_PAT` — a fine-grained PAT with issues:write. Failure issues created
   with the default `GITHUB_TOKEN` do **not** trigger the @claude app; a PAT
   makes the `@claude investigate` mention actually summon it.
-- `HADR_ALERT_WEBHOOK` — a Slack-compatible incoming-webhook URL (or any
-  endpoint accepting `{"text": …}`); failures also post there.
+- `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` — failures also ping a Telegram
+  chat via the Bot API. One-time setup: create a bot with @BotFather
+  (`/newbot` → copy the token), send the bot any message, then read your chat
+  id from `https://api.telegram.org/bot<TOKEN>/getUpdates`
+  (`.result[0].message.chat.id`).
 
 ## Operations
 

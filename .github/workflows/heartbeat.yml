@@ -84,10 +84,14 @@ jobs:
           # mention trigger the app — issues created with GITHUB_TOKEN do not
           # trigger other workflows/apps. Falls back so the alert still exists.
           GH_TOKEN: ${{ secrets.ISSUE_PAT || secrets.GITHUB_TOKEN }}
-          WEBHOOK: ${{ secrets.HADR_ALERT_WEBHOOK }}
+          # Telegram alert channel (decision 2026-07-08): both secrets set ->
+          # a message via the Bot API; either missing -> step skips silently.
+          TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           TITLE="Heartbeat failed $(date -u +%F)"
-          BODY="@claude investigate this failed heartbeat run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          BODY="@claude investigate this failed heartbeat run: $RUN_URL"
           EXISTING=$(gh issue list --label heartbeat-failure --state open --json number --jq '.[0].number // empty' || true)
           if [ -n "$EXISTING" ]; then
             gh issue comment "$EXISTING" --body "$BODY"
@@ -95,8 +99,9 @@ jobs:
             gh issue create --title "$TITLE" --body "$BODY" --label heartbeat-failure || \
             gh issue create --title "$TITLE" --body "$BODY"
           fi
-          if [ -n "$WEBHOOK" ]; then
-            curl -sf -X POST -H 'Content-Type: application/json' \
-              -d "{\"text\": \"HADR claw heartbeat failed: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
-              "$WEBHOOK" || true
+          if [ -n "$TG_TOKEN" ] && [ -n "$TG_CHAT" ]; then
+            curl -sf -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+              -d chat_id="${TG_CHAT}" \
+              --data-urlencode text="⚠️ HADR claw heartbeat failed: $RUN_URL" || \
+            echo "::warning::Telegram alert failed to send"
           fi

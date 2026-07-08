@@ -161,14 +161,22 @@ Declined with rationale (replied on the PRs):
 - state/runs noise in PR #4: already in merged history below Tier 6, where
   the convention doesn't apply yet.
 
+### 2026-07-08 — alert channel decided: Telegram
+
+- Heartbeat failure alerts go to Telegram via the Bot API (`TELEGRAM_BOT_TOKEN`
+  + `TELEGRAM_CHAT_ID` secrets); the generic `HADR_ALERT_WEBHOOK` was replaced
+  since its Slack-style payload wouldn't have worked with Telegram anyway.
+- `heartbeat-failure` label created in the repo — without it the first
+  labeled issue-create fails to the unlabeled fallback and dedup breaks.
+- Pages enabled + first live heartbeat verified end-to-end (engine=agentic,
+  1 turn, ~1.8k tokens, dashboard at mervo.github.io/hadr-claw).
+
 ## Open questions
 
-- Telegram or Slack for the alert webhook, and its credential (user input;
-  workflow reads optional `HADR_ALERT_WEBHOOK` secret, skips if absent).
 - `ISSUE_PAT` secret (fine-grained, issues:write) needed for the failure
   issue's @claude mention to actually trigger the app (user action).
-- GitHub Pages enablement (Settings → Pages → Source: GitHub Actions) —
-  left to the user; the heartbeat's deploy step no-ops meaningfully until then.
+- `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` secrets to be set by the user
+  (BotFather steps in README); failure path test pending those.
 - ReliefWeb appname request must be filed by the user (form + email approval):
   https://apidoc.reliefweb.int/parameters#appname — do this early, approval takes time.
 
