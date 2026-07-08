@@ -2,7 +2,7 @@
 
 (Read CLAUDE.md and ROADMAP.md first. This file is the standing orders for an
 unattended improvement loop; `scripts/overnight.sh` is the harness that runs
-it, checks it, and stops it. Distinct from `Goal.md`, the course brief.)
+it, checks it, and stops it. Distinct from `problem_statement.md`, the course brief.)
 
 ## Target
 

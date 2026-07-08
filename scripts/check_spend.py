@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """Deterministic check: no recorded run exceeded its own caps — the checking
-instrument for the spend/turn/time constraints (Goal.md: a constraint without
+instrument for the spend/turn/time constraints (problem_statement.md: a constraint without
 a checker will be ignored under pressure). Exit 0 on pass, 1 on fail.
 
     uv run python scripts/check_spend.py [state/runs]

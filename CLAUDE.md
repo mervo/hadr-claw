@@ -50,6 +50,6 @@ blind spots. Keep both current in every PR — a stale doc is a bug.
 
 ## Deviations policy
 
-Anything built that departs from Goal.md, ROADMAP.md or this file is recorded in
+Anything built that departs from problem_statement.md, ROADMAP.md or this file is recorded in
 `implementation-notes.md` (Deviations section) with the reason, **before** the PR
 merges. An undocumented deviation is a bug.

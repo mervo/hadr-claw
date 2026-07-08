@@ -171,6 +171,16 @@ Declined with rationale (replied on the PRs):
 - Pages enabled + first live heartbeat verified end-to-end (engine=agentic,
   1 turn, ~1.8k tokens, dashboard at mervo.github.io/hadr-claw).
 
+### 2026-07-08 — course brief renamed to problem_statement.md
+
+- User decision: `Goal.md` (course brief) clashed with `goal.md` (the claw's
+  overnight goal file) — case-only difference, breaks on case-insensitive
+  filesystems and confuses prose. The brief is now `problem_statement.md`;
+  `goal.md` keeps its name since scripts/overnight.sh consumes it. All
+  references updated (README, CLAUDE.md, goal.md, scripts/check_spend.py).
+  Supersedes the earlier "course brief stays untouched" convention for the
+  rename only — the content is unchanged.
+
 ## Open questions
 
 - `ISSUE_PAT` secret (fine-grained, issues:write) needed for the failure
