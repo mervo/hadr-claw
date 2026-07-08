@@ -20,7 +20,7 @@ nothing has changed.
 ## What's a claw?
 
 A claw is a small, always-on agent that is mostly files and a loop. Its six parts,
-mapped to this repository (see [Goal.md](Goal.md) for the course brief):
+mapped to this repository (see [problem_statement.md](problem_statement.md) for the course brief):
 
 | Part | What it is | Where it lives here |
 |------|-----------|---------------------|
@@ -270,7 +270,7 @@ No server. Four free/cheap services each play one part of the claw's anatomy:
 ## Repository map
 
 ```
-Goal.md                  # course brief (untouched) — what this claw must become
+problem_statement.md                  # course brief (untouched) — what this claw must become
 ROADMAP.md               # tier table with live status + known blind spots
 CLAUDE.md                # conventions for agents & humans working on this repo
 implementation-notes.md  # decisions / open questions / deviations, per working block
