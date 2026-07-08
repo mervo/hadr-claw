@@ -1,8 +1,9 @@
 # Roadmap
 
-Progressive build of the HADR claw. **Every tier is end-to-end runnable and
-demoable on its own** — a thin slice through fetch → assess → render, thickened
-tier by tier. One tier = one branch = one PR = one @claude review.
+Progressive build of the HADR claw. **Every tier from 1 up is end-to-end
+runnable and demoable on its own** — a thin slice through fetch → assess →
+render, thickened tier by tier. (Tier 0 is the docs-only bootstrap exception.)
+One tier = one branch = one PR = one @claude review.
 
 Status values: `planned` · `in-progress` · `done`.
 
