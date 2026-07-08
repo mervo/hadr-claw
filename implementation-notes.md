@@ -187,6 +187,27 @@ Declined with rationale (replied on the PRs):
 - Tests: +4 (38 total) — malformed-feature cases for each feed, inline
   payloads (no network), all checkers stay green.
 
+### 2026-07-08 — overnight iteration 3: memory + dedup correctness, multi-hazard fixtures
+
+- **Phantom-escalation bug fixed** (`hadr/memory.py`): `alert_label` returned
+  `gdacs_alert or pager_alert` while `alert_rank` takes the max of both — an
+  event with GDACS Green + PAGER orange recorded the *lower* label, so every
+  subsequent run compared rank 2 against recorded rank 0 and reported
+  ESCALATED forever. `alert_label` now returns the highest-ranked level,
+  keeping label and rank consistent. Regression test added.
+- **Dedup guard**: `_epoch("")` returns 0.0, so two same-hazard events within
+  100 km that *both* lacked timestamps spacetime-merged on place alone. The
+  spacetime rule now requires both `occurred_at` values. (Not reachable from
+  today's normalizers — GDACS/USGS reject rows without times — but a holdout
+  fixture with degraded payloads could hit it.)
+- **Multi-hazard cross-feed fixtures** (`tests/fixtures/crossfeed_multihazard/`):
+  dedup coverage was earthquake-only. Added GDACS TC (Orange, with GLIDE) +
+  ReliefWeb entry merging via GLIDE (summary survives the merge for the
+  assessment), and a fresh GDACS FL with *empty* GLIDE that must stay separate
+  from ReliefWeb's flood entry rather than false-merge on country — pinning
+  the documented first-24h GLIDE gap as intended behavior.
+- Tests: +5 (43 total); all checkers green.
+
 ### 2026-07-08 — overnight run 1: results + harness fixes
 
 - Iteration 1 (the only one that ran): hardened all three feed normalizers —

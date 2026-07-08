@@ -106,6 +106,23 @@ def test_fingerprint_survives_metre_scale_revisions():
     assert memory.fingerprint(a) == memory.fingerprint(b)
 
 
+def test_pager_outranking_gdacs_does_not_escalate_forever():
+    # GDACS says Green but PAGER says orange: alert_rank takes the max, so the
+    # recorded label must too — recording "Green" would read as an escalation
+    # on every subsequent run
+    base = dict(
+        hazard="EQ", title="t", occurred_at="2026-07-07T18:00:00Z",
+        updated_at="2026-07-07T18:00:00Z", lat=1.0, lon=1.0,
+        severity={"gdacs_alert": "Green", "pager_alert": "orange"},
+        sources=[{"feed": "gdacs", "id": "9", "ids": ["9"], "url": None}],
+    )
+    state = memory.load("/nonexistent")
+    memory.diff(state, [Event(uid="gdacs:9", **base)], now=NOW)
+    assert state["events"]["gdacs:9"]["alert_history"][-1][1] == "orange"
+    rerun = memory.diff(state, [Event(uid="gdacs:9", **base)], now=NOW)
+    assert rerun.quiet, "identical event must not re-escalate"
+
+
 def test_state_round_trips(tmp_path):
     state = _day1_state()
     path = tmp_path / "seen.json"

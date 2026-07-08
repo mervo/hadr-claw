@@ -49,6 +49,8 @@ def _match_rule(a: Event, b: Event) -> str | None:
         return "alias"
     if (
         a.hazard == b.hazard
+        and a.occurred_at
+        and b.occurred_at  # _epoch maps missing to 0.0 == 0.0: never match on place alone
         and None not in (a.lat, a.lon, b.lat, b.lon)
         and _haversine_km(a.lat, a.lon, b.lat, b.lon) <= MAX_KM
         and abs(_epoch(a.occurred_at) - _epoch(b.occurred_at)) <= MAX_SECONDS
