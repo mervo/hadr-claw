@@ -116,3 +116,16 @@ def test_usgs_magnitude_overrides_gdacs_when_merging():
     )
     (merged,) = dedupe.merge([gdacs, usgs])
     assert merged.severity["mag"] == 5.0, "USGS magnitude should override GDACS"
+
+
+def test_volcano_merges_across_gdacs_and_reliefweb_via_glide():
+    def _multihazard_vo():
+        events, statuses = gather(["gdacs", "reliefweb"], "tests/fixtures/crossfeed_multihazard")
+        assert all(s.ok for s in statuses)
+        return dedupe.merge(events)
+
+    (volcano,) = [e for e in _multihazard_vo() if e.hazard == "VO"]
+    assert volcano.uid == "glide:VO-2026-000200-IDN"
+    rules = {s["feed"]: s.get("merged_by") for s in volcano.sources}
+    assert rules == {"gdacs": None, "reliefweb": "glide"}
+    assert volcano.severity["gdacs_alert"] == "Orange"

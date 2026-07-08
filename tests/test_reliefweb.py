@@ -7,7 +7,7 @@ FIXTURE = Path(__file__).parent / "fixtures" / "reliefweb" / "rss.xml"
 
 def test_normalize_extracts_glide_hazard_country():
     events = reliefweb.normalize(reliefweb.load_fixture(FIXTURE))
-    assert len(events) == 8
+    assert len(events) == 9
     for e in events:
         assert e.glide, "every fixture entry carries a GLIDE"
         assert e.uid == f"reliefweb:{e.glide}"
@@ -48,3 +48,13 @@ def test_summary_prose_is_clean_of_tags_and_boilerplate():
         summary = e.sources[0]["summary"]
         assert "<" not in summary
         assert "Glide:" not in summary
+
+
+def test_volcano_extracted_from_fixture():
+    """Volcano entries should be properly normalized from ReliefWeb."""
+    events = reliefweb.normalize(reliefweb.load_fixture(FIXTURE))
+    volcanoes = [e for e in events if e.hazard == "VO"]
+    assert len(volcanoes) >= 1
+    vo = volcanoes[0]
+    assert vo.glide.startswith("VO-2026-")
+    assert "Mount Merapi" in vo.title or "Merapi" in vo.title

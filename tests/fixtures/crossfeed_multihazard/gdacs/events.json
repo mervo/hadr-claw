@@ -72,6 +72,42 @@
      "report": "https://www.gdacs.org/report.aspx?eventid=1551201&eventtype=FL"
     }
    }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     110.45,
+     -7.325
+    ]
+   },
+   "properties": {
+    "eventtype": "VO",
+    "eventid": 1551202,
+    "episodeid": 1717302,
+    "glide": "VO-2026-000200-IDN",
+    "name": "Mount Merapi Eruption",
+    "alertlevel": "Orange",
+    "alertscore": 2,
+    "episodealertlevel": "Orange",
+    "iscurrent": "true",
+    "istemporary": "false",
+    "country": "Indonesia",
+    "fromdate": "2026-07-07T12:30:00",
+    "todate": "2026-07-07T12:30:00",
+    "datemodified": "2026-07-07T15:00:00",
+    "iso3": "IDN",
+    "source": "USGS",
+    "severitydata": {
+     "severity": 4,
+     "severitytext": "Magnitude 4",
+     "severityunit": ""
+    },
+    "url": {
+     "report": "https://www.gdacs.org/report.aspx?eventid=1551202&eventtype=VO"
+    }
+   }
   }
  ]
 }

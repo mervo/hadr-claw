@@ -253,3 +253,24 @@ Declined with rationale (replied on the PRs):
 - Impact: fixes "severities right" judging axis on holdout events where GDACS
   and USGS report the same quake with different magnitudes.
 - Tests: +1 (44 total); all checkers green.
+
+### 2026-07-08 — overnight iteration 6: volcano (VO) hazard type coverage
+
+- **Broadened fixture coverage** to include Volcano (VO) hazard type, completing
+  the trio of GDACS multi-hazard types (EQ/TC/FL/VO). Volcano fixtures added to:
+  - Main GDACS fixture (`tests/fixtures/gdacs/events.json`): Mount Merapi eruption
+    (eventid 1550801) with Orange alert and GLIDE VO-2026-000201-IDN
+  - Main ReliefWeb fixture (`tests/fixtures/reliefweb/rss.xml`): matching volcano
+    entry with curated summary text
+  - Multihazard test fixtures (`tests/fixtures/crossfeed_multihazard/`): both GDACS
+    and ReliefWeb volcano events for cross-feed dedup testing
+- **Tests added** (+3 total, 47 total):
+  - `test_volcano_merges_across_gdacs_and_reliefweb_via_glide`: verifies volcano dedup
+    works via GLIDE, same pattern as TC and FL
+  - `test_volcano_orange_alert_kept`: confirms GDACS normalizer keeps Orange-alert
+    volcanoes
+  - `test_volcano_extracted_from_fixture`: confirms ReliefWeb volcano extraction
+- Impact: "more hazard types (TC/FL/VO)" from goal.md now achieved; pipeline tested
+  on all four Orange/Red multi-hazard types. Schema comments already listed VO;
+  this adds the test surface and fixtures to exercise it.
+- Checkers: schema now validates 30 events (was 29), all 6 checkers green.

@@ -1595,6 +1595,53 @@
      "severityunit": "ha"
     }
    }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     110.45,
+     -7.325
+    ]
+   },
+   "properties": {
+    "eventtype": "VO",
+    "eventid": 1550801,
+    "episodeid": 1716999,
+    "glide": "VO-2026-000201-IDN",
+    "name": "Mount Merapi Eruption",
+    "description": "Mount Merapi Eruption",
+    "htmldescription": "Orange Volcano Eruption Mount Merapi in Indonesia at: 06 Jul 2026 12:30:00.",
+    "icon": "https://www.gdacs.org/images/gdacs_icons/maps/Orange/VO.png",
+    "iconoverall": "https://www.gdacs.org/images/gdacs_icons/maps/Orange/VO.png",
+    "url": {
+     "geometry": "https://www.gdacs.org/gdacsapi/api/polygons/getgeometry?eventtype=VO&eventid=1550801&episodeid=1716999",
+     "report": "https://www.gdacs.org/report.aspx?eventid=1550801&episodeid=1716999&eventtype=VO",
+     "details": "https://www.gdacs.org/gdacsapi/api/events/geteventdata?eventtype=VO&eventid=1550801"
+    },
+    "alertlevel": "Orange",
+    "alertscore": 2,
+    "episodealertlevel": "Orange",
+    "episodealertscore": 2.0,
+    "istemporary": "false",
+    "iscurrent": "true",
+    "country": "Indonesia",
+    "fromdate": "2026-07-06T12:30:00",
+    "todate": "2026-07-06T12:30:00",
+    "datemodified": "2026-07-08T02:15:00",
+    "iso3": "IDN",
+    "source": "USGS",
+    "sourceid": "",
+    "polygonlabel": "Centroid",
+    "Class": "Point_Centroid",
+    "affectedcountries": [],
+    "severitydata": {
+     "severity": 4,
+     "severitytext": "Magnitude 4",
+     "severityunit": ""
+    }
+   }
   }
  ]
 }
