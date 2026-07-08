@@ -42,7 +42,8 @@ def _briefing(changes) -> str:
     def brief(e):
         return {
             "uid": e.uid, "hazard": e.hazard, "title": e.title, "country": e.country,
-            "occurred_at": e.occurred_at, "severity": e.severity,
+            "occurred_at": e.occurred_at, "lat": e.lat, "lon": e.lon, "depth_km": e.depth_km,
+            "severity": e.severity,
             "summary": next((s["summary"] for s in e.sources if s.get("summary")), None),
         }
 
