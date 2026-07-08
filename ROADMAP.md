@@ -32,7 +32,7 @@ Status values: `planned` · `in-progress` · `done`.
    (pruned to 14), ops panel on the dashboard, OpenTelemetry traces
    (OTLP when configured, file export otherwise; jaeger compose profile).
 6. **Alerting**: GitHub issue tagging @claude (via PAT, not GITHUB_TOKEN) **plus**
-   a Telegram/Slack webhook. *Open: user confirms channel + credential at Tier 6.*
+   Telegram (decided 2026-07-08; `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` secrets).
 7. **Publishing**: repo goes public at Tier 6 (free-plan Pages requires it), after
    a full-history secret scan.
 8. **Audience**: global watch-floor coverage — all GDACS Orange/Red + significant
@@ -51,7 +51,7 @@ Status values: `planned` · `in-progress` · `done`.
 4. `gh workflow run heartbeat.yml && gh run watch` — verify the Pages URL and
    the state commit-back; then `-f fail_for_demo=true` to see the alert path.
 5. Optional secrets: `ISSUE_PAT` (makes the failure issue's @claude mention
-   fire), `HADR_ALERT_WEBHOOK` (Slack/Telegram-gateway URL for pings).
+   fire), `TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` (failure pings).
 6. File the ReliefWeb appname request (form + email approval takes days):
    https://apidoc.reliefweb.int/parameters#appname
 7. Instructor sign-off on `goal.md` before any unattended overnight run.
