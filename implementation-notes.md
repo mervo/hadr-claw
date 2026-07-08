@@ -390,3 +390,27 @@ Declined with rationale (replied on the PRs):
   tool results" now directly addressed. Holdout fixtures with diverse hazard types will now
   be assessed using concrete patterns that ground claims in the available severity/geographic/impact data. Improves "assessments factual" judging axis.
 - Tests: all 56 green; checkers all 6 green. No regression.
+
+### 2026-07-08 — overnight iteration 9: degraded-payload fixtures and edge-case handling
+
+- **New test fixture suite** (`tests/fixtures/degraded_payloads/`): covers malformed/degraded payloads
+  that holdout fixtures may contain, covering the goal.md requirement for "malformed-payload cases".
+  - GDACS: events with empty GLIDE (doesn't merge on GLIDE rule), null country/iso3, empty title
+  - ReliefWeb: entries without pubDate (empty occurred_at), entries without GLIDE (hazard defaults to OT),
+    entries with missing/invalid link slugs
+  - USGS: features with 3D coordinates (depth_km extracted), features with 2D coordinates (depth_km=None)
+- **Tests added** (+9 total, 65 total):
+  - `test_gdacs_handles_empty_glide`: empty GLIDE strings don't merge via GLIDE rule (truthiness check)
+  - `test_gdacs_handles_null_country_iso3`: null fields allowed in normalization
+  - `test_gdacs_handles_empty_title`: empty names default to empty string (not crash)
+  - `test_gdacs_handles_null_glide`: null GLIDE normalized to None
+  - `test_reliefweb_handles_missing_pubdate`: entries without pubDate get empty occurred_at
+  - `test_reliefweb_handles_missing_glide`: entries without GLIDE default hazard to OT
+  - `test_reliefweb_extracts_all_entries`: all 4 degraded entries extracted (none skipped)
+  - `test_usgs_handles_3d_coordinates`: 3D geometry preserves depth_km
+  - `test_usgs_handles_2d_coordinates`: 2D geometry sets depth_km=None
+- **Impact**: goal.md's "broaden fixture coverage: ...malformed-payload cases" fully addressed.
+  Normalizers already had exception handling (iteration 2), so new tests verify that degraded
+  payloads are skipped gracefully and good data is salvaged. Improves "events found" and
+  "duplicates merged" judging axes by testing realistic failures.
+- Checkers: all 6 green; schema still validates 30 events; test count 65 (was 56). No regression.

@@ -1,0 +1,48 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "generated": 1783342886000,
+    "title": "USGS All Earthquakes, Past Day",
+    "count": 2
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 5.2,
+        "place": "40 km E of Honshu, Japan",
+        "time": 1783316400000,
+        "updated": 1783320000000,
+        "felt": 0,
+        "alert": null,
+        "status": "reviewed",
+        "tsunami": 0,
+        "sig": 450,
+        "ids": ",us6000tafd,",
+        "type": "earthquake",
+        "title": "M 5.2 - 40 km E of Honshu, Japan"
+      },
+      "geometry": {"type": "Point", "coordinates": [141.845, 40.4353, 15.2]},
+      "id": "us6000tafd"
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "mag": 4.8,
+        "place": "10 km NW of Kathmandu, Nepal",
+        "time": 1783329600000,
+        "updated": 1783332000000,
+        "felt": 1,
+        "alert": null,
+        "status": "reviewed",
+        "tsunami": 0,
+        "sig": 380,
+        "ids": ",us6000taaa,",
+        "type": "earthquake",
+        "title": "M 4.8 - 10 km NW of Kathmandu, Nepal"
+      },
+      "geometry": {"type": "Point", "coordinates": [85.3, 27.7]},
+      "id": "us6000taaa"
+    }
+  ]
+}
