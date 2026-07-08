@@ -5,6 +5,8 @@ Level 2: standing orders — prepend agent/soul.md as the system prompt.
          (This is all CLAUDE.md is.)
 Level 3: one tool — the model asks for fetch_feed, our code runs it, the
          result goes back into the messages.
+Level 4: the agent loop — keep going while the model keeps requesting tools,
+         with a hard turn cap because loops never stop on their own.
 
     uv run python agent/harness.py            # interactive
     uv run python agent/harness.py --once "hi" # one turn, then exit
@@ -13,6 +15,7 @@ Level 3: one tool — the model asks for fetch_feed, our code runs it, the
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -22,6 +25,24 @@ from agent import tools  # noqa: E402
 from agent.model import make_model  # noqa: E402
 
 SOUL = Path(__file__).with_name("soul.md")
+MAX_TURNS = int(os.environ.get("HADR_MAX_TURNS", "12"))
+
+
+def run_turn(model, messages: list[dict]) -> dict:
+    """The agent loop: keep going while the model keeps requesting tools."""
+    for _ in range(MAX_TURNS):
+        reply, _usage = model.complete(messages, tools.SCHEMAS)
+        messages.append(reply)
+        if not reply.get("tool_calls"):
+            return reply
+        for call in reply["tool_calls"]:
+            print(f"[tool] {call['function']['name']}({call['function']['arguments'][:120]})")
+            messages.append(
+                {"role": "tool", "tool_call_id": call["id"], "content": tools.run(call)}
+            )
+    reply = {"role": "assistant", "content": f"[stopped: turn cap {MAX_TURNS} reached]"}
+    messages.append(reply)
+    return reply
 
 
 def main() -> int:
@@ -38,16 +59,7 @@ def main() -> int:
         except EOFError:
             return 0
         messages.append({"role": "user", "content": user})
-        reply, _usage = model.complete(messages, tools.SCHEMAS)
-        messages.append(reply)
-        for call in reply.get("tool_calls") or []:
-            print(f"[tool] {call['function']['name']}({call['function']['arguments']})")
-            messages.append(
-                {"role": "tool", "tool_call_id": call["id"], "content": tools.run(call)}
-            )
-        if reply.get("tool_calls"):
-            reply, _usage = model.complete(messages, tools.SCHEMAS)
-            messages.append(reply)
+        reply = run_turn(model, messages)
         print(reply.get("content") or "")
         if args.once:
             return 0
