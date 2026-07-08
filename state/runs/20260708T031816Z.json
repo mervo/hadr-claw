@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-07-08T03:18:16Z",
+  "finished_at": "2026-07-08T03:18:16Z",
+  "duration_ms": 0,
+  "feeds": [
+    {
+      "feed": "usgs",
+      "ok": true,
+      "fetched_at": "2026-07-08T03:18:16Z",
+      "latency_ms": 0,
+      "error": null,
+      "event_count": 17
+    }
+  ],
+  "significant_events": 17,
+  "engine": "pipeline"
+}

@@ -50,6 +50,12 @@ Other windows and magnitude cut-offs exist (`all_hour`, `4.5_week`,
 
 1. This event has one `id` but two entries in `ids`. Why would a single
    earthquake carry several identifiers, and which one do you store?
+   > **Answered (Tier 1):** each seismic network that reports the quake assigns
+   > its own id (`ci…` = California network, `us…` = NEIC), and `ids` lists them
+   > all, comma-wrapped. We store **all of them** as `sources[].ids` aliases —
+   > `hadr/feeds/usgs.py` splits the string — because cross-feed dedup (Tier 2)
+   > needs the NEIC id to match GDACS events whose `source` is `NEIC`. The
+   > feature-level `id` remains the primary key (`uid = "usgs:<id>"`).
 2. `status` is `"automatic"` and `updated` is later than `time`. Events get
    revised — magnitude, location, occasionally deleted outright. What happens
    to a report you have already published when its event changes underneath it?

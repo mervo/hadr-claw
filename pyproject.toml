@@ -1,0 +1,21 @@
+[project]
+name = "hadr-claw"
+version = "0.1.0"
+description = "HADR monitoring claw: watches disaster feeds, assesses events, publishes a morning situation report"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.8",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

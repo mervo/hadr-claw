@@ -1,0 +1,91 @@
+"""CLI: fetch feeds, normalize, render the dashboard, record the run.
+
+    uv run python -m hadr --feeds usgs [--fixtures tests/fixtures] [--out dashboard.html]
+"""
+
+from __future__ import annotations
+
+import argparse
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+from hadr.events import Event, FeedStatus
+from hadr.feeds import usgs
+from hadr.render import write_dashboard
+from hadr.runlog import write_run
+
+FEEDS = {"usgs": usgs}
+
+
+def _now() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def gather(names: list[str], fixtures: str | None) -> tuple[list[Event], list[FeedStatus]]:
+    """Fetch + normalize each feed in isolation: one feed failing must not
+    take down the report (it shows as a banner instead)."""
+    events: list[Event] = []
+    statuses: list[FeedStatus] = []
+    for name in names:
+        mod = FEEDS[name]
+        started = time.monotonic()
+        try:
+            if fixtures:
+                raw = mod.load_fixture(Path(fixtures) / name / "all_day.geojson")
+            else:
+                raw = mod.fetch_raw()
+            found = mod.normalize(raw)
+            events.extend(found)
+            statuses.append(
+                FeedStatus(
+                    feed=name, ok=True, fetched_at=_now(),
+                    latency_ms=int((time.monotonic() - started) * 1000),
+                    event_count=len(found),
+                )
+            )
+        except Exception as exc:  # noqa: BLE001 — isolation boundary
+            statuses.append(FeedStatus(feed=name, ok=False, fetched_at=_now(), error=str(exc)))
+    return events, statuses
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="hadr")
+    parser.add_argument("--feeds", default="usgs", help="comma-separated: " + ",".join(FEEDS))
+    parser.add_argument("--fixtures", help="read feed payloads from this dir instead of the network")
+    parser.add_argument("--out", default="dashboard.html")
+    args = parser.parse_args(argv)
+
+    names = [n.strip() for n in args.feeds.split(",") if n.strip()]
+    unknown = [n for n in names if n not in FEEDS]
+    if unknown:
+        parser.error(f"unknown feed(s) {unknown}; available: {sorted(FEEDS)} (more arrive in Tier 2)")
+
+    started_at = _now()
+    t0 = time.monotonic()
+    events, statuses = gather(names, args.fixtures)
+    out = write_dashboard(events, statuses)
+    if args.out != "dashboard.html":
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        write_dashboard(events, statuses, out)
+
+    write_run(
+        {
+            "started_at": started_at,
+            "finished_at": _now(),
+            "duration_ms": int((time.monotonic() - t0) * 1000),
+            "feeds": [s.to_dict() for s in statuses],
+            "significant_events": len(events),
+            "engine": "pipeline",
+        }
+    )
+    print(
+        f"{len(events)} significant event(s) from "
+        f"{sum(s.ok for s in statuses)}/{len(statuses)} feed(s) -> {out}"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

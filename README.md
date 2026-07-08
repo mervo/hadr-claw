@@ -7,7 +7,8 @@ and [ReliefWeb](feeds/reliefweb.md) — filters the noise, assesses what remains
 report to `dashboard.html` at **08:30 Singapore time**, unattended, staying quiet when
 nothing has changed.
 
-> **Status: Tier 0 — documentation only.** There is no runnable code yet.
+> **Status: Tier 1 — slice one runs end to end.** USGS earthquakes → unified
+> events → `dashboard.html`, deterministic pipeline only (no LLM yet).
 > See [ROADMAP.md](ROADMAP.md) for the tier-by-tier build plan; each tier is
 > end-to-end runnable and demoable. This README grows with each tier and never
 > describes features that don't exist yet.
@@ -46,11 +47,20 @@ mapped to this repository (see [Goal.md](Goal.md) for the course brief):
 
 ## Running it
 
-Nothing is runnable at Tier 0. The interface each tier will add (kept current as
-tiers land — unchecked means not built yet):
+```sh
+docker compose run --rm claw --feeds usgs   # fetch, assess, write dashboard.html
+docker compose up dashboard                 # serve it at http://localhost:8080/dashboard.html
+```
 
-- [ ] **Tier 1** — `docker compose run --rm claw --feeds usgs` then
-  `docker compose up dashboard` → http://localhost:8080
+Dev loop without docker: `uv run python -m hadr --feeds usgs`.
+Offline/deterministic (used by tests and CI): add `--fixtures tests/fixtures`.
+Each run appends a record to `state/runs/` (pruned to the newest 14) — feed health,
+latency, event counts; the dashboard's ops strip shows the same at a glance.
+
+The interface per tier (kept current as tiers land — unchecked means not built yet):
+
+- [x] **Tier 1** — `docker compose run --rm claw --feeds usgs` then
+  `docker compose up dashboard` → http://localhost:8080/dashboard.html
   (dev loop: `uv run python -m hadr --feeds usgs`; offline: `--fixtures tests/fixtures`)
 - [ ] **Tier 2** — `--feeds usgs,gdacs,reliefweb` → merged multi-source events
 - [ ] **Tier 3** — run twice → second run reports "no new developments"
@@ -96,6 +106,10 @@ Goal.md                  # course brief (untouched) — what this claw must beco
 ROADMAP.md               # tier table with live status + known blind spots
 CLAUDE.md                # conventions for agents & humans working on this repo
 implementation-notes.md  # decisions / open questions / deviations, per working block
+hadr/                    # deterministic pipeline: feeds/ → events → render (no LLM here)
+tests/                   # pytest + fixtures (checked-in feed payloads; never the network)
+state/runs/              # per-run observability records (newest 14 kept)
+dashboard.html           # the channel: generated situation report
 feeds/                   # per-feed endpoint docs and open questions
 docs/solutions/          # one hard-won fix per file; grep before debugging
 scripts/                 # deterministic checks (exit 0/1); later the goal-file checkers
