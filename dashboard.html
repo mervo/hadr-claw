@@ -9,252 +9,319 @@
      are fixed across modes and never carry meaning without a text label. */
   :root {
     color-scheme: light dark;
-    --surface: #fcfcfb; --surface-2: #ffffff;
+    --surface: #fcfcfb; --surface-2: #ffffff; --surface-3: #f4f3f0;
     --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #6e6d68;
     --border: #e4e3df; --border-strong: #cfcec9;
     --good: #0ca30c; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
     --warning-tint: #fdf3dd; --warning-ink: #533f03;
-    --accent: #2a78d6;
+    --accent: #2a78d6; --accent-tint: #eaf2fc;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --surface: #1a1a19; --surface-2: #232322;
+      --surface: #1a1a19; --surface-2: #232322; --surface-3: #2b2b29;
       --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #98978e;
       --border: #383835; --border-strong: #4a4945;
       --warning-tint: #33290f; --warning-ink: #f0dfae;
-      --accent: #3987e5;
+      --accent: #3987e5; --accent-tint: #16273d;
     }
   }
   * { box-sizing: border-box; }
   body {
-    margin: 0 auto; max-width: 60rem; padding: 1.5rem 1.25rem 3rem;
+    margin: 0; padding: 0 1.5rem 3rem;
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    line-height: 1.55; background: var(--surface); color: var(--ink);
+    line-height: 1.5; background: var(--surface); color: var(--ink);
     font-variant-numeric: tabular-nums;
   }
-  header { margin-bottom: 0.5rem; }
-  header h1 { margin: 0 0 0.15rem; font-size: 1.45rem; letter-spacing: -0.01em; }
-  header .sub { margin: 0; color: var(--ink-3); font-size: 0.85rem; }
-  .stamp { color: var(--ink-2); font-size: 0.9rem; margin: 0.35rem 0 0; }
-  .ops { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0 1.5rem;
-         font-size: 0.8rem; }
-  .chip { display: inline-flex; align-items: center; gap: 0.4em;
-          border: 1px solid var(--border); border-radius: 999px;
-          padding: 0.2rem 0.75rem; color: var(--ink-2); background: var(--surface-2); }
-  .chip.ok::before, .chip.bad::before, .alert::before {
+  .page { max-width: 100rem; margin: 0 auto; }
+  .dot { width: 0.6em; height: 0.6em; border-radius: 50%; display: inline-block;
+         flex: none; }
+  .dot.red { background: var(--critical); }
+  .dot.orange { background: var(--serious); }
+  .dot.yellow { background: var(--warning); }
+  .dot.green { background: var(--good); }
+  .dot.none { background: var(--border-strong); }
+
+  .ops { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap;
+         align-items: center; gap: 0.45rem 1.1rem; font-size: 0.82rem;
+         color: var(--ink-2); background: var(--surface);
+         border-bottom: 1px solid var(--border); padding: 0.6rem 0.25rem;
+         margin: 0 -0.25rem 1rem; }
+  .ops .brand { font-weight: 700; color: var(--ink); font-size: 0.95rem; }
+  .ops .sep { color: var(--border-strong); }
+  .chip { display: inline-flex; align-items: center; gap: 0.4em; }
+  .chip.ok::before, .chip.bad::before {
     content: ""; width: 0.55em; height: 0.55em; border-radius: 50%;
     display: inline-block; flex: none;
   }
   .chip.ok::before { background: var(--good); }
   .chip.bad::before { background: var(--critical); }
-  .chip.bad { color: var(--ink); border-color: var(--border-strong); }
-  main h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.09em;
-            color: var(--ink-3); margin: 1.75rem 0 0.6rem; font-weight: 600; }
-  main h2 .count { color: var(--ink-3); font-weight: 400; }
-  .card { border: 1px solid var(--border); border-radius: 0.6rem;
-          padding: 0.85rem 1.1rem; margin-bottom: 0.7rem; background: var(--surface-2); }
-  .card h3 { margin: 0 0 0.35rem; font-size: 1.02rem; line-height: 1.4;
-             display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
-  .card .title { font-weight: 650; }
-  .badges { display: inline-flex; gap: 0.4rem; align-items: center; flex: none; }
-  .mag { font-weight: 600; font-size: 0.8rem; border: 1px solid var(--border-strong);
-         border-radius: 0.35rem; padding: 0.05rem 0.45rem; color: var(--ink-2); }
-  .alert { display: inline-flex; align-items: center; gap: 0.35em; font-weight: 600;
-           font-size: 0.8rem; border: 1px solid var(--border-strong);
-           border-radius: 999px; padding: 0.05rem 0.6rem; color: var(--ink); }
-  .alert.Red::before { background: var(--critical); }
-  .alert.Orange::before { background: var(--serious); }
-  .alert.Green::before { background: var(--good); }
-  .hazard { font-size: 0.72rem; letter-spacing: 0.08em; color: var(--ink-3);
-            border: 1px solid var(--border); border-radius: 0.3rem;
-            padding: 0.05rem 0.35rem; flex: none; }
-  .meta { font-size: 0.82rem; color: var(--ink-2); margin: 0 0 0.2rem; }
-  .meta a { color: var(--accent); text-decoration: none; }
-  .meta a:hover { text-decoration: underline; }
-  .card p { margin: 0.45rem 0 0; font-size: 0.92rem; color: var(--ink-2); }
+  .chip.bad { color: var(--ink); font-weight: 600; }
+  .ops .stamp { margin-left: auto; color: var(--ink); font-weight: 600; }
+
   .banner { background: var(--warning-tint); color: var(--warning-ink);
             border: 1px solid var(--warning); border-left-width: 4px;
-            border-radius: 0.5rem; padding: 0.65rem 1rem; margin: 0 0 0.8rem;
-            font-size: 0.92rem; }
-  .assess { border-left: 3px solid var(--accent); padding: 0.1rem 0 0.1rem 0.75rem;
+            border-radius: 0.5rem; padding: 0.6rem 1rem; margin: 0 0 0.8rem;
+            font-size: 0.9rem; }
+
+  .layout { display: grid; grid-template-columns: 19rem 1fr; gap: 1.25rem;
+            align-items: start; }
+  @media (max-width: 64rem) { .layout { grid-template-columns: 1fr; }
+                              .rail { position: static; } }
+  .rail { position: sticky; top: 3.4rem; display: flex; flex-direction: column;
+          gap: 0.75rem; }
+  .panel { border: 1px solid var(--border); border-radius: 0.6rem;
+           background: var(--surface-2); padding: 0.8rem 1rem; }
+  .panel h2 { margin: 0 0 0.5rem; font-size: 0.72rem; text-transform: uppercase;
+              letter-spacing: 0.08em; color: var(--ink-3); font-weight: 600; }
+  .panel .row { display: flex; justify-content: space-between; gap: 0.6rem;
+                font-size: 0.85rem; padding: 0.16rem 0; color: var(--ink-2); }
+  .panel .row b { color: var(--ink); }
+  .panel .row .seg { display: inline-flex; align-items: center; gap: 0.45em;
+                     min-width: 0; }
+  .panel .row .seg span:last-child { overflow: hidden; text-overflow: ellipsis;
+                     white-space: nowrap; }
+  .lead .headline { border-left: 3px solid var(--accent); padding-left: 0.75rem;
+                    font-size: 0.92rem; color: var(--ink); margin: 0.1rem 0 0.6rem; }
+  .quiet { font-size: 0.9rem; color: var(--ink-2); margin: 0.1rem 0 0.6rem; }
+
+  main h2 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.09em;
+            color: var(--ink-3); margin: 1.4rem 0 0.55rem; font-weight: 600; }
+  main section:first-child h2 { margin-top: 0.1rem; }
+  main h2 .count { font-weight: 400; }
+
+  details.ev { border: 1px solid var(--border); border-radius: 0.55rem;
+               background: var(--surface-2); margin-bottom: 0.45rem;
+               overflow: hidden; }
+  details.ev summary { list-style: none; cursor: pointer; display: flex;
+               align-items: center; gap: 0.6rem; padding: 0.5rem 0.9rem;
+               font-size: 0.9rem; min-width: 0; }
+  details.ev summary::-webkit-details-marker { display: none; }
+  details.ev summary::after { content: "\203A"; margin-left: auto;
+               color: var(--ink-3); transform: rotate(90deg);
+               transition: transform 0.15s; flex: none; }
+  details.ev[open] summary::after { transform: rotate(-90deg); }
+  details.ev summary:hover { background: var(--surface-3); }
+  .mag { font-weight: 700; font-size: 0.78rem; min-width: 3.2em; text-align: center;
+         border: 1px solid var(--border-strong); border-radius: 0.35rem;
+         padding: 0.02rem 0.3rem; color: var(--ink-2); flex: none; }
+  .ev .t { font-weight: 600; white-space: nowrap; overflow: hidden;
+           text-overflow: ellipsis; }
+  .ev .where { color: var(--ink-3); font-size: 0.8rem; white-space: nowrap;
+               overflow: hidden; text-overflow: ellipsis; }
+  .ev .age { color: var(--ink-3); font-size: 0.78rem; flex: none; }
+  .ev .body { padding: 0.35rem 0.95rem 0.8rem 2.2rem; font-size: 0.88rem;
+              color: var(--ink-2); border-top: 1px dashed var(--border); }
+  .ev .body p { margin: 0.35rem 0; }
+  .assess { border-left: 3px solid var(--accent); padding-left: 0.7rem;
             color: var(--ink); }
-  .assess .priority { font-size: 0.7rem; text-transform: uppercase;
-                      letter-spacing: 0.08em; font-weight: 700; color: var(--ink-3);
-                      margin-right: 0.5em; }
-  .lead { border: 1px solid var(--border); border-radius: 0.6rem;
-          background: var(--surface-2); padding: 1rem 1.25rem; margin: 0 0 0.6rem; }
-  .lead h2 { margin: 0 0 0.4rem; font-size: 1.15rem; line-height: 1.4; }
-  .lead p { margin: 0; font-size: 0.98rem; color: var(--ink-2); }
-  .quiet { font-size: 1rem; }
-  footer { margin-top: 2.5rem; padding-top: 0.8rem; border-top: 1px solid var(--border);
-           font-size: 0.78rem; color: var(--ink-3); }
+  .assess .priority { font-size: 0.68rem; text-transform: uppercase;
+            font-weight: 700; letter-spacing: 0.08em; color: var(--ink-3);
+            margin-right: 0.5em; }
+  .links a { color: var(--accent); text-decoration: none; margin-right: 0.8em; }
+  .links a:hover { text-decoration: underline; }
+  .badge { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.05em;
+           border-radius: 0.3rem; padding: 0.06rem 0.4rem; flex: none; }
+  .badge.new { background: var(--accent-tint); color: var(--accent); }
+  .badge.esc { background: var(--warning-tint); color: var(--warning-ink); }
+
+  footer { margin-top: 2.5rem; padding-top: 0.8rem;
+           border-top: 1px solid var(--border); font-size: 0.78rem;
+           color: var(--ink-3); }
   footer a { color: inherit; }
 </style>
 </head>
 <body>
-<header>
-  <h1>HADR Situation Report</h1>
-  <p class="sub">Global watch floor · USGS · GDACS · ReliefWeb</p>
-  <p class="stamp">Data as of 2026-07-08 07:14 UTC / 2026-07-08 15:14 SGT</p>
-</header>
-<div class="ops"><span class="chip ok">gdacs: ok · 1496 ms</span>
-<span class="chip ok">reliefweb: ok · 299 ms</span>
-<span class="chip ok">usgs: ok · 85 ms</span>
-<span class="chip">24 significant event(s)</span>
-<span class="chip">2 new, 0 escalated, 1 updated, 0 deleted</span></div>
+<div class="page">
+<div class="ops">
+  <span class="brand">HADR watch</span>
+  <span class="chip"><span class="dot red"></span>1 Red</span><span class="chip"><span class="dot orange"></span>3 Orange</span><span class="chip">24 event(s)</span>
+  <span class="sep">|</span>
+  <span class="chip ok">gdacs: ok · 1074 ms</span><span class="chip ok">reliefweb: ok · 132 ms</span><span class="chip ok">usgs: ok · 112 ms</span>
+  <span class="stamp">Data as of 2026-07-08 07:42 UTC / 2026-07-08 15:42 SGT</span>
+</div>
 
-<div class="lead"><h2>Orange-level forest fires in Portugal; minor earthquakes in Peru and Reykjanes Ridge</h2><p>Two new events and one updated event since last report. The highest priority is the forest fire in Portugal (Orange alert, ~19,670 ha affected). Two Green-alert earthquakes occurred: a M4.7 in Peru and a M5.3 (updated) in the remote Reykjanes Ridge. Neither earthquake is expected to require humanitarian response.</p></div>
-<main>
-<h2>New <span class="count">· 2</span></h2>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">WF</span><span class="alert Orange">Orange</span></span>
-      <span class="title">Forest fires in Portugal</span></h3>
-  <p class="meta">2026-07-02T00:00:00Z · lat 40.62, lon -8.28 · <a href="https://www.gdacs.org/report.aspx?eventid=1029260&amp;episodeid=11&amp;eventtype=WF">gdacs</a></p>
-  <p class="assess"><span class="priority">high</span>A forest fire in Portugal has burned approximately 19,670 hectares and carries a GDACS Orange impact alert. The fire started on 2 July 2026 and is likely affecting rural communities and ecosystems across the burned area.</p>
+<div class="layout">
+  <div class="rail">
+    <div class="panel lead"><h2>Situation</h2><p class="headline">Indonesia earthquake (M5.4) triggers Green alert; no significant change elsewhere</p><p class="quiet">A magnitude 5.4 earthquake struck Indonesia on 7 July 2026 at 07:16 UTC at a depth of 36.8 km. The GDACS alert is Green, indicating a low likelihood of humanitarian impact. All other 23 monitored events remain unchanged with no new or escalated incidents.</p><div class="row"><span>New since last report</span><b>0</b></div><div class="row"><span>Escalated</span><b>0</b></div><div class="row"><span>Updated</span><b>1</b></div><div class="row"><span>Under watch</span><b>23</b></div></div>
+<div class="panel"><h2>By hazard</h2><div class="row"><span>Earthquake</span><b>20</b></div><div class="row"><span>Wildfire</span><b>2</b></div><div class="row"><span>Cyclone</span><b>1</b></div><div class="row"><span>Flood</span><b>1</b></div></div>
+<div class="panel"><h2>Highest severity</h2><div class="row"><span class="seg"><span class="dot red"></span><span>Tropical Cyclone BAVI-26</span></span><b>Red</b></div><div class="row"><span class="seg"><span class="dot orange"></span><span>Flood in China</span></span><b>Orange</b></div><div class="row"><span class="seg"><span class="dot orange"></span><span>Forest fires in Portugal</span></span><b>Orange</b></div></div>
+  </div>
+  <main>
+  <section><h2>Updated <span class="count">· 1</span></h2>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 5.4</span>
+    <span class="t">Earthquake in Indonesia</span>
+    <span class="where">Indonesia · Green alert</span>
+    <span class="age">24 h</span></summary>
+  <div class="body"><p class="assess"><span class="priority">low</span>A magnitude 5.4 earthquake at 36.8 km depth occurred in Indonesia on 7 July 2026. GDACS issued a Green alert, meaning the event is unlikely to require humanitarian assistance. No casualties or damage are reported.</p><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550568&amp;episodeid=1716745&amp;eventtype=EQ">gdacs</a></p></div>
+</details></section>
+<section><h2>Ongoing <span class="count">· 23</span></h2>
+<details class="ev">
+  <summary><span class="dot red"></span><span class="mag">TC</span>
+    <span class="t">Tropical Cyclone BAVI-26</span>
+    <span class="where">Guam, Northern Mariana Islands, Japan, Taiwan, China · Red alert</span>
+    <span class="age">7 d</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1001279&amp;episodeid=29&amp;eventtype=TC">gdacs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot orange"></span><span class="mag">FL</span>
+    <span class="t">Flood in China</span>
+    <span class="where">China · Orange alert</span>
+    <span class="age">32 d</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1103933&amp;episodeid=17&amp;eventtype=FL">gdacs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot orange"></span><span class="mag">WF</span>
+    <span class="t">Forest fires in Portugal</span>
+    <span class="where">Portugal · Orange alert</span>
+    <span class="age">6 d</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1029260&amp;episodeid=11&amp;eventtype=WF">gdacs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot orange"></span><span class="mag">WF</span>
+    <span class="t">Forest fires in France</span>
+    <span class="where">France · Orange alert</span>
+    <span class="age">4 d</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1029331&amp;episodeid=6&amp;eventtype=WF">gdacs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 5.8</span>
+    <span class="t">Earthquake in Chile</span>
+    <span class="where">Chile · Green alert</span>
+    <span class="age">30 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550528&amp;episodeid=1716719&amp;eventtype=EQ">gdacs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 5.3</span>
+    <span class="t">Earthquake in Reykjanes Ridge</span>
+    <span class="where">Reykjanes Ridge · Green alert</span>
+    <span class="age">26 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550559&amp;episodeid=1716735&amp;eventtype=EQ">gdacs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 5.3</span>
+    <span class="t">Earthquake in Costa Rica</span>
+    <span class="where">Costa Rica · 48 km deep · Green alert</span>
+    <span class="age">14 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550639&amp;episodeid=1716823&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tarc">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 5.3</span>
+    <span class="t">Earthquake in Indonesia</span>
+    <span class="where">Indonesia · 35 km deep · Green alert</span>
+    <span class="age">12 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550650&amp;episodeid=1716837&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tary">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 5.0</span>
+    <span class="t">Earthquake in Reykjanes Ridge</span>
+    <span class="where">Reykjanes Ridge · Green alert</span>
+    <span class="age">27 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550554&amp;episodeid=1716731&amp;eventtype=EQ">gdacs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 5.0</span>
+    <span class="t">Earthquake in Reykjanes Ridge</span>
+    <span class="where">Reykjanes Ridge · 10 km deep · Green alert</span>
+    <span class="age">23 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550574&amp;episodeid=1716751&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000talm">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 5.0</span>
+    <span class="t">Earthquake in China</span>
+    <span class="where">China · 10 km deep · Green alert</span>
+    <span class="age">6 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550709&amp;episodeid=1716905&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000taui">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 4.9</span>
+    <span class="t">Earthquake in Drake Passage</span>
+    <span class="where">Drake Passage · 10 km deep · Green alert</span>
+    <span class="age">14 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550638&amp;episodeid=1716821&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tar3">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 4.9</span>
+    <span class="t">Earthquake in New Zealand</span>
+    <span class="where">New Zealand · 121 km deep · Green alert</span>
+    <span class="age">11 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550654&amp;episodeid=1716843&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tasa">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 4.9</span>
+    <span class="t">Earthquake in Tajikistan</span>
+    <span class="where">Tajikistan · 10 km deep · Green alert</span>
+    <span class="age">9 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550675&amp;episodeid=1716888&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tatn">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 4.7</span>
+    <span class="t">Earthquake in British Virgin Is.</span>
+    <span class="where">British Virgin Is. · Green alert</span>
+    <span class="age">14 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550633&amp;episodeid=1716813&amp;eventtype=EQ">gdacs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 4.7</span>
+    <span class="t">Earthquake in Jan Mayen Island Region</span>
+    <span class="where">Jan Mayen Island Region · 10 km deep · Green alert</span>
+    <span class="age">3 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550718&amp;episodeid=1716915&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tauv">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 4.7</span>
+    <span class="t">Earthquake in Peru</span>
+    <span class="where">Peru · 10 km deep · Green alert</span>
+    <span class="age">3 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550728&amp;episodeid=1716944&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tauz">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 4.6</span>
+    <span class="t">Earthquake in China</span>
+    <span class="where">China · 10 km deep · Green alert</span>
+    <span class="age">9 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550674&amp;episodeid=1716865&amp;eventtype=EQ">gdacs</a><a href="https://www.gdacs.org/report.aspx?eventid=1550669&amp;episodeid=1716860&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tati">usgs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tatd">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 4.6</span>
+    <span class="t">Earthquake in Northern Molucca Sea</span>
+    <span class="where">Northern Molucca Sea · 49 km deep · Green alert</span>
+    <span class="age">8 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550684&amp;episodeid=1716889&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tau8">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 4.5</span>
+    <span class="t">Earthquake in Venezuela</span>
+    <span class="where">Venezuela · 127 km deep · Green alert</span>
+    <span class="age">23 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550582&amp;episodeid=1716761&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000talr">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 4.5</span>
+    <span class="t">Earthquake in Indonesia</span>
+    <span class="where">Indonesia · 35 km deep · Green alert</span>
+    <span class="age">17 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550615&amp;episodeid=1716796&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tant">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 4.5</span>
+    <span class="t">Earthquake in United States</span>
+    <span class="where">United States · 172 km deep · Green alert</span>
+    <span class="age">14 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550648&amp;episodeid=1716833&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tara">usgs</a></p></div>
+</details>
+<details class="ev">
+  <summary><span class="dot green"></span><span class="mag">M 4.5</span>
+    <span class="t">Earthquake in Philippines</span>
+    <span class="where">Philippines · 155 km deep · Green alert</span>
+    <span class="age">11 h</span></summary>
+  <div class="body"><p class="links"><a href="https://www.gdacs.org/report.aspx?eventid=1550657&amp;episodeid=1716846&amp;eventtype=EQ">gdacs</a><a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tase">usgs</a></p></div>
+</details></section>
+  </main>
 </div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.7</span></span>
-      <span class="title">Earthquake in Peru</span></h3>
-  <p class="meta">2026-07-08T05:00:32Z · lat -10.71, lon -74.79 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550728&amp;episodeid=1716944&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tauz">usgs</a></p>
-  <p class="assess"><span class="priority">low</span>A magnitude 4.7 earthquake struck Peru at 05:00 UTC on 8 July 2026 at a depth of 10 km. GDACS issued a Green alert with a low alert score, suggesting limited or no humanitarian impact.</p>
-</div>
-<h2>Updated <span class="count">· 1</span></h2>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.3</span></span>
-      <span class="title">Earthquake in Reykjanes Ridge</span></h3>
-  <p class="meta">2026-07-07T05:55:40Z · lat 59.51, lon -30.25 · <a href="https://www.gdacs.org/report.aspx?eventid=1550559&amp;episodeid=1716735&amp;eventtype=EQ">gdacs</a></p>
-  <p class="assess"><span class="priority">low</span>An updated event: a magnitude 5.3 earthquake occurred in the Reykjanes Ridge on 7 July 2026 at 05:55 UTC, depth 10 km. The GDACS Green alert indicates this remote offshore earthquake poses little to no threat to populated areas.</p>
-</div>
-<h2>Ongoing <span class="count">· 21</span></h2>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">TC</span><span class="alert Red">Red</span></span>
-      <span class="title">Tropical Cyclone BAVI-26</span></h3>
-  <p class="meta">2026-07-01T00:00:00Z · lat 16.90, lon 134.10 · <a href="https://www.gdacs.org/report.aspx?eventid=1001279&amp;episodeid=29&amp;eventtype=TC">gdacs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">FL</span><span class="alert Orange">Orange</span></span>
-      <span class="title">Flood in China</span></h3>
-  <p class="meta">2026-06-06T01:00:00Z · lat 27.12, lon 111.03 · <a href="https://www.gdacs.org/report.aspx?eventid=1103933&amp;episodeid=17&amp;eventtype=FL">gdacs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">WF</span><span class="alert Orange">Orange</span></span>
-      <span class="title">Forest fires in France</span></h3>
-  <p class="meta">2026-07-04T00:00:00Z · lat 42.67, lon 2.57 · <a href="https://www.gdacs.org/report.aspx?eventid=1029331&amp;episodeid=6&amp;eventtype=WF">gdacs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.8</span></span>
-      <span class="title">Earthquake in Chile</span></h3>
-  <p class="meta">2026-07-07T01:26:45Z · lat -57.33, lon -66.76 · <a href="https://www.gdacs.org/report.aspx?eventid=1550528&amp;episodeid=1716719&amp;eventtype=EQ">gdacs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.4</span></span>
-      <span class="title">Earthquake in Indonesia</span></h3>
-  <p class="meta">2026-07-07T07:16:26Z · lat 3.12, lon 127.56 · depth 37 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550568&amp;episodeid=1716745&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000talg">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.3</span></span>
-      <span class="title">Earthquake in Costa Rica</span></h3>
-  <p class="meta">2026-07-07T18:11:32Z · lat 9.86, lon -84.60 · depth 48 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550639&amp;episodeid=1716823&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tarc">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.3</span></span>
-      <span class="title">Earthquake in Indonesia</span></h3>
-  <p class="meta">2026-07-07T19:44:52Z · lat -6.77, lon 105.06 · depth 35 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550650&amp;episodeid=1716837&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tary">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.0</span></span>
-      <span class="title">Earthquake in Reykjanes Ridge</span></h3>
-  <p class="meta">2026-07-07T05:00:43Z · lat 59.46, lon -30.25 · <a href="https://www.gdacs.org/report.aspx?eventid=1550554&amp;episodeid=1716731&amp;eventtype=EQ">gdacs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.0</span></span>
-      <span class="title">Earthquake in Reykjanes Ridge</span></h3>
-  <p class="meta">2026-07-07T08:30:56Z · lat 59.48, lon -30.37 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550574&amp;episodeid=1716751&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000talm">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 5.0</span></span>
-      <span class="title">Earthquake in China</span></h3>
-  <p class="meta">2026-07-08T02:08:48Z · lat 28.59, lon 104.75 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550709&amp;episodeid=1716905&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000taui">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.9</span></span>
-      <span class="title">Earthquake in Drake Passage</span></h3>
-  <p class="meta">2026-07-07T17:39:56Z · lat -57.35, lon -66.82 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550638&amp;episodeid=1716821&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tar3">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.9</span></span>
-      <span class="title">Earthquake in New Zealand</span></h3>
-  <p class="meta">2026-07-07T20:33:15Z · lat -37.22, lon 177.43 · depth 121 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550654&amp;episodeid=1716843&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tasa">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.9</span></span>
-      <span class="title">Earthquake in Tajikistan</span></h3>
-  <p class="meta">2026-07-07T22:42:39Z · lat 39.15, lon 71.74 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550675&amp;episodeid=1716888&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tatn">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.7</span></span>
-      <span class="title">Earthquake in British Virgin Is.</span></h3>
-  <p class="meta">2026-07-07T17:25:35Z · lat 19.64, lon -64.48 · <a href="https://www.gdacs.org/report.aspx?eventid=1550633&amp;episodeid=1716813&amp;eventtype=EQ">gdacs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.7</span></span>
-      <span class="title">Earthquake in Jan Mayen Island Region</span></h3>
-  <p class="meta">2026-07-08T04:21:46Z · lat 71.12, lon -7.13 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550718&amp;episodeid=1716915&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tauv">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.6</span></span>
-      <span class="title">Earthquake in China</span></h3>
-  <p class="meta">2026-07-07T22:22:13Z · lat 28.66, lon 104.71 · depth 10 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550674&amp;episodeid=1716865&amp;eventtype=EQ">gdacs</a> · <a href="https://www.gdacs.org/report.aspx?eventid=1550669&amp;episodeid=1716860&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tati">usgs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tatd">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.6</span></span>
-      <span class="title">Earthquake in Northern Molucca Sea</span></h3>
-  <p class="meta">2026-07-07T23:35:51Z · lat 1.40, lon 126.36 · depth 49 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550684&amp;episodeid=1716889&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tau8">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.5</span></span>
-      <span class="title">Earthquake in Venezuela</span></h3>
-  <p class="meta">2026-07-07T08:41:37Z · lat 10.73, lon -62.58 · depth 127 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550582&amp;episodeid=1716761&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000talr">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.5</span></span>
-      <span class="title">Earthquake in Indonesia</span></h3>
-  <p class="meta">2026-07-07T14:21:22Z · lat 3.11, lon 127.29 · depth 35 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550615&amp;episodeid=1716796&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tant">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.5</span></span>
-      <span class="title">Earthquake in United States</span></h3>
-  <p class="meta">2026-07-07T18:07:41Z · lat 52.57, lon -176.28 · depth 172 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550648&amp;episodeid=1716833&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tara">usgs</a></p>
-  
-</div>
-<div class="card">
-  <h3><span class="badges"><span class="hazard">EQ</span><span class="alert Green">Green</span><span class="mag">M 4.5</span></span>
-      <span class="title">Earthquake in Philippines</span></h3>
-  <p class="meta">2026-07-07T20:37:40Z · lat 13.77, lon 120.66 · depth 155 km · <a href="https://www.gdacs.org/report.aspx?eventid=1550657&amp;episodeid=1716846&amp;eventtype=EQ">gdacs</a> · <a href="https://earthquake.usgs.gov/earthquakes/eventpage/us6000tase">usgs</a></p>
-  
-</div>
-</main>
 <footer>Generated unattended by the
   <a href="https://github.com/mervo/hadr-claw">hadr-claw</a> agent ·
-  feed health and change counts above reflect this run</footer>
+  USGS · GDACS · ReliefWeb · click an event for its assessment</footer>
+</div>
 </body>
 </html>
