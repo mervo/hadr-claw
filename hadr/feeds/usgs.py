@@ -12,6 +12,7 @@ from hadr import USER_AGENT
 from hadr.events import Event
 
 URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
+FIXTURE_NAME = "all_day.geojson"
 WINDOW_HOURS = 24  # all_day is a rolling window; memory (Tier 3) needs this to
                    # distinguish deletions from normal aging-out
 

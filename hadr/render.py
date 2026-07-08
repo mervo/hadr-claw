@@ -34,6 +34,11 @@ PAGE = Template("""<!DOCTYPE html>
   .mag { display: inline-block; min-width: 2.6rem; text-align: center; font-weight: bold;
          border-radius: 0.4rem; padding: 0.1rem 0.4rem; margin-right: 0.5rem;
          background: #ffd9a0; color: #222; }
+  .alert { display: inline-block; font-weight: bold; border-radius: 0.4rem;
+           padding: 0.1rem 0.5rem; margin-right: 0.5rem; color: #fff; }
+  .alert.Red { background: #c62828; } .alert.Orange { background: #ef6c00; }
+  .alert.Green { background: #2e7d32; }
+  .hazard { font-size: 0.75rem; letter-spacing: 0.05em; color: #777; margin-right: 0.5rem; }
   .meta { font-size: 0.85rem; color: #555; }
   .banner { background: #fff3cd; color: #533f03; border: 1px solid #e6d9a8;
             border-radius: 0.5rem; padding: 0.6rem 1rem; margin-bottom: 1rem; }
@@ -60,22 +65,42 @@ def _stamp(dt: datetime) -> tuple[str, str]:
     return utc.strftime("%Y-%m-%d %H:%M"), utc.astimezone(SGT).strftime("%Y-%m-%d %H:%M")
 
 
+_ALERT_RANK = {"Red": 0, "Orange": 1, "Green": 2}
+
+
 def _severity_key(e: Event) -> tuple:
-    return (-(e.severity.get("mag") or 0), e.occurred_at)
+    return (
+        _ALERT_RANK.get(e.severity.get("gdacs_alert"), 3),
+        -(e.severity.get("mag") or 0),
+        e.occurred_at,
+    )
 
 
 def _card(e: Event) -> str:
+    alert = e.severity.get("gdacs_alert")
+    badges = ""
+    if alert in _ALERT_RANK:
+        badges += f'<span class="alert {alert}">{alert}</span>'
     mag = e.severity.get("mag")
-    badge = f'<span class="mag">M {escape(str(mag))}</span>' if mag is not None else ""
+    if mag is not None:
+        badges += f'<span class="mag">M {escape(str(mag))}</span>'
     links = " · ".join(
         f'<a href="{escape(s["url"], quote=True)}">{escape(s["feed"])}</a>'
         for s in e.sources
         if s.get("url")
     )
+    place = (
+        f"lat {e.lat:.2f}, lon {e.lon:.2f}"
+        if e.lat is not None and e.lon is not None
+        else escape(e.country or "location n/a")
+    )
     depth = f" · depth {e.depth_km:.0f} km" if e.depth_km is not None else ""
+    summary = next((s["summary"] for s in e.sources if s.get("summary")), "")
+    summary_html = f"<p>{escape(summary)}</p>" if summary else ""
     return f"""<div class="card">
-  <h2>{badge}{escape(e.title)}</h2>
-  <p class="meta">{escape(e.occurred_at)} · lat {e.lat:.2f}, lon {e.lon:.2f}{depth} · {links}</p>
+  <h2><span class="hazard">{escape(e.hazard)}</span>{badges}{escape(e.title)}</h2>
+  <p class="meta">{escape(e.occurred_at)} · {place}{depth} · {links}</p>
+  {summary_html}
 </div>"""
 
 

@@ -57,9 +57,27 @@ RSS alternative: `https://www.gdacs.org/xml/rss.xml`. Per-event detail hangs off
    `episodealertscore`. Which of these is "the alert level" for reporting
    purposes — and can an event's colour change after you have already
    reported on it?
+   > **Answered (Tier 2):** we report the event-level `alertlevel`; episode
+   > values change per episode of long-running events (cyclones) and would
+   > thrash change detection, so they're kept aside in `sources[].episode_alert`.
+   > Yes, the colour can change after reporting — escalation detection is
+   > Tier 3's ESCALATED diff class.
 2. This event's `source` is `NEIC` — the same US agency behind the USGS feed.
    When the same physical earthquake arrives from two of your three feeds,
    what makes two records the same event?
+   > **Answered (Tier 2):** nothing explicit in this payload — `sourceid` is
+   > empty in the live event list, so there is no NEIC id to match against
+   > USGS `ids`. Spatio-temporal matching carries the load: same hazard within
+   > 100 km and 30 min (magnitudes within 0.6). Validated live on 2026-07-08:
+   > 18 of 19 GDACS quakes matched a USGS record with sub-second time offsets
+   > (which also proves the naive datetimes are UTC). GLIDE, when present
+   > (only ~3% of events, but exactly the Orange/Red ones), is the strongest
+   > key and ties in ReliefWeb. See `hadr/dedupe.py`.
 3. GDACS publishes no rate limits and no uptime guarantees. What is a polite
    polling frequency, and what does your 08:30 report say on a morning the
    feed is down?
+   > **Answered (Tier 2):** one fetch per report run (daily at 00:00 UTC plus
+   > occasional manual runs) with an identifying User-Agent — far below any
+   > plausible limit. On failure the feed is isolated: the dashboard renders
+   > from the remaining feeds with a "GDACS unreachable this run" banner and
+   > the run record logs the error (`hadr/__main__.py::gather`).

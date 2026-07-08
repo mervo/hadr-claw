@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "HADR monitoring claw: watches disaster feeds, assesses events, publishes a morning situation report"
 requires-python = ">=3.12"
 dependencies = [
+    "feedparser>=6.0.12",
     "httpx>=0.28",
 ]
 

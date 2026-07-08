@@ -15,8 +15,8 @@ class Event:
     title: str
     occurred_at: str        # ISO8601 UTC
     updated_at: str         # ISO8601 UTC
-    lat: float
-    lon: float
+    lat: float | None       # ReliefWeb entries carry no coordinates
+    lon: float | None
     depth_km: float | None = None
     country: str | None = None
     iso3: str | None = None

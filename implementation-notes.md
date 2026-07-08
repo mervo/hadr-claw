@@ -37,6 +37,20 @@ and decisions of record in ROADMAP.md). Headlines:
 - USGS fixture: 17 significant + 10 below-threshold + 1 non-earthquake, trimmed
   from a live capture so tests exercise the filter both ways.
 
+### 2026-07-08 — Tier 2: all feeds + dedup
+
+- GDACS naive datetimes verified UTC empirically: 18/19 live GDACS quakes
+  matched USGS records within 100 km/30 min at sub-second time offsets.
+- GDACS `sourceid` is empty in the live event list — the NEIC id is NOT
+  exposed there, so the alias rule rarely fires; spatio-temporal matching is
+  the workhorse (live: 59 raw records → 41 events, 18 merged away).
+- GLIDE present on only ~3/100 GDACS events — but exactly the Orange/Red ones,
+  and it's what ties ReliefWeb in days later.
+- ReliefWeb entries have no coordinates → `Event.lat/lon` became `float | None`.
+- GDACS noise filter: Orange/Red always; Green only EQ with mag ≥ 4.5 (76 of
+  100 live events were Green wildfires — dropped).
+- Feed answers recorded in feeds/gdacs.md and feeds/reliefweb.md.
+
 ## Open questions
 
 - Telegram or Slack for the alert webhook, and its credential (user input, Tier 6).

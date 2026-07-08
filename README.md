@@ -7,8 +7,9 @@ and [ReliefWeb](feeds/reliefweb.md) — filters the noise, assesses what remains
 report to `dashboard.html` at **08:30 Singapore time**, unattended, staying quiet when
 nothing has changed.
 
-> **Status: Tier 1 — slice one runs end to end.** USGS earthquakes → unified
-> events → `dashboard.html`, deterministic pipeline only (no LLM yet).
+> **Status: Tier 2 — all three feeds, deduplicated.** USGS + GDACS + ReliefWeb →
+> unified events → cross-feed merge → `dashboard.html`, deterministic pipeline
+> only (no LLM yet).
 > See [ROADMAP.md](ROADMAP.md) for the tier-by-tier build plan; each tier is
 > end-to-end runnable and demoable. This README grows with each tier and never
 > describes features that don't exist yet.
@@ -48,11 +49,11 @@ mapped to this repository (see [Goal.md](Goal.md) for the course brief):
 ## Running it
 
 ```sh
-docker compose run --rm claw --feeds usgs   # fetch, assess, write dashboard.html
-docker compose up dashboard                 # serve it at http://localhost:8080/dashboard.html
+docker compose run --rm claw    # fetch all feeds, dedup, write dashboard.html
+docker compose up dashboard     # serve it at http://localhost:8080/dashboard.html
 ```
 
-Dev loop without docker: `uv run python -m hadr --feeds usgs`.
+Dev loop without docker: `uv run python -m hadr` (or `--feeds usgs` for one feed).
 Offline/deterministic (used by tests and CI): add `--fixtures tests/fixtures`.
 Each run appends a record to `state/runs/` (pruned to the newest 14) — feed health,
 latency, event counts; the dashboard's ops strip shows the same at a glance.
@@ -62,7 +63,8 @@ The interface per tier (kept current as tiers land — unchecked means not built
 - [x] **Tier 1** — `docker compose run --rm claw --feeds usgs` then
   `docker compose up dashboard` → http://localhost:8080/dashboard.html
   (dev loop: `uv run python -m hadr --feeds usgs`; offline: `--fixtures tests/fixtures`)
-- [ ] **Tier 2** — `--feeds usgs,gdacs,reliefweb` → merged multi-source events
+- [x] **Tier 2** — `--feeds usgs,gdacs,reliefweb` (the default) → merged
+  multi-source events; `uv run python scripts/check_dedup.py` proves the merge
 - [ ] **Tier 3** — run twice → second run reports "no new developments"
 - [ ] **Tier 4** — `uv run python agent/harness.py` → chat with the agent; it calls
   the tools itself

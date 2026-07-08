@@ -12,4 +12,4 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY hadr/ hadr/
 
 ENTRYPOINT ["/opt/venv/bin/python", "-m", "hadr"]
-CMD ["--feeds", "usgs"]
+CMD []

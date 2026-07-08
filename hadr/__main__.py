@@ -10,12 +10,13 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+from hadr import dedupe
 from hadr.events import Event, FeedStatus
-from hadr.feeds import usgs
+from hadr.feeds import gdacs, reliefweb, usgs
 from hadr.render import write_dashboard
 from hadr.runlog import write_run
 
-FEEDS = {"usgs": usgs}
+FEEDS = {"usgs": usgs, "gdacs": gdacs, "reliefweb": reliefweb}
 
 
 def _now() -> str:
@@ -32,7 +33,7 @@ def gather(names: list[str], fixtures: str | None) -> tuple[list[Event], list[Fe
         started = time.monotonic()
         try:
             if fixtures:
-                raw = mod.load_fixture(Path(fixtures) / name / "all_day.geojson")
+                raw = mod.load_fixture(Path(fixtures) / name / mod.FIXTURE_NAME)
             else:
                 raw = mod.fetch_raw()
             found = mod.normalize(raw)
@@ -51,7 +52,9 @@ def gather(names: list[str], fixtures: str | None) -> tuple[list[Event], list[Fe
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="hadr")
-    parser.add_argument("--feeds", default="usgs", help="comma-separated: " + ",".join(FEEDS))
+    parser.add_argument(
+        "--feeds", default="usgs,gdacs,reliefweb", help="comma-separated: " + ",".join(FEEDS)
+    )
     parser.add_argument("--fixtures", help="read feed payloads from this dir instead of the network")
     parser.add_argument("--out", default="dashboard.html")
     args = parser.parse_args(argv)
@@ -59,11 +62,12 @@ def main(argv: list[str] | None = None) -> int:
     names = [n.strip() for n in args.feeds.split(",") if n.strip()]
     unknown = [n for n in names if n not in FEEDS]
     if unknown:
-        parser.error(f"unknown feed(s) {unknown}; available: {sorted(FEEDS)} (more arrive in Tier 2)")
+        parser.error(f"unknown feed(s) {unknown}; available: {sorted(FEEDS)}")
 
     started_at = _now()
     t0 = time.monotonic()
-    events, statuses = gather(names, args.fixtures)
+    raw_events, statuses = gather(names, args.fixtures)
+    events = dedupe.merge(raw_events)
     out = write_dashboard(events, statuses)
     if args.out != "dashboard.html":
         out = Path(args.out)
@@ -77,6 +81,7 @@ def main(argv: list[str] | None = None) -> int:
             "duration_ms": int((time.monotonic() - t0) * 1000),
             "feeds": [s.to_dict() for s in statuses],
             "significant_events": len(events),
+            "merged_away": len(raw_events) - len(events),
             "engine": "pipeline",
         }
     )
