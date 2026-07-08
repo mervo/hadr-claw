@@ -8,6 +8,7 @@ can slot in behind normalize() once the appname is approved.
 
 from __future__ import annotations
 
+import logging
 import re
 from html import unescape
 from pathlib import Path
@@ -26,6 +27,8 @@ _GLIDE_IN_DESC = re.compile(r"Glide:\s*([A-Z0-9-]+)")
 _COUNTRY_IN_DESC = re.compile(r"Affected countr(?:y|ies):\s*([^<]+)")
 _TAGS = re.compile(r"<[^>]+>")
 SUMMARY_CHARS = 600
+
+log = logging.getLogger(__name__)
 
 
 def fetch_raw() -> str:
@@ -67,33 +70,43 @@ def _iso(entry) -> str:
 
 
 def normalize(raw: str) -> list[Event]:
+    """One malformed entry skips that entry, never the feed — a crash here
+    would report zero events for the whole run."""
     events = []
     for entry in feedparser.parse(raw).entries:
-        glide = _glide(entry)
-        desc = unescape(entry.get("description", ""))
-        country_match = _COUNTRY_IN_DESC.search(desc)
-        occurred = _iso(entry)
-        events.append(
-            Event(
-                uid=f"reliefweb:{glide or entry.get('link', entry.get('title', ''))}",
-                hazard=glide.split("-")[0] if glide else "OT",
-                title=entry.get("title", ""),
-                occurred_at=occurred,
-                updated_at=occurred,
-                lat=None,
-                lon=None,
-                country=country_match.group(1).strip() if country_match else None,
-                severity={"curated": True},
-                glide=glide,
-                sources=[
-                    {
-                        "feed": "reliefweb",
-                        "id": glide or entry.get("link", ""),
-                        "ids": [glide] if glide else [],
-                        "url": entry.get("link"),
-                        "summary": _prose(entry.get("description", "")),
-                    }
-                ],
-            )
-        )
+        try:
+            event = _normalize_one(entry)
+        except (KeyError, TypeError, ValueError, IndexError, AttributeError) as exc:
+            log.warning("reliefweb: skipping malformed entry %r: %s",
+                        entry.get("link") or entry.get("title"), exc)
+            continue
+        events.append(event)
     return events
+
+
+def _normalize_one(entry) -> Event:
+    glide = _glide(entry)
+    desc = unescape(entry.get("description", ""))
+    country_match = _COUNTRY_IN_DESC.search(desc)
+    occurred = _iso(entry)
+    return Event(
+        uid=f"reliefweb:{glide or entry.get('link', entry.get('title', ''))}",
+        hazard=glide.split("-")[0] if glide else "OT",
+        title=entry.get("title", ""),
+        occurred_at=occurred,
+        updated_at=occurred,
+        lat=None,
+        lon=None,
+        country=country_match.group(1).strip() if country_match else None,
+        severity={"curated": True},
+        glide=glide,
+        sources=[
+            {
+                "feed": "reliefweb",
+                "id": glide or entry.get("link", ""),
+                "ids": [glide] if glide else [],
+                "url": entry.get("link"),
+                "summary": _prose(entry.get("description", "")),
+            }
+        ],
+    )
