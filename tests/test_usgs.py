@@ -19,6 +19,35 @@ def test_normalize_filters_noise_and_non_earthquakes():
     )
 
 
+def test_malformed_feature_skipped_not_fatal():
+    """A single bad feature (null geometry, missing time, string mag) must
+    never take the whole feed down to zero events."""
+    good = {
+        "id": "us_good",
+        "geometry": {"type": "Point", "coordinates": [104.7, 28.5, 10]},
+        "properties": {"type": "earthquake", "mag": 5.0, "sig": 385,
+                       "time": 1783476528776, "title": "M 5.0 test", "ids": ",us_good,"},
+    }
+    null_geometry = {
+        "id": "us_nogeom",
+        "geometry": None,
+        "properties": {"type": "earthquake", "mag": 6.1, "sig": 600, "time": 1783476528776},
+    }
+    missing_time = {
+        "id": "us_notime",
+        "geometry": {"type": "Point", "coordinates": [1.0, 2.0, 3.0]},
+        "properties": {"type": "earthquake", "mag": 6.1, "sig": 600},
+    }
+    string_mag = {
+        "id": "us_strmag",
+        "geometry": {"type": "Point", "coordinates": [1.0, 2.0, 3.0]},
+        "properties": {"type": "earthquake", "mag": "5.9", "time": 1783476528776},
+    }
+    raw = {"features": [null_geometry, good, missing_time, string_mag]}
+    events = usgs.normalize(raw)
+    assert [e.uid for e in events] == ["usgs:us_good"]
+
+
 def test_normalize_shapes_event():
     events = usgs.normalize(usgs.load_fixture(FIXTURE))
     e = events[0]

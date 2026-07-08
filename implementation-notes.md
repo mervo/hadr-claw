@@ -181,6 +181,28 @@ Declined with rationale (replied on the PRs):
   Supersedes the earlier "course brief stays untouched" convention for the
   rename only — the content is unchanged.
 
+### 2026-07-08 — overnight run 1: feed-parsing hardening + harness fixes
+
+Work by the overnight agent (salvaged from the loop's checkpoint chain):
+- All three normalizers now skip a malformed feature/entry (warning via stdlib
+  `logging`) instead of crashing the feed: one bad payload row previously
+  reported **zero events for the whole run** — the worst possible holdout
+  failure mode. Covered: null geometry, missing/null `time`/`fromdate`,
+  string magnitudes, entries stripped of description/link/date.
+- GDACS tolerance: `iscurrent` compared as string today but a boolean upstream
+  would have silently dropped every event; `severitydata.severity` coerced so
+  string magnitudes don't TypeError in is_significant or dedup's mag delta.
+- Tests: +4, inline payloads (no network), all checkers stay green.
+
+Harness fixes from the run's failure mode:
+- The account usage limit killed iterations 2-12 in two minutes ("resets
+  2:10pm") — Route B shares interactive-session limits. overnight.sh now
+  backs off 15m on a limit hit without counting the iteration
+  (docs/solutions entry).
+- python -m hadr wrote run records into repo state/runs even with a scratch
+  --state, polluting the loop branch with state/** churn — records now land
+  next to their state file (+ regression test).
+
 ## Open questions
 
 - `ISSUE_PAT` secret (fine-grained, issues:write) needed for the failure

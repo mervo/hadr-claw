@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -19,6 +20,8 @@ WINDOW_HOURS = 24  # all_day is a rolling window; memory (Tier 3) needs this to
 # Noise filter for a global watch floor (thresholds documented in CLAUDE.md)
 MIN_MAG = 4.5
 MIN_SIG = 600
+
+log = logging.getLogger(__name__)
 
 
 def fetch_raw() -> dict:
@@ -48,40 +51,51 @@ def _iso(epoch_ms: int) -> str:
 
 
 def normalize(raw: dict) -> list[Event]:
+    """One malformed feature (null geometry, missing time) skips that feature,
+    never the feed — a crash here would report zero events for the whole run."""
     events = []
     for feature in raw.get("features", []):
-        props = feature["properties"]
-        if props.get("type") != "earthquake" or not is_significant(props):
+        try:
+            event = _normalize_one(feature)
+        except (KeyError, TypeError, ValueError, IndexError, AttributeError) as exc:
+            log.warning("usgs: skipping malformed feature %r: %s",
+                        (feature or {}).get("id"), exc)
             continue
-        lon, lat, *rest = feature["geometry"]["coordinates"]
-        # `ids` is a comma-wrapped list: one id per reporting network for the same
-        # quake. All are kept as aliases so Tier 2 can match records across feeds.
-        ids = [i for i in (props.get("ids") or "").split(",") if i]
-        events.append(
-            Event(
-                uid=f"usgs:{feature['id']}",
-                hazard="EQ",
-                title=props.get("title") or "",
-                occurred_at=_iso(props["time"]),
-                updated_at=_iso(props.get("updated") or props["time"]),
-                lat=lat,
-                lon=lon,
-                depth_km=rest[0] if rest else None,
-                severity={
-                    "mag": props.get("mag"),
-                    "pager_alert": props.get("alert"),
-                    "sig": props.get("sig"),
-                    "tsunami": props.get("tsunami"),
-                },
-                sources=[
-                    {
-                        "feed": "usgs",
-                        "id": feature["id"],
-                        "ids": ids,
-                        "url": props.get("url"),
-                        "status": props.get("status"),
-                    }
-                ],
-            )
-        )
+        if event:
+            events.append(event)
     return events
+
+
+def _normalize_one(feature: dict) -> Event | None:
+    props = feature["properties"]
+    if props.get("type") != "earthquake" or not is_significant(props):
+        return None
+    lon, lat, *rest = feature["geometry"]["coordinates"]
+    # `ids` is a comma-wrapped list: one id per reporting network for the same
+    # quake. All are kept as aliases so Tier 2 can match records across feeds.
+    ids = [i for i in (props.get("ids") or "").split(",") if i]
+    return Event(
+        uid=f"usgs:{feature['id']}",
+        hazard="EQ",
+        title=props.get("title") or "",
+        occurred_at=_iso(props["time"]),
+        updated_at=_iso(props.get("updated") or props["time"]),
+        lat=lat,
+        lon=lon,
+        depth_km=rest[0] if rest else None,
+        severity={
+            "mag": props.get("mag"),
+            "pager_alert": props.get("alert"),
+            "sig": props.get("sig"),
+            "tsunami": props.get("tsunami"),
+        },
+        sources=[
+            {
+                "feed": "usgs",
+                "id": feature["id"],
+                "ids": ids,
+                "url": props.get("url"),
+                "status": props.get("status"),
+            }
+        ],
+    )
