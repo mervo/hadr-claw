@@ -9,6 +9,7 @@ from string import Template
 from zoneinfo import ZoneInfo
 
 from hadr.events import Event, FeedStatus
+from hadr.memory import Changes
 
 SGT = ZoneInfo("Asia/Singapore")
 
@@ -53,7 +54,7 @@ PAGE = Template("""<!DOCTYPE html>
 <div class="ops">$ops_chips</div>
 $banners
 <main>
-$cards
+$sections
 </main>
 </body>
 </html>
@@ -104,8 +105,19 @@ def _card(e: Event) -> str:
 </div>"""
 
 
+def _section(title: str, events: list[Event]) -> str:
+    if not events:
+        return ""
+    cards = "\n".join(_card(e) for e in sorted(events, key=_severity_key))
+    return f"<h2>{escape(title)}</h2>\n{cards}"
+
+
 def render(
-    events: list[Event], statuses: list[FeedStatus], generated_at: datetime | None = None
+    events: list[Event],
+    statuses: list[FeedStatus],
+    changes: Changes | None = None,
+    generated_at: datetime | None = None,
+    last_change_at: str | None = None,
 ) -> str:
     now = generated_at or datetime.now(timezone.utc)
     stamp_utc, stamp_sgt = _stamp(now)
@@ -117,6 +129,12 @@ def render(
         for s in statuses
     ]
     chips.append(f'<span class="chip">{len(events)} significant event(s)</span>')
+    if changes:
+        chips.append(
+            '<span class="chip">'
+            + ", ".join(f"{v} {k}" for k, v in changes.counts().items() if k != "unchanged")
+            + "</span>"
+        )
 
     banners = "".join(
         f'<div class="banner">{escape(s.feed)} unreachable this run — {escape(s.error or "")}. '
@@ -127,10 +145,35 @@ def render(
     if not events:
         banners += '<div class="banner">No events pass the significance threshold right now.</div>'
 
-    cards = "\n".join(_card(e) for e in sorted(events, key=_severity_key))
+    if changes is None:
+        sections = _section("Events", events)
+    elif changes.quiet:
+        since = f" since {escape(last_change_at)}" if last_change_at else ""
+        sections = (
+            f'<p class="stamp">No new developments{since}. '
+            f"{len(changes.unchanged)} event(s) remain under watch.</p>\n"
+            + _section("Ongoing", changes.unchanged)
+        )
+    else:
+        deleted_note = (
+            '<div class="banner">Withdrawn by their feed while still current: '
+            + ", ".join(escape(d.get("title") or d["uid"]) for d in changes.deleted)
+            + "</div>"
+            if changes.deleted
+            else ""
+        )
+        sections = deleted_note + "\n".join(
+            filter(None, [
+                _section("Escalated", changes.escalated),
+                _section("New", changes.new),
+                _section("Updated", changes.updated),
+                _section("Ongoing", changes.unchanged),
+            ])
+        )
+
     return PAGE.substitute(
         stamp_utc=stamp_utc, stamp_sgt=stamp_sgt, ops_chips="\n".join(chips),
-        banners=banners, cards=cards,
+        banners=banners, sections=sections,
     )
 
 
@@ -138,8 +181,10 @@ def write_dashboard(
     events: list[Event],
     statuses: list[FeedStatus],
     out: str | Path = "dashboard.html",
+    changes: Changes | None = None,
     generated_at: datetime | None = None,
+    last_change_at: str | None = None,
 ) -> Path:
     out = Path(out)
-    out.write_text(render(events, statuses, generated_at))
+    out.write_text(render(events, statuses, changes, generated_at, last_change_at))
     return out

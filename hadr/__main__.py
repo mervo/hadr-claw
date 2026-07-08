@@ -6,11 +6,12 @@
 from __future__ import annotations
 
 import argparse
+import json
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from hadr import dedupe
+from hadr import dedupe, memory
 from hadr.events import Event, FeedStatus
 from hadr.feeds import gdacs, reliefweb, usgs
 from hadr.render import write_dashboard
@@ -57,6 +58,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--fixtures", help="read feed payloads from this dir instead of the network")
     parser.add_argument("--out", default="dashboard.html")
+    parser.add_argument("--state", default=str(memory.STATE_PATH), help="seen-events state file")
     args = parser.parse_args(argv)
 
     names = [n.strip() for n in args.feeds.split(",") if n.strip()]
@@ -68,12 +70,20 @@ def main(argv: list[str] | None = None) -> int:
     t0 = time.monotonic()
     raw_events, statuses = gather(names, args.fixtures)
     events = dedupe.merge(raw_events)
-    out = write_dashboard(events, statuses)
-    if args.out != "dashboard.html":
-        out = Path(args.out)
-        out.parent.mkdir(parents=True, exist_ok=True)
-        write_dashboard(events, statuses, out)
 
+    state = memory.load(args.state)
+    changes = memory.diff(state, events)
+    if not changes.quiet:
+        state["last_change_at"] = _now()
+
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    write_dashboard(events, statuses, out, changes=changes,
+                    last_change_at=state.get("last_change_at"))
+    memory.mark_reported(state, events)
+    memory.save(state, args.state)
+
+    counts = changes.counts()
     write_run(
         {
             "started_at": started_at,
@@ -82,12 +92,19 @@ def main(argv: list[str] | None = None) -> int:
             "feeds": [s.to_dict() for s in statuses],
             "significant_events": len(events),
             "merged_away": len(raw_events) - len(events),
+            "changes": counts,
             "engine": "pipeline",
         }
     )
+    Path(args.state).parent.mkdir(parents=True, exist_ok=True)
+    (Path(args.state).parent / "last_run.json").write_text(
+        json.dumps({"finished_at": _now(), "changes": counts}, indent=2)
+    )
     print(
         f"{len(events)} significant event(s) from "
-        f"{sum(s.ok for s in statuses)}/{len(statuses)} feed(s) -> {out}"
+        f"{sum(s.ok for s in statuses)}/{len(statuses)} feed(s) -> {out} | "
+        + (", ".join(f"{v} {k}" for k, v in counts.items() if k != "unchanged" and v)
+           or "no changes")
     )
     return 0
 

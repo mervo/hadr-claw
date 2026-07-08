@@ -51,6 +51,19 @@ and decisions of record in ROADMAP.md). Headlines:
   100 live events were Green wildfires — dropped).
 - Feed answers recorded in feeds/gdacs.md and feeds/reliefweb.md.
 
+### 2026-07-08 — Tier 3: memory & change detection
+
+- State matches events by uid, then by any shared source id: a cluster's
+  canonical uid changes when a GLIDE arrives late, and alias matching keeps
+  that from reading as a deletion plus a new event.
+- Fingerprints round lat/lon to 2 dp and mag to 1 dp; `sig`/`felt`/`updated_at`
+  excluded — they churn on every USGS revision cycle.
+- DELETED requires *inside the feed's rolling window*; only USGS has one
+  (24 h). GDACS/ReliefWeb disappearances always age out silently.
+- Quiet = content, not absence: the dashboard is rewritten every run (stamp
+  advances), leading with "No new developments since <last change>".
+- Live verification: run 1 → 41 new; run 2 → "no changes", quiet lead renders.
+
 ## Open questions
 
 - Telegram or Slack for the alert webhook, and its credential (user input, Tier 6).
@@ -64,3 +77,8 @@ and decisions of record in ROADMAP.md). Headlines:
 
 <!-- Anything built that departs from the PRD or CLAUDE.md is recorded here,
      with the reason. An undocumented deviation is a bug. -->
+
+### 2026-07-08 — Tier 3
+- The plan promised a "run history sparkline" on the ops panel; shipped a
+  change-counts chip instead — same information, no chart code. Revisit if the
+  panel grows in Tier 5.

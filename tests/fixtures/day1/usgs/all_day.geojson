@@ -1,0 +1,118 @@
+{
+ "type": "FeatureCollection",
+ "metadata": {
+  "generated": 1783468800000,
+  "title": "fixture",
+  "count": 4
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "id": "usday0001",
+   "properties": {
+    "mag": 5.2,
+    "place": "mid-Atlantic ridge",
+    "time": 1783461600000,
+    "updated": 1783462200000,
+    "felt": 0,
+    "alert": null,
+    "status": "reviewed",
+    "tsunami": 0,
+    "sig": 520,
+    "ids": ",usday0001,",
+    "type": "earthquake",
+    "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usday0001",
+    "title": "M 5.2 - mid-Atlantic ridge"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -30.0,
+     40.0,
+     10.0
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "usday0002",
+   "properties": {
+    "mag": 4.8,
+    "place": "east of Papua New Guinea",
+    "time": 1783378800000,
+    "updated": 1783379400000,
+    "felt": 0,
+    "alert": null,
+    "status": "reviewed",
+    "tsunami": 0,
+    "sig": 480,
+    "ids": ",usday0002,",
+    "type": "earthquake",
+    "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usday0002",
+    "title": "M 4.8 - east of Papua New Guinea"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     150.0,
+     -5.0,
+     10.0
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "usday0003",
+   "properties": {
+    "mag": 4.9,
+    "place": "Hindu Kush region",
+    "time": 1783454400000,
+    "updated": 1783455000000,
+    "felt": 0,
+    "alert": null,
+    "status": "reviewed",
+    "tsunami": 0,
+    "sig": 490,
+    "ids": ",usday0003,",
+    "type": "earthquake",
+    "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usday0003",
+    "title": "M 4.9 - Hindu Kush region"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     70.0,
+     36.0,
+     10.0
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "usday0005",
+   "properties": {
+    "mag": 5.0,
+    "place": "northern Chile",
+    "time": 1783425600000,
+    "updated": 1783426200000,
+    "felt": 0,
+    "alert": null,
+    "status": "reviewed",
+    "tsunami": 0,
+    "sig": 500,
+    "ids": ",usday0005,",
+    "type": "earthquake",
+    "url": "https://earthquake.usgs.gov/earthquakes/eventpage/usday0005",
+    "title": "M 5.0 - northern Chile"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -70.0,
+     -20.0,
+     10.0
+    ]
+   }
+  }
+ ]
+}

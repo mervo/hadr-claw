@@ -7,9 +7,11 @@ and [ReliefWeb](feeds/reliefweb.md) — filters the noise, assesses what remains
 report to `dashboard.html` at **08:30 Singapore time**, unattended, staying quiet when
 nothing has changed.
 
-> **Status: Tier 2 — all three feeds, deduplicated.** USGS + GDACS + ReliefWeb →
-> unified events → cross-feed merge → `dashboard.html`, deterministic pipeline
-> only (no LLM yet).
+> **Status: Tier 3 — the claw remembers.** USGS + GDACS + ReliefWeb → unified
+> events → cross-feed merge → diff against `state/seen_events.json` →
+> `dashboard.html` with New / Escalated / Updated / Ongoing sections; a rerun
+> with nothing new says so instead of re-reporting. Deterministic pipeline only
+> (no LLM yet).
 > See [ROADMAP.md](ROADMAP.md) for the tier-by-tier build plan; each tier is
 > end-to-end runnable and demoable. This README grows with each tier and never
 > describes features that don't exist yet.
@@ -65,7 +67,10 @@ The interface per tier (kept current as tiers land — unchecked means not built
   (dev loop: `uv run python -m hadr --feeds usgs`; offline: `--fixtures tests/fixtures`)
 - [x] **Tier 2** — `--feeds usgs,gdacs,reliefweb` (the default) → merged
   multi-source events; `uv run python scripts/check_dedup.py` proves the merge
-- [ ] **Tier 3** — run twice → second run reports "no new developments"
+- [x] **Tier 3** — run twice → second run reports "no new developments";
+  escalations (Green→Orange→Red) surface above the fold; USGS deletions inside
+  the 24 h window are flagged, older disappearances age out silently;
+  `uv run python scripts/check_memory.py` proves all of it
 - [ ] **Tier 4** — `uv run python agent/harness.py` → chat with the agent; it calls
   the tools itself
 - [ ] **Tier 5** — `docker compose run --rm claw` → full agentic morning report;
@@ -110,6 +115,7 @@ CLAUDE.md                # conventions for agents & humans working on this repo
 implementation-notes.md  # decisions / open questions / deviations, per working block
 hadr/                    # deterministic pipeline: feeds/ → events → render (no LLM here)
 tests/                   # pytest + fixtures (checked-in feed payloads; never the network)
+state/seen_events.json   # memory: what the claw has already assessed (committed)
 state/runs/              # per-run observability records (newest 14 kept)
 dashboard.html           # the channel: generated situation report
 feeds/                   # per-feed endpoint docs and open questions
