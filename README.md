@@ -98,6 +98,74 @@ The interface per tier (kept current as tiers land — unchecked means not built
 
 Tests and lint (from Tier 1): `uv run pytest` · `uv run ruff check .`
 
+## Example: from feed to report
+
+**Input** — three feeds report the same physical earthquake, days apart, under
+different identifiers (abridged; full samples in `feeds/*.md`):
+
+```jsonc
+// USGS all_day.geojson — minutes after the quake
+{"id": "us7000ven1", "properties": {"mag": 7.1, "place": "25 km NNW of Moron, Venezuela",
+ "time": 1782310260000, "alert": "orange", "sig": 900, "ids": ",us7000ven1,"}}
+
+// GDACS geteventlist — the same quake, its own id, no depth
+{"properties": {"eventtype": "EQ", "eventid": 1550999, "alertlevel": "Red",
+ "glide": "EQ-2026-000093-VEN", "fromdate": "2026-06-24T14:11:02", "source": "NEIC"}}
+```
+```xml
+<!-- ReliefWeb RSS — days later, human-curated -->
+<item><title>Venezuela: Earthquakes - Jun 2026</title>
+  <link>https://reliefweb.int/disaster/eq-2026-000093-ven</link> …</item>
+```
+
+**Normalized + deduplicated** — one `Event`, three audited sources
+(`uv run python -m hadr --fixtures tests/fixtures/crossfeed`):
+
+```jsonc
+{"uid": "glide:EQ-2026-000093-VEN", "hazard": "EQ",
+ "title": "Earthquake in Venezuela", "occurred_at": "2026-06-24T14:11:02Z",
+ "lat": 10.62, "lon": -68.28, "depth_km": 10.0,          // depth kept from USGS
+ "severity": {"gdacs_alert": "Red", "mag": 7.1, "pager_alert": "orange"},
+ "glide": "EQ-2026-000093-VEN",
+ "sources": [
+   {"feed": "gdacs", "id": "1550999"},                        // merge primary
+   {"feed": "usgs", "id": "us7000ven1", "merged_by": "spacetime"},
+   {"feed": "reliefweb", "id": "EQ-2026-000093-VEN", "merged_by": "glide"}]}
+```
+
+**Assessment** — the morning engine briefs the model with the memory diff
+(counts + the new/escalated events above); the model answers with one
+structured tool call, never free HTML:
+
+```jsonc
+write_dashboard({"headline": "Red-alert M7.1 earthquake near Moron, Venezuela",
+  "overview": "Two strong earthquakes struck north-central Venezuela …",
+  "assessments": [{"uid": "glide:EQ-2026-000093-VEN", "priority": "high",
+    "assessment": "M7.1 at 10 km depth near populated Carabobo State; GDACS Red …"}]})
+```
+
+Facts (magnitude, place, links) are injected from the normalized data by uid —
+unknown uids are rejected, so the model cannot invent events.
+
+**Output** — three artifacts per run:
+
+- [`dashboard.html`](https://mervo.github.io/hadr-claw/) — the situation
+  report: freshness stamp (UTC + SGT), ops strip (feed health/latency, change
+  counts), then Escalated / New / Updated / Ongoing cards with the model's
+  assessment on each.
+- `state/runs/<stamp>.json` — the run record (a real one):
+  ```json
+  {"engine": "agentic", "turns": 1, "tokens": 1783, "cap_tripped": null,
+   "duration_ms": 7948, "changes": {"new": 1, "escalated": 0, "updated": 1,
+   "unchanged": 40, "deleted": 0}}
+  ```
+  plus `<stamp>-transcript.json`, the full model conversation for audit.
+- Console: `engine=agentic events=42 turns=1 tokens=1783 cap=None -> dashboard.html`
+
+On a morning where nothing changed, the report still publishes — fresh stamp,
+"No new developments since <date>" — and the model is never called
+(`engine=pipeline-quiet`, zero tokens).
+
 ## Configuration & secrets
 
 All configuration is environment variables; **no secret value ever appears in a
@@ -127,22 +195,69 @@ degrades gracefully without them):
   id from `https://api.telegram.org/bot<TOKEN>/getUpdates`
   (`.result[0].message.chat.id`).
 
-## Operations
+## How it's hosted and runs
 
-- **Heartbeat**: `.github/workflows/heartbeat.yml`, cron 00:00 UTC (08:00 SGT —
-  drift buffer inside the 08:30 promise) + `workflow_dispatch`. Each run:
-  morning report in the same container as everywhere → checkers → commit
-  `state/` + `dashboard.html` back (`[skip ci]`, rebase-retry ×3) → deploy
-  `site/index.html` to GitHub Pages.
-- **The published dashboard** lives at the repo's GitHub Pages URL; the
-  committed `dashboard.html` is the demo copy. After this tier, dev PRs must
-  not diff `dashboard.html`/`state/**` (take main's, regenerate).
-- **Quiet mornings still publish** — the stamp advances, the lead says "no new
-  developments"; a page that never changes is indistinguishable from a dead one.
-- **When a heartbeat fails**: an issue labeled `heartbeat-failure` appears
-  tagging @claude (deduped — repeat failures comment on the open issue), plus
-  a webhook ping if configured. The daily commit is also the keep-alive that
-  stops GitHub auto-disabling the cron after 60 idle days.
+No server. Four free/cheap services each play one part of the claw's anatomy:
+
+```
+             GitHub Actions (cron 00:00 UTC + workflow_dispatch)   ← heartbeat
+                  │  runs `docker compose run --rm claw`
+                  ▼
+             agent/morning.py in the project container             ← loop
+              │ fetch USGS/GDACS/ReliefWeb (hadr/, deterministic)  ← tools
+              │ dedup across feeds, diff vs state/seen_events.json ← memory
+              │ model assesses via OpenCode Zen (OpenAI-compatible)
+              │ write dashboard (structured args; fallback if model fails)
+              ▼
+   git commit state/ + dashboard.html back to main   [runner is wiped;
+                  │                                    memory survives in git]
+                  ▼
+             GitHub Pages ← https://mervo.github.io/hadr-claw/     ← channel
+```
+
+**The daily lifecycle** (`.github/workflows/heartbeat.yml`):
+
+1. Cron fires at **00:00 UTC / 08:00 SGT** — buffer inside the 08:30 SGT
+   promise, because Actions cron can drift 15+ minutes.
+2. The runner checks out the repo and runs the **same compose service used in
+   dev** (`docker compose run --rm claw`) with `OPENCODE_API_KEY` from the
+   Actions secret store, under a 10-minute `timeout` on top of the in-code caps.
+3. `scripts/check_dashboard.py` + `check_spend.py` gate the result — a report
+   that fails its checks never publishes.
+4. `state/` + `dashboard.html` are committed back to main (`[skip ci]`,
+   rebase-retry ×3) — the runner is wiped after every run, so **the repo is the
+   claw's memory**. The daily commit doubles as the keep-alive that stops
+   GitHub auto-disabling the cron after 60 idle days.
+5. `dashboard.html` deploys to **GitHub Pages** as `index.html` — the published
+   artifact is canonical for readers; the committed file is the demo copy.
+   (After Tier 6, dev PRs must not diff `dashboard.html`/`state/**` — take
+   main's version and regenerate.)
+6. **Quiet mornings still publish** — fresh stamp, "no new developments" lead,
+   zero model tokens; a page that never changes is indistinguishable from a
+   dead one.
+
+**When a run fails** (verified live with `workflow_dispatch` +
+`fail_for_demo=true`):
+
+- An issue labeled `heartbeat-failure` opens, tagging **@claude** to
+  investigate, with the run URL. Repeat failures comment on the open issue
+  instead of piling up new ones. (The mention only *summons* the app when the
+  issue is created with `ISSUE_PAT`; with the fallback `GITHUB_TOKEN` the
+  issue still exists but the app isn't triggered.)
+- A **Telegram** message hits the configured chat via the Bot API
+  (`TELEGRAM_BOT_TOKEN` + `TELEGRAM_CHAT_ID` secrets).
+- The morning report itself degrades before it dies: model failure or a
+  tripped cap produces the deterministic fallback dashboard with a banner,
+  and a feed outage produces a partial report with a per-feed banner — a
+  workflow failure means something worse than both.
+
+**Alternative hosts** (same image, no code changes):
+
+- **Any Docker host / VPS**: `docker compose --profile heartbeat up -d` runs
+  supercronic on the same 00:00 UTC schedule; state persists on disk via the
+  bind mount, no commit-back needed.
+- **Laptop**: `docker compose run --rm claw` whenever you want a report
+  (remember the lid-closed problem — this is for dev, not the promise).
 
 ## The feeds
 
