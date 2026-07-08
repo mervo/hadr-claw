@@ -22,6 +22,26 @@ def test_glide_from_slug_matches_description():
         assert e.glide == slug, "GLIDE in description must agree with the link slug"
 
 
+def test_bare_entry_survives_without_crashing_the_feed():
+    """An entry stripped of description/GLIDE/date still normalizes (curated
+    entries are always kept) and never takes healthy neighbors down."""
+    raw = """<?xml version="1.0" encoding="UTF-8"?>
+    <rss version="2.0"><channel><title>t</title>
+    <item><title>Bare entry, no description or link</title></item>
+    <item>
+      <title>Flood - Testland</title>
+      <link>https://reliefweb.int/disaster/fl-2026-000123-tst</link>
+      <description>Affected country: Testland Glide: FL-2026-000123-TST</description>
+      <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+    </item>
+    </channel></rss>"""
+    events = reliefweb.normalize(raw)
+    assert len(events) == 2
+    assert any(e.glide == "FL-2026-000123-TST" for e in events)
+    bare = next(e for e in events if not e.glide)
+    assert bare.hazard == "OT" and bare.occurred_at == ""
+
+
 def test_summary_prose_is_clean_of_tags_and_boilerplate():
     events = reliefweb.normalize(reliefweb.load_fixture(FIXTURE))
     for e in events:

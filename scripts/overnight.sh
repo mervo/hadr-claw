@@ -15,6 +15,7 @@ set -euo pipefail
 MAX_ITERATIONS=12
 MAX_MINUTES=360
 ITERATION_TIMEOUT_MINUTES=20
+LIMIT_BACKOFF_MINUTES=15
 DRY_RUN=0
 
 while [[ $# -gt 0 ]]; do
@@ -66,9 +67,20 @@ for ((i = 1; i <= MAX_ITERATIONS; i++)); do
   if (( DRY_RUN )); then
     echo "[dry-run] would run: timeout ${ITERATION_TIMEOUT_MINUTES}m claude -p <goal.md>" | tee -a "$LOG"
   else
-    timeout "${ITERATION_TIMEOUT_MINUTES}m" \
-      claude -p "$(cat "$PRISTINE/goal.md")" --permission-mode acceptEdits \
-      2>&1 | tail -5 | tee -a "$LOG" || echo "iteration $i: claude exited nonzero/timeout" | tee -a "$LOG"
+    CLAUDE_OUT="$(timeout "${ITERATION_TIMEOUT_MINUTES}m" \
+      claude -p "$(cat "$PRISTINE/goal.md")" --permission-mode acceptEdits 2>&1)" \
+      || echo "iteration $i: claude exited nonzero/timeout" | tee -a "$LOG"
+    echo "$CLAUDE_OUT" | tail -5 | tee -a "$LOG"
+    # Account usage limits are shared with interactive sessions and reset on a
+    # schedule; a limit hit must WAIT, not burn the iteration budget — the
+    # first live run torched iterations 2-12 in two minutes this way.
+    if echo "$CLAUDE_OUT" | grep -qiE "session limit|usage limit"; then
+      echo "usage limit hit — backing off ${LIMIT_BACKOFF_MINUTES}m (iteration not counted)" | tee -a "$LOG"
+      git reset --hard "$CHECKPOINT" >/dev/null
+      i=$((i - 1))
+      sleep $((LIMIT_BACKOFF_MINUTES * 60))
+      continue
+    fi
   fi
 
   # Anti-cheat gate: the goal and its instruments are read-only for the agent.

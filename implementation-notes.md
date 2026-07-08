@@ -171,6 +171,36 @@ Declined with rationale (replied on the PRs):
 - Pages enabled + first live heartbeat verified end-to-end (engine=agentic,
   1 turn, ~1.8k tokens, dashboard at mervo.github.io/hadr-claw).
 
+### 2026-07-08 — overnight iteration 2: feed-parsing hardening
+
+(Iteration 1 checkpoints are empty — setup/orientation only, no changes landed.)
+
+- All three normalizers now skip a malformed feature/entry (warning via stdlib
+  `logging`) instead of crashing the feed: one bad payload row previously
+  reported **zero events for the whole run** — the worst possible holdout
+  failure mode. Covered: null geometry, missing/null `time`/`fromdate`,
+  string magnitudes, entries stripped of description/link/date.
+- GDACS tolerance: `iscurrent` compared as string today but a boolean upstream
+  would have silently dropped every event (`str(...).lower() == "true"` now);
+  `severitydata.severity` coerced via `_num()` so string magnitudes don't
+  TypeError in `is_significant` or dedup's magnitude-delta comparison.
+- Tests: +4 (38 total) — malformed-feature cases for each feed, inline
+  payloads (no network), all checkers stay green.
+
+### 2026-07-08 — overnight run 1: results + harness fixes
+
+- Iteration 1 (the only one that ran): hardened all three feed normalizers —
+  a malformed feature/entry (null geometry, missing time, string magnitudes,
+  boolean iscurrent) skips that row with a warning instead of crashing the
+  feed; +4 no-network tests. Salvaged onto this branch from the loop's
+  checkpoint chain (24 empty checkpoints dropped).
+- Iterations 2-12 died instantly on the account usage limit ("resets 2:10pm")
+  — Route B shares interactive-session limits. overnight.sh now backs off 15m
+  on a limit hit without counting the iteration (docs/solutions entry).
+- python -m hadr wrote run records into repo state/runs even with a scratch
+  --state, polluting the loop branch with state/** churn — records now land
+  next to their state file (+ regression test).
+
 ## Open questions
 
 - `ISSUE_PAT` secret (fine-grained, issues:write) needed for the failure

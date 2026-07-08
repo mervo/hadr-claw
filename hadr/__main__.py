@@ -93,7 +93,10 @@ def main(argv: list[str] | None = None) -> int:
             "merged_away": len(raw_events) - len(events),
             "changes": counts,
             "engine": "pipeline",
-        }
+        },
+        # run records live next to their state file — a checker run pointed at
+        # a scratch --state must not pollute the repo's committed state/runs
+        runs_dir=Path(args.state).parent / "runs",
     )
     Path(args.state).parent.mkdir(parents=True, exist_ok=True)
     (Path(args.state).parent / "last_run.json").write_text(
