@@ -197,6 +197,8 @@ degrades gracefully without them):
 
 ## How it's hosted and runs
 
+**The short answer:** GitHub Actions runs your claw on their servers at 00:00 UTC daily. You don't need your laptop powered on; GitHub provides the compute. The workflow is in `.github/workflows/heartbeat.yml`.
+
 No server. Four free/cheap services each play one part of the claw's anatomy:
 
 ```
@@ -214,6 +216,20 @@ No server. Four free/cheap services each play one part of the claw's anatomy:
                   ▼
              GitHub Pages ← https://mervo.github.io/hadr-claw/     ← channel
 ```
+
+**Key detail:** GitHub Actions runners are wiped after each run, so memory survives only because the workflow commits `state/seen_events.json` back to the repo. On the next run, the workflow checks out your repo again, which includes the memory from the previous run.
+
+### Free Tier Constraints
+
+The free tier has limits you should monitor:
+
+- **Actions minutes:** 2,000 min/month across all your repos. One morning run takes ~10 min; at once daily (30 days), you use ~300 min. ✓ Well under budget. Monitor at `github.com/settings/billing/summary`. If you add more scheduled runs, budget accordingly.
+- **Concurrent jobs:** 1 per repo. If you trigger a manual run while the cron is already queued, it waits. Don't spam `gh workflow run`; each run costs 10 minutes.
+- **API rate limits:** Authenticated requests = 5,000/hour. Each morning run makes ~5–10 GitHub API calls (git push, issue creation, Pages publish). ✓ Not a concern at once daily.
+- **External API (OpenCode key):** Check your OpenCode account for limits on the Zen gateway. The workflow has a **10-minute timeout** + token caps in the claw code to prevent runaway spend.
+- **Secrets:** Store `OPENCODE_API_KEY` only in GitHub Secrets, never in `.env` or tracked files. Rotate the key periodically if it was shared in chat or logs.
+
+**The upshot:** At one run per day with the current setup, the free tier is fine. You have room to expand to multiple runs per day before hitting any hard limits.
 
 **The daily lifecycle** (`.github/workflows/heartbeat.yml`):
 
