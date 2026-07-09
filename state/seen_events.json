@@ -19,7 +19,7 @@
       "last_reported_fingerprint": "sha256:fb96f5b304f1f2e08667ac8cbd449265c612bb16d0743c8dc957cae061e275d7",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T01:26:45Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Chile"
     },
     "gdacs:1550554": {
@@ -41,7 +41,7 @@
       "last_reported_fingerprint": "sha256:83c2f94725cc9af9d52acc2a97f4d315da0334599e7a1e53c85d4a370e37a496",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T05:00:43Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Reykjanes Ridge"
     },
     "gdacs:1550559": {
@@ -63,7 +63,7 @@
       "last_reported_fingerprint": "sha256:02569d67c93998b3866e92f5ee2f09109df3d22b6f00c5938c81c95c4c2e272e",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T05:55:40Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Reykjanes Ridge"
     },
     "gdacs:1550568": {
@@ -85,7 +85,7 @@
       "last_reported_fingerprint": "sha256:1c9409125987f07f11cd496a6e5b57db922ad4b1b0c39acb742fc5c042b51ccd",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T07:16:26Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Indonesia"
     },
     "gdacs:1550574": {
@@ -110,7 +110,7 @@
       "last_reported_fingerprint": "sha256:7ffde236a658bdc0df0cd735a997afc5efd7b9da0a7900ceabca23d238459b00",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T08:30:56Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Reykjanes Ridge"
     },
     "gdacs:1550582": {
@@ -135,7 +135,7 @@
       "last_reported_fingerprint": "sha256:8f6e71d68b9ec666975b54e37b01ca4c2b2bc21427ea457907e588ce2ca7dd11",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T08:41:37Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Venezuela"
     },
     "gdacs:1550615": {
@@ -160,7 +160,7 @@
       "last_reported_fingerprint": "sha256:2c35efe77399087ae60f814ebbb9b007bef7fc15ebcd03b5f6d0a2c547c48888",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T14:21:22Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Indonesia"
     },
     "gdacs:1550633": {
@@ -182,7 +182,7 @@
       "last_reported_fingerprint": "sha256:3b9d76e655bae22b582e87adfc1866eee6a92423fe77c98cf8178bd2b30cde49",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T17:25:35Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in British Virgin Is."
     },
     "gdacs:1550638": {
@@ -207,7 +207,7 @@
       "last_reported_fingerprint": "sha256:def932a253ba825cb3ede17364ca8199b5d1521fcce6bc54332f605555acddbe",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T17:39:56Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Drake Passage"
     },
     "gdacs:1550639": {
@@ -232,7 +232,7 @@
       "last_reported_fingerprint": "sha256:1e52028487c793cab8a5eedae35927ba3e77a8c032151dcc0b573b1fb4879dc8",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T18:11:32Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Costa Rica"
     },
     "gdacs:1550648": {
@@ -258,7 +258,7 @@
       "last_reported_fingerprint": "sha256:ab3dfd557967be9c7185d1a5f9e627bf596dab712f0068ffdc129784703639be",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T18:07:41Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in United States"
     },
     "gdacs:1550650": {
@@ -283,7 +283,7 @@
       "last_reported_fingerprint": "sha256:02baffae30be3ab33e791c208c1a8ca077965755327de0220ffe9729e4ea19e4",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T19:44:52Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Indonesia"
     },
     "gdacs:1550654": {
@@ -308,7 +308,7 @@
       "last_reported_fingerprint": "sha256:057653f777935e20436317dca771eab42659d2dbd821785cd6cccdf285f5a172",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T20:33:15Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in New Zealand"
     },
     "gdacs:1550657": {
@@ -333,7 +333,7 @@
       "last_reported_fingerprint": "sha256:9583e01b6b617b39368cf1a11b8035f4a87b5ef7f9db3cb6cd7b022659716aa1",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T20:37:40Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Philippines"
     },
     "gdacs:1550674": {
@@ -362,7 +362,7 @@
       "last_reported_fingerprint": "sha256:3813cd7a7d6c76c58a69cf61ed57dfbe01f89ab51aa08dc39e6bbc6baa000bd4",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T22:22:13Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in China"
     },
     "gdacs:1550675": {
@@ -387,7 +387,7 @@
       "last_reported_fingerprint": "sha256:bc26f33efb07f3a19f12468f491d77f5e073ff985037a0deccdd7da6eebc14e0",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T22:42:39Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Tajikistan"
     },
     "gdacs:1550684": {
@@ -412,7 +412,7 @@
       "last_reported_fingerprint": "sha256:d5b491c1d630c67c923b2ee5a8f64e8c64c72bb6d5c2f37b0e9e61ebe71ec9a4",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-07T23:35:51Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Earthquake in Northern Molucca Sea"
     },
     "gdacs:1550709": {
@@ -432,10 +432,10 @@
         "gdacs",
         "usgs"
       ],
-      "fingerprint": "sha256:ccbd8e049e64ddfcd7b9e2551caa67c4dfa1bac81d6a5ac5122e295d7c12fd7e",
+      "fingerprint": "sha256:59d3b5a360e2ca1dc08c5b42fa9fee261be5af387ecc34011927311084bd619e",
       "first_seen": "2026-07-08T03:33:29Z",
       "last_reported_fingerprint": "sha256:ccbd8e049e64ddfcd7b9e2551caa67c4dfa1bac81d6a5ac5122e295d7c12fd7e",
-      "last_seen": "2026-07-08T07:42:01Z",
+      "last_seen": "2026-07-09T01:42:22Z",
       "occurred_at": "2026-07-08T02:08:48Z",
       "status": "active",
       "title": "Earthquake in China"
@@ -459,7 +459,7 @@
       ],
       "fingerprint": "sha256:dce71d5df4dab172e30671cb55a5c1082abd4232bf29951d03d69b896bfdac9b",
       "first_seen": "2026-07-08T05:25:51Z",
-      "last_seen": "2026-07-08T07:42:01Z",
+      "last_seen": "2026-07-09T01:42:22Z",
       "occurred_at": "2026-07-08T04:21:46Z",
       "status": "active",
       "title": "Earthquake in Jan Mayen Island Region"
@@ -483,10 +483,322 @@
       ],
       "fingerprint": "sha256:61878e45e8a8c7fb89e81f19c9f528d4e007b370b122b9662fbc357de5a6c403",
       "first_seen": "2026-07-08T07:14:09Z",
-      "last_seen": "2026-07-08T07:42:01Z",
+      "last_seen": "2026-07-09T01:42:22Z",
       "occurred_at": "2026-07-08T05:00:32Z",
       "status": "active",
       "title": "Earthquake in Peru"
+    },
+    "gdacs:1550754": {
+      "alert_history": [
+        [
+          "2026-07-09T01:42:22Z",
+          "Green"
+        ]
+      ],
+      "aliases": [
+        "1550754",
+        "gdacs:1550754",
+        "us6000tavs",
+        "usgs:us6000tavs"
+      ],
+      "feeds": [
+        "gdacs",
+        "usgs"
+      ],
+      "fingerprint": "sha256:da65f2dec7bbe3740e52b47dc6765d531eea1d12fbe5d11c5060df9b43506de9",
+      "first_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:42:22Z",
+      "occurred_at": "2026-07-08T07:35:51Z",
+      "status": "active",
+      "title": "Earthquake in Japan"
+    },
+    "gdacs:1550763": {
+      "alert_history": [
+        [
+          "2026-07-09T01:42:22Z",
+          "Green"
+        ]
+      ],
+      "aliases": [
+        "1550763",
+        "gdacs:1550763",
+        "us6000tavx",
+        "usgs:us6000tavx"
+      ],
+      "feeds": [
+        "gdacs",
+        "usgs"
+      ],
+      "fingerprint": "sha256:97192ff31a45afc21d76796e3b549fe586bae0387666d70733a7576fce4bf53c",
+      "first_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:42:22Z",
+      "occurred_at": "2026-07-08T08:36:06Z",
+      "status": "active",
+      "title": "Earthquake in Indonesia"
+    },
+    "gdacs:1550772": {
+      "alert_history": [
+        [
+          "2026-07-09T01:42:22Z",
+          "Green"
+        ]
+      ],
+      "aliases": [
+        "1550772",
+        "gdacs:1550772",
+        "us6000tawe",
+        "usgs:us6000tawe"
+      ],
+      "feeds": [
+        "gdacs",
+        "usgs"
+      ],
+      "fingerprint": "sha256:5b6b48621e5baac8966fa347b37c4298a9d35b859197d177755e12ffe63b7d54",
+      "first_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:42:22Z",
+      "occurred_at": "2026-07-08T09:50:23Z",
+      "status": "active",
+      "title": "Earthquake in Vanuatu"
+    },
+    "gdacs:1550780": {
+      "alert_history": [
+        [
+          "2026-07-09T01:42:22Z",
+          "Green"
+        ]
+      ],
+      "aliases": [
+        "1550780",
+        "gdacs:1550780",
+        "us6000tawr",
+        "usgs:us6000tawr"
+      ],
+      "feeds": [
+        "gdacs",
+        "usgs"
+      ],
+      "fingerprint": "sha256:252127490e1dfcdfdcc17704786e576f3b9388d8032cde65b0ee3866109ac026",
+      "first_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:42:22Z",
+      "occurred_at": "2026-07-08T11:23:04Z",
+      "status": "active",
+      "title": "Earthquake in Papua New Guinea"
+    },
+    "gdacs:1550781": {
+      "alert_history": [
+        [
+          "2026-07-09T01:42:22Z",
+          "Green"
+        ]
+      ],
+      "aliases": [
+        "1550781",
+        "gdacs:1550781",
+        "us6000tawt",
+        "usgs:us6000tawt"
+      ],
+      "feeds": [
+        "gdacs",
+        "usgs"
+      ],
+      "fingerprint": "sha256:ac2fed3f3aae38d9ee6aac17b7476f26ce6f6cf1104c2eb8bc664a97fc285705",
+      "first_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:42:22Z",
+      "occurred_at": "2026-07-08T11:42:51Z",
+      "status": "active",
+      "title": "Earthquake in Vanuatu"
+    },
+    "gdacs:1550783": {
+      "alert_history": [
+        [
+          "2026-07-09T01:42:22Z",
+          "Green"
+        ]
+      ],
+      "aliases": [
+        "1550783",
+        "gdacs:1550783",
+        "us6000taww",
+        "usgs:us6000taww"
+      ],
+      "feeds": [
+        "gdacs",
+        "usgs"
+      ],
+      "fingerprint": "sha256:d08e9b884a22c29065ac6cdf1e82fddd3b0d50c6975f1c7bc99bd76825a259eb",
+      "first_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:42:22Z",
+      "occurred_at": "2026-07-08T12:18:59Z",
+      "status": "active",
+      "title": "Earthquake in Tonga Islands Region"
+    },
+    "gdacs:1550787": {
+      "alert_history": [
+        [
+          "2026-07-09T01:42:22Z",
+          "Green"
+        ]
+      ],
+      "aliases": [
+        "1550787",
+        "gdacs:1550787",
+        "us6000tay7",
+        "usgs:us6000tay7"
+      ],
+      "feeds": [
+        "gdacs",
+        "usgs"
+      ],
+      "fingerprint": "sha256:57c0db2644218be4de0bdbe68a464d43a19b54d5613355f49957f12be59f2507",
+      "first_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:42:22Z",
+      "occurred_at": "2026-07-08T13:01:10Z",
+      "status": "active",
+      "title": "Earthquake in Chagos Archipelago Region"
+    },
+    "gdacs:1550816": {
+      "alert_history": [
+        [
+          "2026-07-09T01:42:22Z",
+          "Green"
+        ]
+      ],
+      "aliases": [
+        "1550816",
+        "gdacs:1550816",
+        "us6000tazy",
+        "usgs:us6000tazy"
+      ],
+      "feeds": [
+        "gdacs",
+        "usgs"
+      ],
+      "fingerprint": "sha256:783e20514a748b208dd31cafa35debe9f4583ace18c71c2505d2f8f55184ae20",
+      "first_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:42:22Z",
+      "occurred_at": "2026-07-08T15:22:34Z",
+      "status": "active",
+      "title": "Earthquake in Islamic Republic of Iran"
+    },
+    "gdacs:1550840": {
+      "alert_history": [
+        [
+          "2026-07-09T01:42:22Z",
+          "Green"
+        ]
+      ],
+      "aliases": [
+        "1550840",
+        "gdacs:1550840",
+        "us7000sz2b",
+        "usgs:us7000sz2b"
+      ],
+      "feeds": [
+        "gdacs",
+        "usgs"
+      ],
+      "fingerprint": "sha256:97a23b698921d6ac04a024810e3769286d80170f772419e76c652d61f4c73332",
+      "first_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:42:22Z",
+      "occurred_at": "2026-07-08T19:07:10Z",
+      "status": "active",
+      "title": "Earthquake in Balleny Islands Region"
+    },
+    "gdacs:1550851": {
+      "alert_history": [
+        [
+          "2026-07-09T01:42:22Z",
+          "Green"
+        ]
+      ],
+      "aliases": [
+        "1550851",
+        "gdacs:1550851",
+        "us7000sz31",
+        "usgs:us7000sz31"
+      ],
+      "feeds": [
+        "gdacs",
+        "usgs"
+      ],
+      "fingerprint": "sha256:333bc27fc967d30198f669391c178cbe19e8c0070b80132e597098c1f8fd450c",
+      "first_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:42:22Z",
+      "occurred_at": "2026-07-08T20:32:04Z",
+      "status": "active",
+      "title": "Earthquake in Philippines"
+    },
+    "gdacs:1550868": {
+      "alert_history": [
+        [
+          "2026-07-09T01:42:22Z",
+          "Green"
+        ]
+      ],
+      "aliases": [
+        "1550868",
+        "gdacs:1550868",
+        "us7000sz3z",
+        "usgs:us7000sz3z"
+      ],
+      "feeds": [
+        "gdacs",
+        "usgs"
+      ],
+      "fingerprint": "sha256:80845844e1f70904aa0c07eb959bd89460461d550c68d08e862b1a04ab8c1a23",
+      "first_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:42:22Z",
+      "occurred_at": "2026-07-08T23:44:13Z",
+      "status": "active",
+      "title": "Earthquake in China"
+    },
+    "gdacs:1550874": {
+      "alert_history": [
+        [
+          "2026-07-09T01:42:22Z",
+          "Green"
+        ]
+      ],
+      "aliases": [
+        "1550874",
+        "gdacs:1550874",
+        "us7000sz4q",
+        "usgs:us7000sz4q"
+      ],
+      "feeds": [
+        "gdacs",
+        "usgs"
+      ],
+      "fingerprint": "sha256:747183f8a90e6b20d658159b0c4ca4b94309155fed43dd8d6db99cdf47ddaaee",
+      "first_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:42:22Z",
+      "occurred_at": "2026-07-09T01:16:25Z",
+      "status": "active",
+      "title": "Earthquake in Indonesia"
+    },
+    "gdacs:1550875": {
+      "alert_history": [
+        [
+          "2026-07-09T01:42:22Z",
+          "Green"
+        ]
+      ],
+      "aliases": [
+        "1550875",
+        "gdacs:1550875",
+        "us7000sz4p",
+        "usgs:us7000sz4p"
+      ],
+      "feeds": [
+        "gdacs",
+        "usgs"
+      ],
+      "fingerprint": "sha256:f0335fd7afbb14b8417c68fcd3600fd2cdc199bc43d4ecb961929261df97de74",
+      "first_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:42:22Z",
+      "occurred_at": "2026-07-09T01:15:09Z",
+      "status": "active",
+      "title": "Earthquake in Tajikistan"
     },
     "glide:EP-2026-000048-BGD": {
       "alert_history": [
@@ -784,7 +1096,7 @@
       "last_reported_fingerprint": "sha256:d7bccacfc9fcac41a9113511ea3998c4d1d9b865f148a9c57fbf00d78abcf109",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-06-06T01:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Flood in China"
     },
     "glide:FL-2026-000106-GEO": {
@@ -963,10 +1275,10 @@
       "feeds": [
         "gdacs"
       ],
-      "fingerprint": "sha256:4e030a996635b7ed084aabc24991948b9ea491d068072b9ad20db42bf2f4e7b6",
+      "fingerprint": "sha256:4f1d11918b0de5eb98b61e513c883e512d69acf78e038a9790b03576f5a40960",
       "first_seen": "2026-07-08T03:33:29Z",
       "last_reported_fingerprint": "sha256:4e030a996635b7ed084aabc24991948b9ea491d068072b9ad20db42bf2f4e7b6",
-      "last_seen": "2026-07-08T07:42:01Z",
+      "last_seen": "2026-07-09T01:42:22Z",
       "occurred_at": "2026-07-01T00:00:00Z",
       "status": "active",
       "title": "Tropical Cyclone BAVI-26"
@@ -1013,7 +1325,7 @@
       "first_seen": "2026-07-08T07:14:09Z",
       "last_seen": "2026-07-08T07:42:01Z",
       "occurred_at": "2026-07-02T00:00:00Z",
-      "status": "active",
+      "status": "aged_out",
       "title": "Forest fires in Portugal"
     },
     "glide:WF-2026-000102-FRA": {
@@ -1034,13 +1346,13 @@
       "fingerprint": "sha256:b7df2c1627cfbc59b7ddaf077493580df45f48c9bd30bfe95e5101e02dca86a4",
       "first_seen": "2026-07-08T03:33:29Z",
       "last_reported_fingerprint": "sha256:b7df2c1627cfbc59b7ddaf077493580df45f48c9bd30bfe95e5101e02dca86a4",
-      "last_seen": "2026-07-08T07:42:01Z",
+      "last_seen": "2026-07-09T01:42:22Z",
       "occurred_at": "2026-07-04T00:00:00Z",
       "status": "active",
       "title": "Forest fires in France"
     }
   },
-  "last_change_at": "2026-07-08T07:42:01Z",
-  "updated_at": "2026-07-08T07:42:01Z",
+  "last_change_at": "2026-07-09T01:42:22Z",
+  "updated_at": "2026-07-09T01:42:22Z",
   "version": 1
 }
