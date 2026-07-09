@@ -14,7 +14,7 @@ and decisions of record in ROADMAP.md). Headlines:
   fallback renderer — the morning report can never fail to exist).
 - Model API: OpenCode Go (Zen gateway, OpenAI-compatible, env-configured).
 - Runtime: docker-compose canonical; uv for the dev loop.
-- Heartbeat: GitHub Actions cron 00:00 UTC + workflow_dispatch; VPS-portable
+- Heartbeat: GitHub Actions cron 00:07 UTC + workflow_dispatch; VPS-portable
   supercronic compose profile as documented alternative.
 - Observability: run records + transcripts in state/runs/, ops panel on the
   dashboard, OTel traces with jaeger compose profile.
