@@ -246,6 +246,11 @@ The free tier has limits you should monitor:
    GitHub auto-disabling the cron after 60 idle days.
 5. `dashboard.html` deploys to **GitHub Pages** as `index.html` — the published
    artifact is canonical for readers; the committed file is the demo copy.
+   Two hand-written static pages ship alongside it, untouched by the run:
+   [`architecture.html`](https://mervo.github.io/hadr-claw/architecture.html)
+   (architecture & workflow) and
+   [`marketing.html`](https://mervo.github.io/hadr-claw/marketing.html)
+   (project overview) — sources in `pages/`.
    (After Tier 6, dev PRs must not diff `dashboard.html`/`state/**` — take
    main's version and regenerate.)
 6. **Quiet mornings still publish** — fresh stamp, "no new developments" lead,
@@ -295,6 +300,7 @@ tests/                   # pytest + fixtures (checked-in feed payloads; never th
 state/seen_events.json   # memory: what the claw has already assessed (committed)
 state/runs/              # per-run observability records (newest 14 kept)
 dashboard.html           # the channel: generated situation report
+pages/                   # static site pages published alongside the dashboard
 feeds/                   # per-feed endpoint docs and open questions
 docs/solutions/          # one hard-won fix per file; grep before debugging
 scripts/                 # deterministic checks (exit 0/1); later the goal-file checkers
