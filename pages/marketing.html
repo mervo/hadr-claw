@@ -7,17 +7,17 @@
 <style>
   :root {
     color-scheme: light dark;
-    --surface: #f7f7f5; --surface-2: #ffffff;
+    --surface: #f7f7f5; --surface-2: #ffffff; --surface-3: #f0efec;
     --ink: #0b0b0b; --ink-2: #4e4d4a; --ink-3: #85847d;
     --border: #e4e3df;
     --accent: #2a78d6; --accent-2: #7c4dd6;
-    --good: #0ca30c; --critical: #d03b3b;
+    --good: #0ca30c; --warning: #e9a812; --serious: #ec835a; --critical: #d03b3b;
     --glow-a: rgba(42,120,214,0.14); --glow-b: rgba(124,77,214,0.12);
     --card-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(20,30,60,0.06);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --surface: #131312; --surface-2: #1d1d1c;
+      --surface: #131312; --surface-2: #1d1d1c; --surface-3: #262625;
       --ink: #f5f5f2; --ink-2: #bdbcb2; --ink-3: #85847b;
       --border: #33332f;
       --accent: #5a9bea; --accent-2: #a37ee8;
@@ -27,7 +27,7 @@
   }
   * { box-sizing: border-box; }
   body {
-    margin: 0; padding: 0 2.5rem 2rem; min-height: 100vh;
+    margin: 0; padding: 0 2.5rem 1.6rem; min-height: 100vh;
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
     line-height: 1.5; color: var(--ink);
     background:
@@ -35,7 +35,7 @@
       radial-gradient(52rem 26rem at 85% -4rem, var(--glow-b), transparent 60%),
       var(--surface);
   }
-  .page { max-width: 90rem; margin: 0 auto; }
+  .page { max-width: 92rem; margin: 0 auto; }
   a { color: var(--accent); }
 
   nav {
@@ -48,16 +48,21 @@
   nav a:hover { color: var(--accent); }
   nav a.active { color: var(--ink); font-weight: 700; }
 
-  .hero { text-align: center; padding: 2.2rem 0 2.4rem; }
+  /* Hero: text left, live flow diagram right */
+  .hero {
+    display: grid; grid-template-columns: 1.05fr 1fr; gap: 2.5rem;
+    align-items: center; padding: 1.6rem 0 1.8rem;
+  }
+  @media (max-width: 64rem) { .hero { grid-template-columns: 1fr; text-align: center; } }
   .hero .kicker {
-    display: inline-block; font-size: 0.78rem; font-weight: 700;
+    display: inline-block; font-size: 0.75rem; font-weight: 700;
     letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
     border: 1px solid var(--border); background: var(--surface-2);
-    border-radius: 999px; padding: 0.3rem 0.9rem; margin-bottom: 1.1rem;
+    border-radius: 999px; padding: 0.28rem 0.9rem; margin-bottom: 1rem;
     box-shadow: var(--card-shadow);
   }
   .hero h1 {
-    font-size: clamp(2.2rem, 4.6vw, 3.4rem); line-height: 1.08;
+    font-size: clamp(2.1rem, 3.8vw, 3.1rem); line-height: 1.08;
     letter-spacing: -0.02em; margin: 0 0 0.8rem;
   }
   .hero h1 em {
@@ -65,10 +70,11 @@
     background: linear-gradient(90deg, var(--accent), var(--accent-2));
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .hero p { font-size: 1.12rem; color: var(--ink-2); margin: 0 auto 1.5rem; max-width: 44rem; }
+  .hero p { font-size: 1.08rem; color: var(--ink-2); margin: 0 0 1.3rem; max-width: 34rem; }
+  @media (max-width: 64rem) { .hero p { margin-inline: auto; } }
   .cta { display: inline-flex; gap: 0.8rem; }
   .cta a {
-    padding: 0.65rem 1.5rem; border-radius: 10px; text-decoration: none;
+    padding: 0.6rem 1.4rem; border-radius: 10px; text-decoration: none;
     font-weight: 700; font-size: 0.95rem;
   }
   .cta .primary {
@@ -77,42 +83,65 @@
   }
   .cta .secondary { border: 1px solid var(--border); background: var(--surface-2); color: var(--ink); }
 
-  .qgrid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem;
-    align-items: stretch;
+  .diagram {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 16px; box-shadow: var(--card-shadow); padding: 1rem 1.2rem 0.8rem;
   }
+  .diagram svg { display: block; width: 100%; height: auto; }
+  .diagram .cap {
+    text-align: center; font-size: 0.75rem; color: var(--ink-3);
+    letter-spacing: 0.08em; text-transform: uppercase; padding-top: 0.35rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .flowdot { animation: flow 3.2s linear infinite; }
+    .flowdot.d2 { animation-delay: 1.05s; }
+    .flowdot.d3 { animation-delay: 2.1s; }
+    @keyframes flow { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+    .ping { animation: ping 2.4s ease-out infinite; transform-origin: center; transform-box: fill-box; }
+    @keyframes ping { 0% { opacity: 0.9; transform: scale(0.3);} 70% { opacity: 0; transform: scale(1.6);} 100% { opacity: 0;} }
+  }
+
+  .qgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; }
   @media (max-width: 70rem) { .qgrid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 42rem) { .qgrid { grid-template-columns: 1fr; } }
   .q {
     background: var(--surface-2); border: 1px solid var(--border);
-    border-radius: 14px; padding: 1.3rem 1.4rem 1.4rem;
+    border-radius: 14px; padding: 1.15rem 1.3rem 1.25rem;
     box-shadow: var(--card-shadow); position: relative; overflow: hidden;
   }
   .q::before {
     content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
     background: linear-gradient(90deg, var(--accent), var(--accent-2));
   }
-  .q .n {
-    font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em;
-    text-transform: uppercase; color: var(--accent); margin-bottom: 0.55rem;
+  .q .head { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.55rem; }
+  .q .icon {
+    flex: none; width: 2.3rem; height: 2.3rem; border-radius: 10px;
+    display: grid; place-items: center; color: var(--accent);
+    background: linear-gradient(135deg, var(--glow-a), var(--glow-b));
+    border: 1px solid var(--border);
   }
-  .q h2 { font-size: 1.15rem; letter-spacing: -0.01em; margin: 0 0 0.6rem; }
-  .q p { margin: 0 0 0.6rem; font-size: 0.92rem; color: var(--ink-2); }
+  .q .icon svg { width: 1.25rem; height: 1.25rem; }
+  .q .n {
+    font-size: 0.68rem; font-weight: 800; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  .q h2 { font-size: 1.08rem; letter-spacing: -0.01em; margin: 0; line-height: 1.2; }
+  .q p { margin: 0 0 0.55rem; font-size: 0.9rem; color: var(--ink-2); }
   .q p:last-child { margin-bottom: 0; }
   .q b { color: var(--ink); }
-  .q ul { margin: 0; padding: 0; list-style: none; font-size: 0.92rem; color: var(--ink-2); }
-  .q li { padding-left: 1.3rem; position: relative; margin-bottom: 0.5rem; }
+  .q ul { margin: 0; padding: 0; list-style: none; font-size: 0.9rem; color: var(--ink-2); }
+  .q li { padding-left: 1.25rem; position: relative; margin-bottom: 0.42rem; }
   .q li:last-child { margin-bottom: 0; }
-  .q li::before { content: "✕"; position: absolute; left: 0; color: var(--critical); font-weight: 700; font-size: 0.8rem; top: 0.15rem; }
+  .q li::before { content: "✕"; position: absolute; left: 0; color: var(--critical); font-weight: 700; font-size: 0.78rem; top: 0.14rem; }
 
   .strip {
-    display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem 2.4rem;
-    margin: 1.8rem 0 1.4rem; font-size: 0.88rem; color: var(--ink-2);
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem 2.2rem;
+    margin: 1.5rem 0 1rem; font-size: 0.88rem; color: var(--ink-2);
   }
   .strip span b { color: var(--ink); font-weight: 700; }
   .strip span::before { content: "●"; color: var(--good); font-size: 0.6rem; margin-right: 0.5rem; vertical-align: 0.1rem; }
 
-  footer { color: var(--ink-3); font-size: 0.8rem; text-align: center; padding-top: 0.4rem; }
+  footer { color: var(--ink-3); font-size: 0.8rem; text-align: center; padding-top: 0.3rem; }
   footer a { color: var(--ink-3); }
 </style>
 </head>
@@ -128,54 +157,136 @@
 </nav>
 
 <div class="hero">
-  <span class="kicker">Unattended · Daily · 08:30 SGT</span>
-  <h1>Your disaster watch floor,<br><em>staffed by an agent</em></h1>
-  <p>Three global disaster feeds in. One assessed morning report out.
-  Nobody stays up all night.</p>
-  <div class="cta">
-    <a class="primary" href="./">View today's report</a>
-    <a class="secondary" href="architecture.html">How it works</a>
+  <div>
+    <span class="kicker">Unattended · Daily · 08:30 SGT</span>
+    <h1>Your disaster watch floor,<br><em>staffed by an agent</em></h1>
+    <p>Three global disaster feeds in. One assessed morning report out.
+    Nobody stays up all night.</p>
+    <div class="cta">
+      <a class="primary" href="./">View today's report</a>
+      <a class="secondary" href="architecture.html">How it works</a>
+    </div>
+  </div>
+
+  <div class="diagram" aria-label="Flow: three feeds merge in the claw and publish one morning report">
+    <svg viewBox="0 0 560 300" role="img">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="var(--accent)"/><stop offset="1" stop-color="var(--accent-2)"/>
+        </linearGradient>
+      </defs>
+
+      <!-- feed nodes -->
+      <g font-family="system-ui, sans-serif">
+        <g>
+          <rect x="12" y="30" width="132" height="52" rx="10" fill="var(--surface-3)" stroke="var(--border)"/>
+          <circle cx="36" cy="56" r="5" fill="var(--critical)"/>
+          <circle cx="36" cy="56" r="5" fill="var(--critical)" class="ping"/>
+          <text x="52" y="52" font-size="14" font-weight="700" fill="var(--ink)">USGS</text>
+          <text x="52" y="68" font-size="10.5" fill="var(--ink-3)">earthquakes</text>
+        </g>
+        <g>
+          <rect x="12" y="124" width="132" height="52" rx="10" fill="var(--surface-3)" stroke="var(--border)"/>
+          <circle cx="36" cy="150" r="5" fill="var(--serious)"/>
+          <circle cx="36" cy="150" r="5" fill="var(--serious)" class="ping"/>
+          <text x="52" y="146" font-size="14" font-weight="700" fill="var(--ink)">GDACS</text>
+          <text x="52" y="162" font-size="10.5" fill="var(--ink-3)">multi-hazard</text>
+        </g>
+        <g>
+          <rect x="12" y="218" width="132" height="52" rx="10" fill="var(--surface-3)" stroke="var(--border)"/>
+          <circle cx="36" cy="244" r="5" fill="var(--good)"/>
+          <circle cx="36" cy="244" r="5" fill="var(--good)" class="ping"/>
+          <text x="52" y="240" font-size="14" font-weight="700" fill="var(--ink)">ReliefWeb</text>
+          <text x="52" y="256" font-size="10.5" fill="var(--ink-3)">UN OCHA, curated</text>
+        </g>
+      </g>
+
+      <!-- wires into the claw -->
+      <g fill="none" stroke="var(--border)" stroke-width="2">
+        <path id="w1" d="M144 56 C 210 56, 200 130, 258 143"/>
+        <path id="w2" d="M144 150 L 258 150"/>
+        <path id="w3" d="M144 244 C 210 244, 200 170, 258 157"/>
+      </g>
+      <circle r="4" fill="var(--accent)" class="flowdot" style="offset-path: path('M144 56 C 210 56, 200 130, 258 143')"/>
+      <circle r="4" fill="var(--accent)" class="flowdot d2" style="offset-path: path('M144 150 L 258 150')"/>
+      <circle r="4" fill="var(--accent)" class="flowdot d3" style="offset-path: path('M144 244 C 210 244, 200 170, 258 157')"/>
+
+      <!-- the claw -->
+      <g font-family="system-ui, sans-serif">
+        <rect x="258" y="102" width="140" height="96" rx="14" fill="none" stroke="url(#g)" stroke-width="2.5"/>
+        <text x="328" y="130" font-size="15" font-weight="800" fill="var(--ink)" text-anchor="middle">the claw</text>
+        <text x="328" y="150" font-size="10.5" fill="var(--ink-2)" text-anchor="middle">dedup · memory diff</text>
+        <text x="328" y="165" font-size="10.5" fill="var(--ink-2)" text-anchor="middle">AI assessment</text>
+        <text x="328" y="180" font-size="10.5" fill="var(--ink-2)" text-anchor="middle">capped + fallback</text>
+      </g>
+
+      <!-- wire out -->
+      <path id="w4" d="M398 150 L 452 150" fill="none" stroke="var(--border)" stroke-width="2"/>
+      <circle r="4" fill="var(--accent-2)" class="flowdot d2" style="offset-path: path('M398 150 L 452 150')"/>
+
+      <!-- the report -->
+      <g font-family="system-ui, sans-serif">
+        <rect x="452" y="86" width="96" height="128" rx="10" fill="var(--surface-3)" stroke="var(--border)"/>
+        <rect x="452" y="86" width="96" height="26" rx="10" fill="url(#g)"/>
+        <rect x="452" y="102" width="96" height="10" fill="url(#g)"/>
+        <text x="500" y="104" font-size="11" font-weight="800" fill="#fff" text-anchor="middle">08:30 SGT</text>
+        <rect x="462" y="122" width="56" height="7" rx="3.5" fill="var(--critical)" opacity="0.85"/>
+        <rect x="462" y="136" width="76" height="5" rx="2.5" fill="var(--border)"/>
+        <rect x="462" y="147" width="66" height="5" rx="2.5" fill="var(--border)"/>
+        <rect x="462" y="162" width="42" height="7" rx="3.5" fill="var(--serious)" opacity="0.85"/>
+        <rect x="462" y="176" width="76" height="5" rx="2.5" fill="var(--border)"/>
+        <rect x="462" y="187" width="58" height="5" rx="2.5" fill="var(--border)"/>
+        <text x="500" y="230" font-size="10.5" fill="var(--ink-3)" text-anchor="middle">one page, assessed</text>
+      </g>
+    </svg>
+    <div class="cap">live feeds → one merged, assessed report — every morning</div>
   </div>
 </div>
 
 <div class="qgrid">
   <div class="q">
-    <div class="n">01 · What</div>
-    <h2>A monitoring agent for HADR</h2>
+    <div class="head">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span>
+      <div><div class="n">01 · What</div><h2>A monitoring agent for HADR</h2></div>
+    </div>
     <p>It watches <b>USGS</b>, <b>GDACS</b> and <b>ReliefWeb</b>, merges duplicate
     reports of the same event, and remembers what it has already seen.</p>
-    <p>Each morning it publishes one page: what's <b>new</b>, what <b>escalated</b>,
-    what it means — assessed by an AI model that can only speak about events the
-    pipeline verified.</p>
+    <p>Each morning: one page — what's <b>new</b>, what <b>escalated</b>, what it
+    means. The AI can only speak about events the pipeline verified.</p>
   </div>
 
   <div class="q">
-    <div class="n">02 · Why</div>
-    <h2>Feeds are for machines</h2>
+    <div class="head">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 8-6-16-3 8H2"/></svg></span>
+      <div><div class="n">02 · Why</div><h2>Feeds are for machines</h2></div>
+    </div>
     <p>The same quake arrives three times under three IDs, buried in entries that
-    will never matter. Someone has to read it all — every morning.</p>
-    <p>The claw makes that reading unnecessary. And it's built to be trusted:
-    hard caps on the model, a deterministic fallback, so <b>the report always
-    exists</b>. Next: more feeds, deeper escalation tracking.</p>
+    never matter. Someone has to read it all — every morning.</p>
+    <p>The claw makes that reading unnecessary — with hard caps and a deterministic
+    fallback, so <b>the report always exists</b>. Next: more feeds, deeper
+    escalation tracking.</p>
   </div>
 
   <div class="q">
-    <div class="n">03 · Who</div>
-    <h2>The morning duty officer</h2>
+    <div class="head">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg></span>
+      <div><div class="n">03 · Who</div><h2>The morning duty officer</h2></div>
+    </div>
     <p>Analysts, response planners, NGO ops — anyone who needs situational
     awareness before the day's first meeting, without an overnight shift.</p>
-    <p>It speeds up exactly one decision:<br>
-    <b>“Does anything need my attention this morning?”</b><br>
-    One glance, not thirty minutes of feeds.</p>
+    <p>It speeds up one decision: <b>“Does anything need my attention this
+    morning?”</b> One glance, not thirty minutes of feeds.</p>
   </div>
 
   <div class="q">
-    <div class="n">04 · Not</div>
-    <h2>Deliberate non-goals</h2>
+    <div class="head">
+      <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/><path d="M9.5 12.5l2 2 3.5-4"/></svg></span>
+      <div><div class="n">04 · Not</div><h2>Deliberate non-goals</h2></div>
+    </div>
     <ul>
       <li><b>Not a pager.</b> Daily report, not real-time alerts.</li>
-      <li><b>Not a source.</b> Every fact links back to the official feed.</li>
-      <li><b>No invented events.</b> Unknown IDs are rejected in code.</li>
+      <li><b>Not a source.</b> Every fact links to the official feed.</li>
+      <li><b>No invented events.</b> Unknown IDs rejected in code.</li>
       <li><b>No runaway spend.</b> Turns, tokens, wall clock — capped.</li>
       <li><b>No servers.</b> If a run fails, it files the issue itself.</li>
     </ul>
