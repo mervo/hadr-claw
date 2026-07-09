@@ -1,0 +1,50 @@
+{
+  "started_at": "2026-07-09T03:28:43Z",
+  "finished_at": "2026-07-09T03:28:51Z",
+  "duration_ms": 7439,
+  "feeds": [
+    {
+      "feed": "gdacs",
+      "ok": true,
+      "fetched_at": "2026-07-09T03:28:44Z",
+      "latency_ms": 1015,
+      "error": null,
+      "event_count": 18
+    },
+    {
+      "feed": "reliefweb",
+      "ok": true,
+      "fetched_at": "2026-07-09T03:28:44Z",
+      "latency_ms": 92,
+      "error": null,
+      "event_count": 0
+    },
+    {
+      "feed": "usgs",
+      "ok": true,
+      "fetched_at": "2026-07-09T03:28:44Z",
+      "latency_ms": 56,
+      "error": null,
+      "event_count": 15
+    }
+  ],
+  "significant_events": 18,
+  "changes": {
+    "new": 0,
+    "escalated": 0,
+    "updated": 2,
+    "unchanged": 16,
+    "deleted": 0
+  },
+  "engine": "agentic",
+  "model": "deepseek-v4-flash-free",
+  "caps": {
+    "turns": 12,
+    "tokens": 150000,
+    "seconds": 300
+  },
+  "turns": 1,
+  "tokens": 2255,
+  "wrote": true,
+  "cap_tripped": null
+}
