@@ -7,74 +7,113 @@
 <style>
   :root {
     color-scheme: light dark;
-    --surface: #fcfcfb; --surface-2: #ffffff; --surface-3: #f4f3f0;
-    --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #6e6d68;
-    --border: #e4e3df; --border-strong: #cfcec9;
-    --good: #0ca30c; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
-    --accent: #2a78d6; --accent-tint: #eaf2fc;
+    --surface: #f7f7f5; --surface-2: #ffffff;
+    --ink: #0b0b0b; --ink-2: #4e4d4a; --ink-3: #85847d;
+    --border: #e4e3df;
+    --accent: #2a78d6; --accent-2: #7c4dd6;
+    --good: #0ca30c; --critical: #d03b3b;
+    --glow-a: rgba(42,120,214,0.14); --glow-b: rgba(124,77,214,0.12);
+    --card-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(20,30,60,0.06);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --surface: #1a1a19; --surface-2: #232322; --surface-3: #2b2b29;
-      --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #98978e;
-      --border: #383835; --border-strong: #4a4945;
-      --accent: #3987e5; --accent-tint: #16273d;
+      --surface: #131312; --surface-2: #1d1d1c;
+      --ink: #f5f5f2; --ink-2: #bdbcb2; --ink-3: #85847b;
+      --border: #33332f;
+      --accent: #5a9bea; --accent-2: #a37ee8;
+      --glow-a: rgba(42,120,214,0.18); --glow-b: rgba(124,77,214,0.16);
+      --card-shadow: 0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35);
     }
   }
   * { box-sizing: border-box; }
   body {
-    margin: 0; padding: 0 2rem 2.5rem;
+    margin: 0; padding: 0 2.5rem 2rem; min-height: 100vh;
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    line-height: 1.55; background: var(--surface); color: var(--ink);
+    line-height: 1.5; color: var(--ink);
+    background:
+      radial-gradient(60rem 28rem at 18% -6rem, var(--glow-a), transparent 60%),
+      radial-gradient(52rem 26rem at 85% -4rem, var(--glow-b), transparent 60%),
+      var(--surface);
   }
-  .page { max-width: 88rem; margin: 0 auto; }
-  nav {
-    display: flex; align-items: center; gap: 1.2rem; padding: 0.7rem 0;
-    border-bottom: 1px solid var(--border); margin-bottom: 1.8rem;
-    font-size: 0.9rem;
-  }
-  nav .brand { font-weight: 700; font-size: 1rem; }
-  nav a { color: var(--ink-2); text-decoration: none; }
-  nav a:hover { color: var(--accent); }
-  nav a.active { color: var(--ink); font-weight: 600; }
+  .page { max-width: 90rem; margin: 0 auto; }
   a { color: var(--accent); }
 
-  /* Hero sized so hero + first band fill one 16:9 screen. */
-  .hero { text-align: center; max-width: 64rem; margin: 0 auto 2rem; }
-  .hero h1 { font-size: 2.4rem; line-height: 1.15; margin: 0 0 0.7rem; }
-  .hero h1 em { font-style: normal; color: var(--accent); }
-  .hero p { font-size: 1.1rem; color: var(--ink-2); margin: 0 0 1.2rem; }
+  nav {
+    display: flex; align-items: center; gap: 1.4rem; padding: 0.9rem 0;
+    font-size: 0.9rem;
+  }
+  nav .brand { font-weight: 800; font-size: 1.05rem; letter-spacing: -0.01em; }
+  nav .brand::before { content: "◆ "; color: var(--accent); }
+  nav a { color: var(--ink-2); text-decoration: none; font-weight: 500; }
+  nav a:hover { color: var(--accent); }
+  nav a.active { color: var(--ink); font-weight: 700; }
+
+  .hero { text-align: center; padding: 2.2rem 0 2.4rem; }
+  .hero .kicker {
+    display: inline-block; font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+    border: 1px solid var(--border); background: var(--surface-2);
+    border-radius: 999px; padding: 0.3rem 0.9rem; margin-bottom: 1.1rem;
+    box-shadow: var(--card-shadow);
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 4.6vw, 3.4rem); line-height: 1.08;
+    letter-spacing: -0.02em; margin: 0 0 0.8rem;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p { font-size: 1.12rem; color: var(--ink-2); margin: 0 auto 1.5rem; max-width: 44rem; }
   .cta { display: inline-flex; gap: 0.8rem; }
   .cta a {
-    display: inline-block; padding: 0.55rem 1.3rem; border-radius: 8px;
-    text-decoration: none; font-weight: 600; font-size: 0.95rem;
+    padding: 0.65rem 1.5rem; border-radius: 10px; text-decoration: none;
+    font-weight: 700; font-size: 0.95rem;
   }
-  .cta .primary { background: var(--accent); color: #fff; }
-  .cta .secondary { border: 1px solid var(--border-strong); color: var(--ink); }
+  .cta .primary {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: #fff; box-shadow: 0 6px 18px var(--glow-a);
+  }
+  .cta .secondary { border: 1px solid var(--border); background: var(--surface-2); color: var(--ink); }
 
-  h2 {
-    font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em;
-    color: var(--ink-3); margin: 0 0 0.8rem;
+  .qgrid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem;
+    align-items: stretch;
   }
-  .band { margin-bottom: 2rem; }
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
-  .grid.two { grid-template-columns: 1fr 1fr; }
-  @media (max-width: 64rem) { .grid, .grid.two { grid-template-columns: 1fr; } }
-  .card {
+  @media (max-width: 70rem) { .qgrid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 42rem) { .qgrid { grid-template-columns: 1fr; } }
+  .q {
     background: var(--surface-2); border: 1px solid var(--border);
-    border-radius: 10px; padding: 1.1rem 1.25rem;
+    border-radius: 14px; padding: 1.3rem 1.4rem 1.4rem;
+    box-shadow: var(--card-shadow); position: relative; overflow: hidden;
   }
-  .card h3 { margin: 0 0 0.4rem; font-size: 1rem; }
-  .card p { margin: 0 0 0.5rem; font-size: 0.92rem; color: var(--ink-2); }
-  .card p:last-child { margin-bottom: 0; }
-  ul { margin: 0; padding-left: 1.1rem; font-size: 0.92rem; color: var(--ink-2); }
-  li { margin-bottom: 0.45rem; }
-  li b { color: var(--ink); }
-  code {
-    background: var(--surface-3); border-radius: 4px; padding: 0.05rem 0.35rem;
-    font-size: 0.88em;
+  .q::before {
+    content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
   }
-  footer { color: var(--ink-3); font-size: 0.8rem; border-top: 1px solid var(--border); padding-top: 0.8rem; }
+  .q .n {
+    font-size: 0.75rem; font-weight: 800; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 0.55rem;
+  }
+  .q h2 { font-size: 1.15rem; letter-spacing: -0.01em; margin: 0 0 0.6rem; }
+  .q p { margin: 0 0 0.6rem; font-size: 0.92rem; color: var(--ink-2); }
+  .q p:last-child { margin-bottom: 0; }
+  .q b { color: var(--ink); }
+  .q ul { margin: 0; padding: 0; list-style: none; font-size: 0.92rem; color: var(--ink-2); }
+  .q li { padding-left: 1.3rem; position: relative; margin-bottom: 0.5rem; }
+  .q li:last-child { margin-bottom: 0; }
+  .q li::before { content: "✕"; position: absolute; left: 0; color: var(--critical); font-weight: 700; font-size: 0.8rem; top: 0.15rem; }
+
+  .strip {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem 2.4rem;
+    margin: 1.8rem 0 1.4rem; font-size: 0.88rem; color: var(--ink-2);
+  }
+  .strip span b { color: var(--ink); font-weight: 700; }
+  .strip span::before { content: "●"; color: var(--good); font-size: 0.6rem; margin-right: 0.5rem; vertical-align: 0.1rem; }
+
+  footer { color: var(--ink-3); font-size: 0.8rem; text-align: center; padding-top: 0.4rem; }
+  footer a { color: var(--ink-3); }
 </style>
 </head>
 <body>
@@ -89,103 +128,69 @@
 </nav>
 
 <div class="hero">
+  <span class="kicker">Unattended · Daily · 08:30 SGT</span>
   <h1>Your disaster watch floor,<br><em>staffed by an agent</em></h1>
-  <p>HADR Claw watches global disaster feeds around the clock, filters the noise,
-  and publishes an assessed morning situation report at 08:30 Singapore time —
-  every day, unattended, on free infrastructure.</p>
+  <p>Three global disaster feeds in. One assessed morning report out.
+  Nobody stays up all night.</p>
   <div class="cta">
     <a class="primary" href="./">View today's report</a>
     <a class="secondary" href="architecture.html">How it works</a>
   </div>
 </div>
 
-<div class="band">
-  <h2>What is this?</h2>
-  <div class="grid">
-    <div class="card"><h3>A monitoring agent for HADR</h3>
-      <p>A small, always-on agent ("claw") for humanitarian assistance and disaster
-      response. It pulls USGS earthquakes, GDACS multi-hazard alerts and UN OCHA's
-      ReliefWeb, merges duplicate reports of the same event, and diffs against what
-      it has already seen.</p></div>
-    <div class="card"><h3>One page, once a day</h3>
-      <p>The output is a single static HTML situation report: escalated, new,
-      updated and ongoing events, each with an AI-written assessment of what
-      happened, where, how bad, and who is affected. Facts are injected from the
-      feeds — the model cannot invent events.</p></div>
-    <div class="card"><h3>Mostly files and a loop</h3>
-      <p>No server. GitHub Actions is the heartbeat, git is the memory, GitHub
-      Pages is the channel, and one <code>docker compose run</code> is the whole
-      system — identical in CI, on a VPS, or on a laptop.</p></div>
+<div class="qgrid">
+  <div class="q">
+    <div class="n">01 · What</div>
+    <h2>A monitoring agent for HADR</h2>
+    <p>It watches <b>USGS</b>, <b>GDACS</b> and <b>ReliefWeb</b>, merges duplicate
+    reports of the same event, and remembers what it has already seen.</p>
+    <p>Each morning it publishes one page: what's <b>new</b>, what <b>escalated</b>,
+    what it means — assessed by an AI model that can only speak about events the
+    pipeline verified.</p>
   </div>
-</div>
 
-<div class="band">
-  <h2>Why it does what it does — and where it's headed</h2>
-  <div class="grid two">
-    <div class="card"><h3>Why</h3>
-      <p>Disaster feeds are noisy, redundant and shaped for machines, not for a
-      person deciding at 08:30 whether today needs attention. The same earthquake
-      arrives three times under three identifiers; most entries never matter to a
-      regional watch floor. Someone — or something — has to read it all every
-      morning.</p>
-      <p>The claw exists to make that reading unnecessary: deterministic code does
-      the filtering and dedup (so it's testable and repeatable), and a capped model
-      does only the judgement — with a fallback so <b>the report always exists</b>,
-      even when the model fails.</p></div>
-    <div class="card"><h3>Direction</h3>
-      <p>All seven planned tiers are built, through the capped overnight
-      self-improvement loop. From here the trajectory is depth, not sprawl:
-      more hazard feeds behind the same event schema, richer escalation tracking,
-      and more of the report's quality guarded by deterministic checkers rather
-      than prompts.</p>
-      <p>The roadmap and its known blind spots are public —
-      see <a href="https://github.com/mervo/hadr-claw/blob/main/ROADMAP.md">ROADMAP.md</a>.</p></div>
+  <div class="q">
+    <div class="n">02 · Why</div>
+    <h2>Feeds are for machines</h2>
+    <p>The same quake arrives three times under three IDs, buried in entries that
+    will never matter. Someone has to read it all — every morning.</p>
+    <p>The claw makes that reading unnecessary. And it's built to be trusted:
+    hard caps on the model, a deterministic fallback, so <b>the report always
+    exists</b>. Next: more feeds, deeper escalation tracking.</p>
   </div>
-</div>
 
-<div class="band">
-  <h2>Who it's for — and the decision it speeds up</h2>
-  <div class="grid two">
-    <div class="card"><h3>Audience</h3>
-      <p>A global HADR watch floor and anyone with the morning duty officer's
-      problem: analysts, response planners, NGO ops staff, or a team lead who needs
-      situational awareness before the day's first meeting — without staffing an
-      overnight shift.</p></div>
-    <div class="card"><h3>The decision</h3>
-      <p><b>"Does anything need my attention this morning?"</b> — answered in one
-      glance instead of thirty minutes of feed-reading. Escalations surface above
-      the fold, quiet mornings say "no new developments" in one line, and a page
-      that never changes is distinguishable from a dead one by its freshness
-      stamp.</p></div>
+  <div class="q">
+    <div class="n">03 · Who</div>
+    <h2>The morning duty officer</h2>
+    <p>Analysts, response planners, NGO ops — anyone who needs situational
+    awareness before the day's first meeting, without an overnight shift.</p>
+    <p>It speeds up exactly one decision:<br>
+    <b>“Does anything need my attention this morning?”</b><br>
+    One glance, not thirty minutes of feeds.</p>
   </div>
-</div>
 
-<div class="band">
-  <h2>What it deliberately does not do</h2>
-  <div class="card">
+  <div class="q">
+    <div class="n">04 · Not</div>
+    <h2>Deliberate non-goals</h2>
     <ul>
-      <li><b>Not real-time alerting.</b> It is a daily morning report, not a pager.
-        For minute-level warnings, use official channels; the claw tells you what
-        the night left behind.</li>
-      <li><b>Not a primary source.</b> Every event links back to USGS, GDACS or
-        ReliefWeb. The claw curates and assesses; it never replaces official
-        advisories, and it ingests no social media or unverified reports.</li>
-      <li><b>No invented facts.</b> The model can only assess events the pipeline
-        verified; unknown event ids are rejected in code, and every fact on the
-        page comes from the normalized feed data.</li>
-      <li><b>No unbounded spend.</b> Turns, tokens and wall clock are hard-capped
-        in code. If the model misbehaves, a deterministic fallback publishes the
-        report anyway — with a banner saying so.</li>
-      <li><b>No infrastructure to babysit.</b> No database, no queue, no server.
-        If a run fails, it opens an issue that summons an AI investigator and
-        pings Telegram — silence is never ambiguous.</li>
+      <li><b>Not a pager.</b> Daily report, not real-time alerts.</li>
+      <li><b>Not a source.</b> Every fact links back to the official feed.</li>
+      <li><b>No invented events.</b> Unknown IDs are rejected in code.</li>
+      <li><b>No runaway spend.</b> Turns, tokens, wall clock — capped.</li>
+      <li><b>No servers.</b> If a run fails, it files the issue itself.</li>
     </ul>
   </div>
 </div>
 
-<footer>HADR Claw · <a href="./">live dashboard</a> ·
-  <a href="architecture.html">architecture &amp; workflow</a> ·
-  <a href="https://github.com/mervo/hadr-claw">source on GitHub</a></footer>
+<div class="strip">
+  <span><b>3 feeds</b> → 1 picture</span>
+  <span><b>0 servers</b> — Actions + Pages + git</span>
+  <span><b>100%</b> mornings published, fallback guaranteed</span>
+  <span><b>Open source</b> — roadmap &amp; blind spots public</span>
+</div>
+
+<footer><a href="./">live dashboard</a> · <a href="architecture.html">architecture</a> ·
+  <a href="https://github.com/mervo/hadr-claw">github.com/mervo/hadr-claw</a></footer>
 
 </div>
 </body>
