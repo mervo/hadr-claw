@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HADR Claw — Architecture &amp; Workflow</title>
+<style>
+  /* Same tokens as dashboard.html so the three pages read as one site. */
+  :root {
+    color-scheme: light dark;
+    --surface: #fcfcfb; --surface-2: #ffffff; --surface-3: #f4f3f0;
+    --ink: #0b0b0b; --ink-2: #52514e; --ink-3: #6e6d68;
+    --border: #e4e3df; --border-strong: #cfcec9;
+    --good: #0ca30c; --warning: #fab219; --serious: #ec835a; --critical: #d03b3b;
+    --accent: #2a78d6; --accent-tint: #eaf2fc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface: #1a1a19; --surface-2: #232322; --surface-3: #2b2b29;
+      --ink: #ffffff; --ink-2: #c3c2b7; --ink-3: #98978e;
+      --border: #383835; --border-strong: #4a4945;
+      --accent: #3987e5; --accent-tint: #16273d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0 2rem 2.5rem;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.5; background: var(--surface); color: var(--ink);
+  }
+  .page { max-width: 88rem; margin: 0 auto; }
+  nav {
+    display: flex; align-items: center; gap: 1.2rem; padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border); margin-bottom: 1.4rem;
+    font-size: 0.9rem;
+  }
+  nav .brand { font-weight: 700; font-size: 1rem; }
+  nav a { color: var(--ink-2); text-decoration: none; }
+  nav a:hover { color: var(--accent); }
+  nav a.active { color: var(--ink); font-weight: 600; }
+  h1 { font-size: 1.5rem; margin: 0 0 0.2rem; }
+  .sub { color: var(--ink-2); margin: 0 0 1.4rem; max-width: 60rem; }
+  h2 {
+    font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--ink-3); margin: 0 0 0.7rem;
+  }
+  a { color: var(--accent); }
+
+  /* 16:9-friendly: wide horizontal grids, short columns, minimal scroll. */
+  .cols { display: grid; grid-template-columns: 1.15fr 1fr; gap: 1.6rem; }
+  @media (max-width: 64rem) { .cols { grid-template-columns: 1fr; } }
+  section { margin-bottom: 1.6rem; }
+
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; align-items: stretch; }
+  .step {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.7rem 0.85rem; position: relative;
+  }
+  .step + .step { margin-left: 1.3rem; }
+  .step + .step::before {
+    content: "→"; position: absolute; left: -1.05rem; top: 50%;
+    transform: translateY(-50%); color: var(--ink-3); font-size: 1rem;
+  }
+  .step b { display: block; font-size: 0.9rem; margin-bottom: 0.15rem; }
+  .step span { font-size: 0.8rem; color: var(--ink-2); }
+  .step .tag {
+    display: inline-block; font-size: 0.68rem; font-weight: 600;
+    color: var(--accent); background: var(--accent-tint);
+    border-radius: 4px; padding: 0.05rem 0.4rem; margin-bottom: 0.3rem;
+  }
+  @media (max-width: 64rem) {
+    .flow { grid-template-columns: 1fr; }
+    .step + .step { margin-left: 0; margin-top: 1.3rem; }
+    .step + .step::before { content: "↓"; left: 50%; top: -1.15rem; transform: translateX(-50%); }
+  }
+
+  table { border-collapse: collapse; width: 100%; font-size: 0.88rem; }
+  th, td { text-align: left; padding: 0.4rem 0.7rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--ink-3); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  td code, li code, p code {
+    background: var(--surface-3); border-radius: 4px; padding: 0.05rem 0.3rem;
+    font-size: 0.85em;
+  }
+  ul { margin: 0; padding-left: 1.1rem; font-size: 0.9rem; }
+  li { margin-bottom: 0.35rem; }
+  li b { color: var(--ink); }
+  .card {
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 0.9rem 1.1rem;
+  }
+  footer { color: var(--ink-3); font-size: 0.8rem; border-top: 1px solid var(--border); padding-top: 0.8rem; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<nav>
+  <span class="brand">HADR Claw</span>
+  <a href="./">Dashboard</a>
+  <a href="architecture.html" class="active">Architecture</a>
+  <a href="marketing.html">Overview</a>
+  <a href="https://github.com/mervo/hadr-claw">GitHub</a>
+</nav>
+
+<h1>Architecture &amp; workflow</h1>
+<p class="sub">An unattended disaster-monitoring agent: a deterministic feed pipeline, a
+capped agentic assessment loop, and a daily GitHub Actions heartbeat that publishes a
+morning situation report — with a fallback that guarantees the report always exists.</p>
+
+<section>
+  <h2>The daily run — 00:00 UTC / 08:00 SGT</h2>
+  <div class="flow">
+    <div class="step"><span class="tag">Heartbeat</span><b>Actions cron wakes the claw</b>
+      <span>Runner checks out the repo (which <em>is</em> the memory) and runs the same
+      container used in dev: <code>docker compose run --rm claw</code>.</span></div>
+    <div class="step"><span class="tag">Pipeline · hadr/</span><b>Fetch → normalize → dedup</b>
+      <span>USGS, GDACS and ReliefWeb are pulled, mapped to one event schema, and
+      cross-feed merged (GLIDE ids, then space-time proximity). No LLM here.</span></div>
+    <div class="step"><span class="tag">Memory</span><b>Diff against what's been seen</b>
+      <span>Events compared with <code>state/seen_events.json</code>: new, escalated,
+      updated, unchanged, deleted. A quiet morning skips the model entirely.</span></div>
+    <div class="step"><span class="tag">Agent · agent/</span><b>Model assesses the changes</b>
+      <span>A ~100-line loop briefs the model with the diff; it answers via a structured
+      <code>write_dashboard</code> tool call. Unknown event ids are rejected.</span></div>
+    <div class="step"><span class="tag">Channel</span><b>Publish &amp; commit back</b>
+      <span>Checks gate the report; <code>state/</code> + <code>dashboard.html</code>
+      are committed to main, and the dashboard deploys to GitHub Pages.</span></div>
+  </div>
+</section>
+
+<div class="cols">
+  <section>
+    <h2>Anatomy of the claw</h2>
+    <table>
+      <tr><th>Part</th><th>Role</th><th>Lives in</th></tr>
+      <tr><td><b>Soul</b></td><td>Standing orders: purpose and behaviour</td><td><code>agent/soul.md</code> + <code>CLAUDE.md</code></td></tr>
+      <tr><td><b>Loop</b></td><td>Feeds the model context, runs its tools, repeats</td><td><code>agent/harness.py</code></td></tr>
+      <tr><td><b>Tools</b></td><td>Bounded actions: <code>fetch_feed</code>, <code>write_dashboard</code></td><td><code>agent/tools.py</code> → <code>hadr/</code></td></tr>
+      <tr><td><b>Memory</b></td><td>What survives between runs, in files</td><td><code>state/seen_events.json</code></td></tr>
+      <tr><td><b>Heartbeat</b></td><td>Wakes it daily without a human</td><td><code>.github/workflows/heartbeat.yml</code></td></tr>
+      <tr><td><b>Channel</b></td><td>Where the report lands</td><td><code>dashboard.html</code> → GitHub Pages</td></tr>
+    </table>
+  </section>
+
+  <section>
+    <h2>Guardrails — enforced in code, not prose</h2>
+    <div class="card">
+      <ul>
+        <li><b>Hard caps</b> on turns, total tokens and wall clock; a 10-minute
+          <code>timeout</code> wraps the whole run in CI.</li>
+        <li><b>Deterministic fallback:</b> if the model fails or a cap trips, a
+          stdlib renderer still writes the report, with a banner.</li>
+        <li><b>No invented events:</b> facts (magnitude, place, links) are injected
+          from normalized data by uid; unknown uids are rejected.</li>
+        <li><b>Gate before publish:</b> <code>check_dashboard.py</code> and
+          <code>check_spend.py</code> must pass or nothing deploys.</li>
+        <li><b>Failure alerting:</b> a failed run opens a
+          <code>heartbeat-failure</code> issue tagging @claude and pings Telegram.</li>
+        <li><b>Every string</b> from a feed is HTML-escaped; all timestamps are
+          UTC ISO8601, converted only at the feed boundary.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<div class="cols">
+  <section>
+    <h2>The two layers</h2>
+    <ul>
+      <li><b><code>hadr/</code> — deterministic pipeline.</b> Fetch, normalize,
+        cross-feed dedup, memory diff, fallback rendering. Fully testable offline
+        against fixtures; no LLM call in this package, ever.</li>
+      <li><b><code>agent/</code> — agentic engine.</b> The morning run's model loop
+        (OpenCode Zen gateway, OpenAI-compatible). Tests replay recorded transcripts
+        via <code>HADR_FAKE_MODEL</code> — CI never needs a key or the network.</li>
+      <li><b>Noise filter:</b> quakes kept at <code>mag ≥ 4.5</code> or
+        <code>sig ≥ 600</code> or any PAGER alert; GDACS Orange/Red always kept;
+        ReliefWeb (human-curated) always kept.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Development workflow</h2>
+    <ul>
+      <li><b>One tier = one branch = one PR = one @claude review</b> — seven tiers,
+        each end-to-end demoable (see <a href="https://github.com/mervo/hadr-claw/blob/main/ROADMAP.md">ROADMAP.md</a>).</li>
+      <li><b>Canonical runtime is docker-compose;</b> <code>uv run</code> is the fast
+        dev loop. Tests: <code>uv run pytest</code> · lint: <code>uv run ruff check .</code></li>
+      <li><b>The repo is the claw's memory:</b> runners are wiped, so the heartbeat
+        commits state back to main. Dev PRs never touch
+        <code>dashboard.html</code>/<code>state/**</code>.</li>
+      <li><b>Overnight loop (Tier 7):</b> a capped self-improvement loop —
+        <code>claude -p</code> per iteration against <code>goal.md</code>, with
+        pristine-copy checkers and checkpoint-commit reverts.</li>
+      <li><b>Hard-won fixes</b> land as one file each in <code>docs/solutions/</code>;
+        secrets live only in <code>.env</code> (gitignored) and Actions secrets.</li>
+    </ul>
+  </section>
+</div>
+
+<footer>HADR Claw · <a href="./">live dashboard</a> ·
+  <a href="marketing.html">project overview</a> ·
+  <a href="https://github.com/mervo/hadr-claw">source on GitHub</a></footer>
+
+</div>
+</body>
+</html>

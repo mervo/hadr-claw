@@ -71,7 +71,8 @@ jobs:
           exit 1
 
       - name: stage site
-        run: mkdir -p site && cp dashboard.html site/index.html
+        # index.html stays the dashboard; pages/*.html ride alongside untouched
+        run: mkdir -p site && cp dashboard.html site/index.html && cp pages/*.html site/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
