@@ -28,7 +28,7 @@ mapped to this repository (see [problem_statement.md](problem_statement.md) for 
 | **Loop** | Code that feeds the model context, runs its tools, goes round again | `agent/harness.py` (~100-line agent loop, Tier 4) |
 | **Tools** | Bounded actions run on the model's behalf | `fetch_feed`, `write_dashboard` (`agent/tools.py`, thin wrappers over `hadr/`) |
 | **Memory** | What survives between runs, in files not prompts | `state/seen_events.json` — which events it has already assessed (Tier 3) |
-| **Heartbeat** | The schedule that wakes it without a human | GitHub Actions cron, 00:00 UTC daily (Tier 6); docker-compose `heartbeat` profile for VPS hosting |
+| **Heartbeat** | The schedule that wakes it without a human | GitHub Actions cron, 00:07 UTC daily (Tier 6); docker-compose `heartbeat` profile for VPS hosting |
 | **Channel** | Where output lands so someone can act on it | `dashboard.html`, published via GitHub Pages (Tier 6) |
 
 ## Architecture at a glance
@@ -197,12 +197,12 @@ degrades gracefully without them):
 
 ## How it's hosted and runs
 
-**The short answer:** GitHub Actions runs your claw on their servers at 00:00 UTC daily. You don't need your laptop powered on; GitHub provides the compute. The workflow is in `.github/workflows/heartbeat.yml`.
+**The short answer:** GitHub Actions runs your claw on their servers at 00:07 UTC daily. You don't need your laptop powered on; GitHub provides the compute. The workflow is in `.github/workflows/heartbeat.yml`.
 
 No server. Four free/cheap services each play one part of the claw's anatomy:
 
 ```
-             GitHub Actions (cron 00:00 UTC + workflow_dispatch)   ← heartbeat
+             GitHub Actions (cron 00:07 UTC + workflow_dispatch)   ← heartbeat
                   │  runs `docker compose run --rm claw`
                   ▼
              agent/morning.py in the project container             ← loop
@@ -233,7 +233,7 @@ The free tier has limits you should monitor:
 
 **The daily lifecycle** (`.github/workflows/heartbeat.yml`):
 
-1. Cron fires at **00:00 UTC / 08:00 SGT** — buffer inside the 08:30 SGT
+1. Cron fires at **00:07 UTC / 08:07 SGT** — buffer inside the 08:30 SGT
    promise, because Actions cron can drift 15+ minutes.
 2. The runner checks out the repo and runs the **same compose service used in
    dev** (`docker compose run --rm claw`) with `OPENCODE_API_KEY` from the
@@ -275,7 +275,7 @@ The free tier has limits you should monitor:
 **Alternative hosts** (same image, no code changes):
 
 - **Any Docker host / VPS**: `docker compose --profile heartbeat up -d` runs
-  supercronic on the same 00:00 UTC schedule; state persists on disk via the
+  supercronic on the same 00:07 UTC schedule; state persists on disk via the
   bind mount, no commit-back needed.
 - **Laptop**: `docker compose run --rm claw` whenever you want a report
   (remember the lid-closed problem — this is for dev, not the promise).

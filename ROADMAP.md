@@ -26,7 +26,7 @@ Status values: `planned` · `in-progress` · `done`.
    the engine; the pipeline is the seatbelt.*
 2. **Model API**: OpenCode Go (Zen gateway), OpenAI-compatible, env-configured.
 3. **Runtime**: docker-compose is canonical for portability; `uv run` is the dev loop.
-4. **Heartbeat**: GitHub Actions cron `0 0 * * *` UTC (≈08:00 SGT — drift buffer
+4. **Heartbeat**: GitHub Actions cron `7 0 * * *` UTC (≈08:07 SGT — drift buffer
    inside the 08:30 promise) + `workflow_dispatch`; memory committed back each run.
 5. **Observability**: JSONL run records + model transcripts in `state/runs/`
    (pruned to 14), ops panel on the dashboard, OpenTelemetry traces
