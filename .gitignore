@@ -219,3 +219,4 @@ __marimo__/
 state/runs/spans.jsonl
 .overnight/
 state/overnight.log
+.claude/worktrees/
