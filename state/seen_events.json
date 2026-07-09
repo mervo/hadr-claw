@@ -435,7 +435,7 @@
       "fingerprint": "sha256:59d3b5a360e2ca1dc08c5b42fa9fee261be5af387ecc34011927311084bd619e",
       "first_seen": "2026-07-08T03:33:29Z",
       "last_reported_fingerprint": "sha256:ccbd8e049e64ddfcd7b9e2551caa67c4dfa1bac81d6a5ac5122e295d7c12fd7e",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T02:08:48Z",
       "status": "active",
       "title": "Earthquake in China"
@@ -459,7 +459,7 @@
       ],
       "fingerprint": "sha256:dce71d5df4dab172e30671cb55a5c1082abd4232bf29951d03d69b896bfdac9b",
       "first_seen": "2026-07-08T05:25:51Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T04:21:46Z",
       "status": "active",
       "title": "Earthquake in Jan Mayen Island Region"
@@ -483,7 +483,7 @@
       ],
       "fingerprint": "sha256:61878e45e8a8c7fb89e81f19c9f528d4e007b370b122b9662fbc357de5a6c403",
       "first_seen": "2026-07-08T07:14:09Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T05:00:32Z",
       "status": "active",
       "title": "Earthquake in Peru"
@@ -507,7 +507,7 @@
       ],
       "fingerprint": "sha256:da65f2dec7bbe3740e52b47dc6765d531eea1d12fbe5d11c5060df9b43506de9",
       "first_seen": "2026-07-09T01:42:22Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T07:35:51Z",
       "status": "active",
       "title": "Earthquake in Japan"
@@ -531,7 +531,7 @@
       ],
       "fingerprint": "sha256:97192ff31a45afc21d76796e3b549fe586bae0387666d70733a7576fce4bf53c",
       "first_seen": "2026-07-09T01:42:22Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T08:36:06Z",
       "status": "active",
       "title": "Earthquake in Indonesia"
@@ -555,7 +555,7 @@
       ],
       "fingerprint": "sha256:5b6b48621e5baac8966fa347b37c4298a9d35b859197d177755e12ffe63b7d54",
       "first_seen": "2026-07-09T01:42:22Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T09:50:23Z",
       "status": "active",
       "title": "Earthquake in Vanuatu"
@@ -579,7 +579,7 @@
       ],
       "fingerprint": "sha256:252127490e1dfcdfdcc17704786e576f3b9388d8032cde65b0ee3866109ac026",
       "first_seen": "2026-07-09T01:42:22Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T11:23:04Z",
       "status": "active",
       "title": "Earthquake in Papua New Guinea"
@@ -603,7 +603,7 @@
       ],
       "fingerprint": "sha256:ac2fed3f3aae38d9ee6aac17b7476f26ce6f6cf1104c2eb8bc664a97fc285705",
       "first_seen": "2026-07-09T01:42:22Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T11:42:51Z",
       "status": "active",
       "title": "Earthquake in Vanuatu"
@@ -627,7 +627,7 @@
       ],
       "fingerprint": "sha256:d08e9b884a22c29065ac6cdf1e82fddd3b0d50c6975f1c7bc99bd76825a259eb",
       "first_seen": "2026-07-09T01:42:22Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T12:18:59Z",
       "status": "active",
       "title": "Earthquake in Tonga Islands Region"
@@ -651,7 +651,7 @@
       ],
       "fingerprint": "sha256:57c0db2644218be4de0bdbe68a464d43a19b54d5613355f49957f12be59f2507",
       "first_seen": "2026-07-09T01:42:22Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T13:01:10Z",
       "status": "active",
       "title": "Earthquake in Chagos Archipelago Region"
@@ -675,7 +675,7 @@
       ],
       "fingerprint": "sha256:783e20514a748b208dd31cafa35debe9f4583ace18c71c2505d2f8f55184ae20",
       "first_seen": "2026-07-09T01:42:22Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T15:22:34Z",
       "status": "active",
       "title": "Earthquake in Islamic Republic of Iran"
@@ -699,7 +699,7 @@
       ],
       "fingerprint": "sha256:97a23b698921d6ac04a024810e3769286d80170f772419e76c652d61f4c73332",
       "first_seen": "2026-07-09T01:42:22Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T19:07:10Z",
       "status": "active",
       "title": "Earthquake in Balleny Islands Region"
@@ -723,7 +723,7 @@
       ],
       "fingerprint": "sha256:333bc27fc967d30198f669391c178cbe19e8c0070b80132e597098c1f8fd450c",
       "first_seen": "2026-07-09T01:42:22Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T20:32:04Z",
       "status": "active",
       "title": "Earthquake in Philippines"
@@ -747,7 +747,7 @@
       ],
       "fingerprint": "sha256:80845844e1f70904aa0c07eb959bd89460461d550c68d08e862b1a04ab8c1a23",
       "first_seen": "2026-07-09T01:42:22Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-08T23:44:13Z",
       "status": "active",
       "title": "Earthquake in China"
@@ -771,7 +771,7 @@
       ],
       "fingerprint": "sha256:747183f8a90e6b20d658159b0c4ca4b94309155fed43dd8d6db99cdf47ddaaee",
       "first_seen": "2026-07-09T01:42:22Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-09T01:16:25Z",
       "status": "active",
       "title": "Earthquake in Indonesia"
@@ -795,7 +795,7 @@
       ],
       "fingerprint": "sha256:f0335fd7afbb14b8417c68fcd3600fd2cdc199bc43d4ecb961929261df97de74",
       "first_seen": "2026-07-09T01:42:22Z",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-09T01:15:09Z",
       "status": "active",
       "title": "Earthquake in Tajikistan"
@@ -1278,7 +1278,7 @@
       "fingerprint": "sha256:4f1d11918b0de5eb98b61e513c883e512d69acf78e038a9790b03576f5a40960",
       "first_seen": "2026-07-08T03:33:29Z",
       "last_reported_fingerprint": "sha256:4e030a996635b7ed084aabc24991948b9ea491d068072b9ad20db42bf2f4e7b6",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-01T00:00:00Z",
       "status": "active",
       "title": "Tropical Cyclone BAVI-26"
@@ -1346,13 +1346,13 @@
       "fingerprint": "sha256:b7df2c1627cfbc59b7ddaf077493580df45f48c9bd30bfe95e5101e02dca86a4",
       "first_seen": "2026-07-08T03:33:29Z",
       "last_reported_fingerprint": "sha256:b7df2c1627cfbc59b7ddaf077493580df45f48c9bd30bfe95e5101e02dca86a4",
-      "last_seen": "2026-07-09T01:42:22Z",
+      "last_seen": "2026-07-09T01:57:35Z",
       "occurred_at": "2026-07-04T00:00:00Z",
       "status": "active",
       "title": "Forest fires in France"
     }
   },
   "last_change_at": "2026-07-09T01:42:22Z",
-  "updated_at": "2026-07-09T01:42:22Z",
+  "updated_at": "2026-07-09T01:57:35Z",
   "version": 1
 }

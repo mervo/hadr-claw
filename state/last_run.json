@@ -1,11 +1,11 @@
 {
-  "finished_at": "2026-07-09T01:42:39Z",
+  "finished_at": "2026-07-09T01:57:35Z",
   "changes": {
-    "new": 13,
+    "new": 0,
     "escalated": 0,
-    "updated": 2,
-    "unchanged": 3,
+    "updated": 0,
+    "unchanged": 18,
     "deleted": 0
   },
-  "engine": "agentic"
+  "engine": "pipeline-quiet"
 }
